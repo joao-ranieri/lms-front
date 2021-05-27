@@ -1,14 +1,14 @@
 <template>
   <div>
-    <fm-app-settings-button 
+    <fm-app-settings-button
       :align="localButtonAlign"
       variant="dark"></fm-app-settings-button>
     <fm-app-settings-drawer
-      namespace="huma-v1.0.0" 
-      :options="computedOptions" 
+      namespace="huma-v1.0.0"
+      :options="computedOptions"
       :drawer-align="localDrawerAlign"
       :sidebar-type="localSidebarType"
-      :sidebar-variant="localSidebarVariant"></fm-app-settings-drawer> 
+      :sidebar-variant="localSidebarVariant"></fm-app-settings-drawer>
   </div>
 </template>
 
@@ -27,8 +27,8 @@ Vue.use(BootstrapVue)
 
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
-import { 
-  FmAppSettingsButton, 
+import {
+  FmAppSettingsButton,
   FmAppSettingsDrawer,
   listenOnRootMixin,
   sidebarProps,
