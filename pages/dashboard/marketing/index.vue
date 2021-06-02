@@ -1,5 +1,5 @@
 <template>
-  <p>Dashboard</p>
+  <p>Marketing sub menu 1</p>
 </template>
 
 <script>
