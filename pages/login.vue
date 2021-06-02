@@ -3,7 +3,7 @@
 
     <b-col sm="12" md="6" align-self="end" class="logo-box">
         <span class="logo d-block" style="margin-bottom: 20px">
-          <img height="63" src="../assets/img/ico/logo-text.svg" alt="masters-logo">
+          <img height="63" src="../assets/img/utils/logo-text-white.svg" alt="masters-logo">
         </span>
       <span class="d-block" style="max-width: 500px">
           Conteúdo de qualidade criado de professor para professor
