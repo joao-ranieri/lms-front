@@ -3,7 +3,7 @@
 
     <b-col sm="12" md="6" align-self="end" class="logo-box">
         <span class="logo d-block" style="margin-bottom: 20px">
-          <img height="63" src="../assets/img/ico/logo-text.svg" alt="masters-logo">
+          <img height="63" src="../assets/img/utils/logo-text.svg" alt="masters-logo">
         </span>
       <span class="d-block" style="max-width: 500px">
           Conteúdo de qualidade criado de professor para professor
@@ -14,26 +14,25 @@
       <b-card align="left" class="mb-2">
         <b-form>
           <h2 v-text="formOptions[formSelected].title"></h2>
-          <small v-if="formSelected === 'login'">Ainda não tem cadastro? <a href="#" @click="formControl('new')">Crie sua conta
-            agora</a></small>
-          <div class="box-form" style="max-height: 326px">
-            <b-form-group id="email" label="Nome completo" label-for="name" class="mt-4" v-if="formSelected === 'new'">
-              <b-form-input name="name" type="name" placeholder="" required></b-form-input>
-            </b-form-group>
+          <small v-if="formSelected === 'login'">Ainda não tem cadastro? <a href="#" @click="formControl('new')">
+            Crie sua conta agora</a>
+          </small>
 
-            <b-form-group id="email" label="E-mail" label-for="email" class="mt-4">
-              <b-form-input name="email" type="email" placeholder="" required></b-form-input>
-            </b-form-group>
+          <div class="box-form">
 
-            <b-form-group id="password" label="Senha" label-for="password" class="mt-4">
-              <b-form-input name="password" type="password" placeholder="" required></b-form-input>
-              <span class="input-tip" v-if="formSelected === 'new'">Sua senha deve ter no mínimo 8 caracteres, composta por letras e números.</span>
-            </b-form-group>
+            <FormInput class="mt-4" :isRequired="true" labelText="Nome completo" nameInput="name" size="lg"
+                       v-if="formSelected === 'new'"/>
+            <FormInput class="mt-4" typeInput="email" :isRequired="true" labelText="E-mail" nameInput="email"
+                       size="lg"/>
+            <FormInput class="mt-4" typeInput="password" :isRequired="true" labelText="Senha" nameInput="password"
+                       size="lg"/>
 
             <div class="text-center mt-4">
               <small v-if="formSelected === 'login'"><a href="#" @click="formControl('recover')">Esqueci minha senha</a></small>
 
-              <b-button @click="executeForm" href="#" variant="primary" class="d-block mt-4">{{formOptions[formSelected].buttonText}}</b-button>
+              <b-button @click="executeForm" href="#" variant="primary" class="d-block mt-4">
+                {{ formOptions[formSelected].buttonText }}
+              </b-button>
             </div>
           </div>
         </b-form>
@@ -44,6 +43,7 @@
 </template>
 
 <script>
+
 export default {
   data() {
     return {
@@ -60,7 +60,7 @@ export default {
     formControl(type) {
       this.formSelected = type;
     },
-    executeForm(){
+    executeForm() {
       alert('chegou aqui')
     }
   }
