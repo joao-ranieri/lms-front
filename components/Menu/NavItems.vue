@@ -1,31 +1,90 @@
 <template>
   <div class="menu-items">
-    <div v-for="item in menuItems" :key="item.text" class="item">
-      <div class="item-icon">
-        <img :src="require('../../assets/img/dashbord/'+item.icon+'.svg')" :alt="item.icon">
-      </div>
-      <span>{{item.text}}</span>
-      <div v-if="item.submenu" class="submenu">
-        <div v-for="submenu in item.submenu" :key="submenu">
-          {{submenu}}
+    <div v-for="item in menuItems" :key="item.id"
+      :class="[activeItem === item.id && 'active', 'item-menu']">
+
+      <div class="item" @click="item.submenu ? dropSubmenu(item) : openLink(item)">
+        <div class="item-icon">
+          <img :src="require('../../assets/img/dashbord/'+item.icon+(activeItem === item.id
+            ? '-purple.svg' : '-gray.svg'))" :alt="item.icon">
+        </div>
+        <span>{{item.text}}</span>
+        <div v-if="item.submenu"
+          :id="'arro-icon-'+item.id"
+          :class="[activeItem === item.id && 'arrowIconOpened', 'arrow-icon']">
+          <img :src="require('../../assets/img/utils/small-right-'+(activeItem === item.id ? 'purple.svg' : 'gray.svg'))" alt="arrow icon">
         </div>
       </div>
+
+      <div v-if="item.submenu"
+        :id="'submenu'+item.id"
+        :class="[activeItem === item.id && 'dropdownItem', 'submenu']">
+        <div v-for="subMenuItem in item.submenu" :key="subMenuItem.id"
+          :class="activeSubItem === subMenuItem.id && 'subActive'"
+          @click="activeSubMenuRoute(item, subMenuItem)">
+          {{subMenuItem.text}}
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
 
 <script>
+
 const items = [
-  {text: 'Cursos', icon: 'folder-gray'},
-  {text: 'Alunos', icon: 'profile-gray'},
-  {text: 'Marketing', icon: 'live-gray', submenu: ['item 1', 'item 2']},
-  {text: 'Comunicação', icon: 'chat-gray', submenu: ['item 3', 'item 4']}
+  {id: 1, text: 'Cursos', icon: 'folder', route: '/dashboard/cursos'},
+  {id: 2, text: 'Alunos', icon: 'profile', route: '/dashboard/alunos'},
+  {id: 3, text: 'Marketing', icon: 'live', submenu: [{id: 31, text: 'item 1', route: '/dashboard/marketing'}, {id: 32, text: 'item 2', route: '/dashboard/teste'}]},
+  {id: 4, text: 'Comunicação', icon: 'chat', submenu: [{id: 41, text: 'item 1', route: '/dashboard/comunicacao'}]},
 ]
+
 export default {
   data() {
     return {
-      menuItems: items
+      menuItems: items,
+      activeItem: null,
+      activeSubItem: null,
     }
+  },
+
+  mounted() {
+    this.activeMenuRoute();
+  },
+
+  methods: {
+    activeMenuRoute() {
+      //veridica se a rota é referente a algum menu
+      const route = $nuxt.$router.history.current.fullPath;
+      const itemMenuActive = this.menuItems.find(item => item.route === route || route.includes(item.route));
+      this.activeItem = itemMenuActive ? itemMenuActive.id : null;
+
+      //caso não seja verifica se a rota é referente a algum submenu
+      if(!itemMenuActive) {
+        const menu = this.menuItems.filter(item => item.submenu);
+        menu.map(item => {
+          const submenu = item.submenu.find(sub => sub.route === route || route.includes(sub.route));
+          if(submenu) {
+            this.activeItem = item.id
+            this.activeSubItem = submenu.id
+          }
+        })
+      }
+    },
+    activeSubMenuRoute(item, subMenuItem){
+      this.activeItem = item.id;
+      this.activeSubItem = subMenuItem.id;
+      $nuxt.$router.push(subMenuItem.route);
+    },
+    dropSubmenu(item) {
+      document.getElementById("submenu"+item.id).classList.toggle("dropdownItem");
+      document.getElementById("arro-icon-"+item.id).classList.toggle("arrowIconOpened");
+    },
+    openLink(item) {
+      this.activeItem = item.id;
+      this.activeSubItem = null;
+      $nuxt.$router.push(item.route);
+    },
   }
 }
 </script>
@@ -35,19 +94,23 @@ export default {
   padding: 0 40px;
 }
 
+.item-menu {
+  border-bottom: 1px solid #F1F1F2;
+}
+
 .item {
   display: flex;
+  position: relative;
   align-items: center;
-  flex-wrap: wrap;
   min-height: 56px;
   padding: 15px 0;
-  border-bottom: 1px solid #F1F1F2;
   color: #525359;
   cursor: pointer;
 }
 
 .item:hover span,
-.item:hover .item-icon {
+.item:hover .item-icon,
+.item:hover .arrow-icon {
   filter: brightness(1);
 }
 
@@ -68,9 +131,58 @@ export default {
   transition: 0.2s;
 }
 
+.arrow-icon {
+  right: 0;
+  position: absolute;
+  filter: brightness(1.5);
+  transition: 0.4s;
+}
+
+/* submenu */
 .submenu {
+  display: none;
   width: 100%;
-  margin-top: 18px;
-  margin-left: 42px;
+  margin-bottom: 18px;
+  padding-left: 42px;
+  color: #525359;
+}
+
+.submenu div {
+  font-size: 14px;
+  font-family: "Inter Bold";
+  line-height: 20px;
+  padding: 12px 0;
+  filter: brightness(1.5);
+  transition: 0.2s;
+  cursor: pointer;
+}
+
+.submenu div:hover {
+  filter: brightness(1);
+}
+
+/* active */
+.active .submenu div.subActive,
+.active .item {
+  color: #6C5DD3;
+}
+
+.dropdownItem.submenu {
+  display: block;
+}
+
+.active .submenu div.subActive,
+.active .item span,
+.active .item-icon,
+.active .arrow-icon {
+  filter: brightness(1);
+}
+
+.arrowIconOpened.arrow-icon {
+  -webkit-transform: rotate(180deg);
+  -moz-transform: rotate(180deg);
+  -o-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  transform: rotate(180deg);
 }
 </style>
