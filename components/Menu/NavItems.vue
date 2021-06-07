@@ -185,4 +185,13 @@ export default {
   -ms-transform: rotate(180deg);
   transform: rotate(180deg);
 }
+
+/* Reduced Menu Settings */
+.reduced-menu .menu-items {
+  padding: 0 30px;
+}
+
+.reduced-menu .item span {
+  display: none;
+}
 </style>

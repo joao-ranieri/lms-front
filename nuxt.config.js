@@ -4,7 +4,6 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: ' - Masters',
     htmlAttrs: {
       lang: 'pt-br'
     },
@@ -14,7 +13,7 @@ export default {
       { hid: 'description', name: 'description', content: '' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: 'logo.utils' }
+      { rel: 'icon', type: 'image/x-icon', href: '/logo.ico' }
     ]
   },
 

@@ -48,6 +48,11 @@
 import LottieAnimation from "lottie-vuejs/src/LottieAnimation.vue";
 
 export default {
+  head(){
+    return {
+      title: "Login - Masters",
+    }
+  },
   components: {
     'lottie-animation': LottieAnimation
   },

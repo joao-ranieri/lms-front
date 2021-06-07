@@ -2,7 +2,7 @@
   <nav>
     <div class="header-nav">
       <img width="136" src="../../assets/img/utils/logo-text-black.svg" alt="masters-logo">
-      <img width="32" src="../../assets/img/utils/burger-icon-gray.svg" alt="burger-icon">
+      <a href="#" @click="retract"><img width="32" src="../../assets/img/utils/burger-icon-gray.svg" alt="burger-icon"></a>
     </div>
     <div class="itens">
       <MenuNavItems />
@@ -14,7 +14,13 @@
 </template>
 
 <script>
+
 export default {
+  methods: {
+    retract() {
+      this.$store.commit('setExpanded', !this.$store.state.expanded)
+    }
+  }
 }
 </script>
 
@@ -48,6 +54,15 @@ nav {
   width: 100%;
   height: 72px;
   border-top: 1px solid #F1F1F2;
+}
+
+/* Reduced Menu Settings */
+.reduced-menu .header-nav {
+  justify-content: center;
+}
+
+.reduced-menu .header-nav > img {
+  display: none;
 }
 
 @media (max-width: 768px) {

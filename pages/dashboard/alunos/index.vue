@@ -3,7 +3,13 @@
 </template>
 
 <script>
-export default {}
+export default {
+  head(){
+    return {
+      title: "Alunos - Masters",
+    }
+  },
+}
 </script>
 
 <style scoped>

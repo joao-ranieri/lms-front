@@ -9,6 +9,11 @@
 }
 
 @font-face {
+  font-family: 'Poppins Regular';
+  src: local("Poppins Regular"), url("../fonts/Poppins/Poppins-Regular.ttf") format('truetype');
+}
+
+@font-face {
   font-family: 'Poppins SemiBold';
   src: local("Poppins SemiBold"), url("../fonts/Poppins/Poppins-SemiBold.ttf") format('truetype');
 }
@@ -42,4 +47,47 @@ label, form small {
   font-family: "Inter Regular";
   color: #8A8C92;
   height: 16px;
+}
+
+.btn {
+  font: 12px "Inter Bold";
+}
+
+.btn.btn-purple {
+  background-color: #6C5DD3;
+  color: white;
+}
+
+.btn.lg {
+  border-radius: 8px;
+  padding: 18px;
+}
+
+/*Icon toggle Courses*/
+.btn-menu {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+}
+
+.btn-menu.dropdown-toggle::after {
+  display: none;
+}
+
+/* Dropdown settings*/
+.dropdown-item {
+  display: flex;
+  align-items: center;
+}
+
+.dropdown-menu {
+  background: #FFFFFF;
+  border: 1px solid #F1F1F2;
+  box-shadow: 0px 12px 23px rgba(53, 55, 60, 0.1);
+  border-radius: 8px;
 }
