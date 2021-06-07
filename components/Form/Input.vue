@@ -103,7 +103,7 @@ input.form-control {
   font-size: 14px;
   font-weight: 600;
   line-height: 20px;
-  font-family: 'Inter Bold';
+  font-family: 'Inter SemiBold';
   border: none;
 }
 

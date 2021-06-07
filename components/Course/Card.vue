@@ -1,13 +1,15 @@
 <template>
   <b-card overlay :img-src="require('../../assets/img/course-test/image.png')">
-      <b-dropdown class="menu-card" right toggle-class="btn-menu">
-        <template #button-content>
-            <img src="../../assets/img/utils/three-points.svg" alt="author">
-        </template>
-        <b-dropdown-item> <i class="mr-1 share-ico"></i>Compartilhar</b-dropdown-item>
-        <b-dropdown-item> <i class="mr-1 trash-ico"></i>Deletar</b-dropdown-item>
-        <b-dropdown-item> <i class="mr-1 star-ico"></i>Salvar como favorito</b-dropdown-item>
-      </b-dropdown>
+    <span class="course-status">Publicado</span>
+
+    <b-dropdown class="menu-card" right toggle-class="btn-menu">
+      <template #button-content>
+        <img src="../../assets/img/utils/three-points.svg" alt="author">
+      </template>
+      <b-dropdown-item @click="share"><i class="share-ico mr-1"></i>Compartilhar</b-dropdown-item>
+      <b-dropdown-item @click="remove"><i class="trash-ico mr-1"></i>Deletar</b-dropdown-item>
+      <b-dropdown-item @click="favorite"><i class="star-ico mr-1"></i>Salvar como favorito</b-dropdown-item>
+    </b-dropdown>
 
     <div class="card-content">
       <div class="tags-group">
@@ -23,7 +25,7 @@
         <img src="../../assets/img/course-test/img-author.svg" alt="author"> Yvelize Wielewicki
       </div>
 
-      <b-button href="#" class="d-block btn-purple lg">
+      <b-button @click="edit" href="#" class="d-block btn-purple lg">
         Editar Curso
       </b-button>
     </div>
@@ -32,7 +34,27 @@
 
 <script>
 export default {
+  props: {
+    idCourse: {type: Number},
+    courseTitle: {type: String},
+    tags: {type: Array},
+    isPublished: {type: Boolean},
+    author: {type: Object}
+  },
+  methods: {
+    share(){
 
+    },
+    remove(){
+
+    },
+    favorite(){
+
+    },
+    edit(){
+
+    }
+  }
 }
 </script>
 
@@ -50,7 +72,7 @@ export default {
 }
 
 .card-img-overlay {
-  background: linear-gradient(180deg , rgba(58, 62, 69, 0.0001) -6%, #212527 85%);
+  background: linear-gradient(180deg, rgba(58, 62, 69, 0.0001) -6%, #212527 85%);
   height: 101%;
   padding: 16px;
 }
@@ -86,6 +108,7 @@ export default {
   flex-wrap: wrap;
 }
 
+.course-status,
 .tags-group .tag {
   padding: 4px 8px;
   margin: 0 10px 5px 0px;
@@ -93,7 +116,11 @@ export default {
   font: 12px "Inter Regular";
   line-height: 16px;
   color: #6C5DD3;
-  border-radius: 8px;
+  border-radius: 100px;
+}
+
+.course-status {
+  color: #7FBA7A;
 }
 
 .card .title {

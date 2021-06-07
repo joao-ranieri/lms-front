@@ -4,6 +4,11 @@
 }
 
 @font-face {
+  font-family: "Inter Semibold";
+  src: local("Inter Semibold"), url("../fonts/Inter/Inter-SemiBold.ttf") format('truetype');
+}
+
+@font-face {
   font-family: "Inter Bold";
   src: local("Inter Bold"), url("../fonts/Inter/Inter-Bold.ttf") format('truetype');
 }
