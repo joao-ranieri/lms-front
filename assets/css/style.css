@@ -80,6 +80,8 @@ label, form small {
   border: none;
 }
 
+.message-box .dropdown-toggle::after,
+.notification-box .dropdown-toggle::after,
 .btn-menu.dropdown-toggle::after {
   display: none;
 }
@@ -90,9 +92,91 @@ label, form small {
   align-items: center;
 }
 
+.dropdown-item span {
+  margin-right: 12px;
+  width: 17px;
+}
+
 .dropdown-menu {
   background: #FFFFFF;
   border: 1px solid #F1F1F2;
   box-shadow: 0px 12px 23px rgba(53, 55, 60, 0.1);
   border-radius: 8px;
+}
+
+/* Dropdown settings - MESSAGES AND NOTIFICATIONS */
+.message-btn img,
+.notification-btn img {
+  width: 19px;
+}
+
+.message-btn:hover img {
+  content: url("../../assets/img/utils/ico-message-purple.svg");
+}
+
+.notification-btn:hover img {
+  content: url("../../assets/img/utils/ico-bell-purple.svg");
+}
+
+.btn.btn-transparent.dropdown-toggle:hover,
+.btn.btn-transparent.dropdown-toggle:focus,
+.btn.btn-transparent.dropdown-toggle:active,
+.show > .btn.btn-transparent.dropdown-toggle {
+  color: #fff;
+  background-color: transparent;
+  border-color: transparent;
+}
+
+  /* Dropdown settings - PROFILE */
+.message-btn,
+.notification-btn,
+.profile-btn {
+  display: flex;
+  align-items: center;
+  background: white;
+  padding: 16px;
+  border: none;
+  border-radius: 8px;
+}
+
+.btn.btn-white.dropdown-toggle:hover,
+.btn.btn-white.dropdown-toggle:focus,
+.btn.btn-white.dropdown-toggle:active,
+.show > .btn.btn-white.dropdown-toggle {
+  color: #fff;
+  background-color: #F1F1F2;
+  border-color: transparent;
+}
+
+.profile-btn .username {
+  font: 14px "Inter Bold";
+  color: #525359;
+}
+
+.profile-btn .user-mail {
+  font: 14px "Inter Regular";
+  color: #8A8C92;
+}
+
+.profile-btn::after {
+  display: flex;
+  align-items: center;
+  width: 8px;
+  height: 4px;
+  content: url("../../assets/img/utils/ico-arrow-dropdown.svg");
+  border: none;
+  padding: 0 16px;
+}
+
+.profile-box .dropdown-menu {
+  border: 1px solid #F1F1F2;
+}
+
+.profile-box .dropdown-menu.show {
+  min-width: 100%;
+}
+
+.profile-box .dropdown-item {
+  font: 16px "Inter SemiBold";
+  color: #090E11;
 }
