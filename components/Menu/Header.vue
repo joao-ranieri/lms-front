@@ -18,8 +18,8 @@
       <template #button-content>
         <img height="40" width="40" src="../../assets/img/course-test/img-author.svg" alt="author">
         <span class="ml-3 text-left">
-          <span class="d-block username">João Silva</span>
-          <span class="d-block user-mail">joao@mail.com</span>
+          <span class="d-block username">{{user.name}}</span>
+          <span class="d-block user-mail">{{user.email}}</span>
         </span>
       </template>
       <b-dropdown-item @click=""><span class="profile-ico"></span>Meu perfil</b-dropdown-item>
@@ -30,7 +30,13 @@
 </template>
 
 <script>
-export default {}
+export default {
+  computed: {
+    user(){
+      return this.$store.state.user
+    }
+  },
+}
 </script>
 
 <style scoped>

@@ -16,6 +16,14 @@ export default {
   computed: {
     expanded() {
       return this.$store.state.expanded;
+    },
+    user() {
+      return this.$store.state.user;
+    }
+  },
+  beforeMount() {
+    if(!this.user?.name) {
+      this.$router.push("/login")
     }
   }
 }
