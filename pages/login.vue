@@ -12,7 +12,7 @@
 
     <div class="login-content-box align-self-center">
       <b-card align="left" class="mb-2">
-        <b-form>
+        <b-form id="login-form" @submit="executeForm">
           <h2 v-text="formOptions[formSelected].title"></h2>
           <small v-if="formSelected === 'login'">Ainda não tem cadastro? <a href="#" @click="formControl('new')">
             Crie sua conta agora</a>
@@ -21,18 +21,18 @@
           <div class="box-form">
 
             <FormInput class="mt-4 position-relative" :isRequired="true" labelText="Nome completo" nameInput="name" size="lg"
-                       v-if="formSelected === 'new'"/>
-            <FormInput class="mt-4 position-relative" typeInput="email" :isRequired="true" labelText="E-mail" nameInput="email"
-                       size="lg"/>
+                        v-if="newRegister" :isNew="newRegister"/>
+            <FormInput class="mt-4 position-relative" typeInput="email" :isRequired="true" labelText="E-mail" nameInput="username"
+                       size="lg" @value-model="setValue" :isNew="newRegister"/>
             <FormInput class="mt-4 position-relative" typeInput="password" :isRequired="true" labelText="Senha" nameInput="password"
-                       size="lg"/>
+                       size="lg" @value-model="setValue" :isNew="newRegister"/>
 
 <!--            <lottie-animation :path='require("/assets/animations/save-success.json")' />-->
 
             <div class="text-center mt-4">
               <small v-if="formSelected === 'login'"><a href="#" @click="formControl('recover')">Esqueci minha senha</a></small>
 
-              <b-button @click="executeForm" href="#" variant="primary" class="d-block mt-4">
+              <b-button type="submit" variant="primary" class="d-block mt-4 btn-purple">
                 {{ formOptions[formSelected].buttonText }}
               </b-button>
             </div>
@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import LottieAnimation from "lottie-vuejs/src/LottieAnimation.vue";
+import LottieAnimation from "lottie-vuejs/src/LottieAnimation.vue"
 
 export default {
   head(){
@@ -60,22 +60,30 @@ export default {
   data() {
     return {
       formOptions: {
-        new: {title: "Cadatrar", buttonText: "Fazer cadastro", route: "/newUser"},
+        new: {title: "Cadatrar", buttonText: "Fazer cadastro", route: "/api/user"},
         recover: {title: "Redefinir senha", buttonText: "Redefinir minha senha", route: "/recovery"},
-        login: {title: "Entrar", buttonText: "Acessar sua conta", route: "/enter"}
+        login: {title: "Entrar", buttonText: "Acessar sua conta", route: "/auth/adm"}
       },
+      form: {},
       formSelected: 'login',
-      isAdmin: false
+      isAdmin: false,
+      newRegister: false
     }
   },
   methods: {
     formControl(type) {
+
+      this.newRegister = type === 'new';
       this.formSelected = type;
     },
-    executeForm() {
-      alert('chegou aqui')
+    executeForm(e) {
+      e.preventDefault();
+      this.$axios.$post(this.formOptions[this.formSelected], this.form).then(response => console.log(response));
+    },
+    setValue (v) {
+      this.form[v.model] = v.value;
     }
-  }
+  },
 }
 </script>
 
@@ -158,7 +166,7 @@ input.form-control:focus, input.form-control:active {
   box-shadow: 0px 0px 0 2px #6C5DD3;
 }
 
-a {
+button[type=submit] {
   color: #6C5DD3;
   text-decoration-line: underline;
   line-height: 16px;

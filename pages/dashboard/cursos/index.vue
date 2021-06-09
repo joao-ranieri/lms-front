@@ -8,7 +8,7 @@
       <div class="order-by-box">
         <label>Ordenar por:</label>
         <b-dropdown class="order-by-select h-100" :text="selectedOrderBy.text" right  toggle-class="btn-menu btn-white">
-          <b-dropdown-item v-for="(o, index) in ordinations" @click="orderingBy(index)">{{o.text}}</b-dropdown-item>
+          <b-dropdown-item v-for="(o, index) in ordinations" :key="index" @click="orderingBy(index)">{{o.text}}</b-dropdown-item>
         </b-dropdown>
       </div>
 

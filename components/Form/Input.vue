@@ -1,13 +1,17 @@
 <template>
   <div>
-    <b-form-group :label="labelText" :label-for="nameInput" :class="[size, {hasError}, {validated}, {isPass}]">
-      <b-form-input :name="nameInput" :type="typeInput" v-model="value" :required="isRequired" :placeholder="placeholder" @change="validate(nameInput)">
+    <b-form-group :label="labelText" :label-for="nameInput"
+                  :class="[size, {hasError}, {validated}, {'isPass': typeInput === 'password'}]">
+      <b-form-input :name="nameInput" :type="typeInput" v-model="value" :required="isRequired"
+                    :placeholder="placeholder" @change="validate">
       </b-form-input>
       <span class="ico-input" @click="inputAction(hasError)" :title="hasError ? 'Limpar campo' : ''">
         <img src="" alt="ico-input">
       </span>
     </b-form-group>
-    <span class="error-validation" v-text="message" v-if="hasError"></span>
+
+    <span :class="{'error-validation': hasError}"
+          v-text="message" v-if="hasError || (isNew && typeInput === 'password')"></span>
   </div>
 </template>
 
@@ -18,70 +22,75 @@ export default {
     nameInput: {type: String},
     placeholder: {type: String},
     typeInput: {type: String, default: "text"},
+    size: {type: String},
     isRequired: {type: Boolean, default: false},
-    validateForm: {type: Boolean, default: false},
-    isPass: {type: Boolean, default: false},
-    size: {type: String}
+    isNew: {type: Boolean, default: false}
   },
   data() {
     return {
       value: null,
-      message:'',
+      message: "Sua senha deve ter no mínimo 8 caracteres, composta por letras e números.",
       hasError: false,
       validated: false
     }
   },
   methods: {
-    validate(nameInput) {
+    validate() {
       let value = this.value;
-      this.validated = this.error = false;
+      this.validated = this.hasError = false;
 
-      if(value === null || value === undefined || value==='') {
+      if (value === null || value === undefined || value === '') {
         return false;
       }
 
-      if(nameInput === "name") {
-        if (value.split(" ").length < 2) {
-          this.message = "Informe seu nome e sobrenome.";
-          this.hasError = true;
+      // Valida o input do formulário em caso de novo cadastro
+      if (this.isNew) {
+        if (this.nameInput === "name") {
+          if (value.split(" ").length < 2) {
+            this.message = "Informe seu nome e sobrenome.";
+            this.hasError = true;
+          } else {
+            this.validated = true;
+          }
         }
-        else {
-          this.validated = true;
-        }
-      }
-      else if(nameInput === "password") {
-        let patternNumber = /^[0-9]+$/;
-        let patternLettersNumbers = /(?=.*[0-9])(?=[a-zA-Z])/;
+        else if (this.nameInput === "password") {
+          let patternNumber = /^\d+$/;
+          let patternLetters = /^[a-zA-Z]+$/;
 
-        if(value.length < 8){
-          this.message = "Sua senha deve ter no mínimo 8 caracteres, composta por letras e números.";
-          this.hasError = true;
-        }
-        else if (patternNumber.test(value)) {
+          if (value.length < 8) {
+            this.message = "Sua senha deve ter no mínimo 8 caracteres, composta por letras e números.";
+            this.hasError = true;
+          }
+          else if (patternNumber.test(value)) {
             this.message = "Essa senha não possui letras.";
             this.hasError = true;
+          }
+          else if (patternLetters.test(value)) {
+            this.message = "Essa senha não possui números.";
+            this.hasError = true;
+          }
+          else {
+            this.validated = true;
+          }
         }
-        else if (!patternLettersNumbers.test(value)) {
-          this.message = "Essa senha não possui números.";
-          this.hasError = true;
-        }
-        else {
-          this.validated = true;
+        else if (this.typeInput === "email") {
+          let pattern = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9]+\.(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+          if (!pattern.test(value)) {
+            this.message = "Esse e-mail não é válido. O e-mail deve conter “@” e “.com”";
+            this.hasError = true;
+          } else {
+            this.validated = true;
+          }
         }
       }
-      else if(nameInput === "email") {
-        let pattern = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
-        if(!pattern.test(value)){
-          this.message = "Esse e-mail não é válido. O e-mail deve conter “@” e “.com”";
-          this.hasError = true;
-        }
-        else {
-          this.validated = true;
-        }
+
+      // Devolve ao componente pai o valor do input caso seja válido
+      if (this.validated) {
+        this.$emit('value-model', {model: this.nameInput, value: this.value})
       }
     },
     inputAction(hasError) {
-      if(hasError) {
+      if (hasError) {
         this.hasError = false;
         this.value = '';
         document.getElementsByName(this.nameInput)[0].focus();
@@ -115,7 +124,7 @@ input.form-control {
   color: #8A8C92;
 }
 
-::-moz-placeholder {  /* Firefox 19+ */
+::-moz-placeholder { /* Firefox 19+ */
   color: #8A8C92;
 }
 
@@ -183,10 +192,16 @@ input.form-control:focus, input.form-control:active {
   cursor: pointer;
 }
 
-.error-validation {
-  color: #FF754C;
+span {
+  display: inline-block;
+  margin-top: 8px;
+  color: #8A8C92;
   font: 12px "Inter Regular";
   line-height: 16px;
+}
+
+.error-validation {
+  color: #FF754C;
 }
 
 legend {

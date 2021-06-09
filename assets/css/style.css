@@ -58,7 +58,7 @@ label, form small {
   font: 12px "Inter Bold";
 }
 
-.btn.btn-purple {
+.btn-purple {
   background-color: #6C5DD3;
   color: white;
 }
