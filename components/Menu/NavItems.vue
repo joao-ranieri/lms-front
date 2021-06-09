@@ -12,13 +12,14 @@
         <div v-if="item.submenu"
           :id="'arro-icon-'+item.id"
           :class="[activeItem === item.id && 'arrowIconOpened', 'arrow-icon']">
-          <img :src="require('../../assets/img/utils/small-right-'+(activeItem === item.id ? 'purple.svg' : 'gray.svg'))" alt="arrow icon">
+          <img :src="require('../../assets/img/utils/small-right-'+(activeItem === item.id ? 'purple.svg' : 'gray.svg'))"
+            alt="arrow icon" v-if="expanded">
         </div>
       </div>
 
       <div v-if="item.submenu"
         :id="'submenu'+item.id"
-        :class="[activeItem === item.id && 'dropdownItem', 'submenu']">
+        :class="[(activeItem === item.id && expanded) && 'dropdownItem', 'submenu']">
         <div v-for="subMenuItem in item.submenu" :key="subMenuItem.id"
           :class="activeSubItem === subMenuItem.id && 'subActive'"
           @click="activeSubMenuRoute(item, subMenuItem)">
@@ -52,6 +53,21 @@ export default {
     this.activeMenuRoute();
   },
 
+  computed: {
+    expanded() {
+      this.menuItems.forEach(item => {
+        const submenu = document.getElementById("submenu"+item.id);
+        const arroicon = document.getElementById("arro-icon-"+item.id);
+        if(submenu) {
+          submenu.classList.remove("dropdownItem");
+          submenu.classList.remove("notExpanded")
+        }
+        arroicon && arroicon.classList.remove("arrowIconOpened");
+      })
+      return this.$store.state.expanded;
+    },
+  },
+
   methods: {
     activeMenuRoute() {
       //veridica se a rota é referente a algum menu
@@ -75,15 +91,33 @@ export default {
       this.activeItem = item.id;
       this.activeSubItem = subMenuItem.id;
       $nuxt.$router.push(subMenuItem.route);
+      document.getElementById("submenu"+item.id).classList.toggle("notExpanded");
     },
     dropSubmenu(item) {
-      document.getElementById("submenu"+item.id).classList.toggle("dropdownItem");
-      document.getElementById("arro-icon-"+item.id).classList.toggle("arrowIconOpened");
+      if(this.expanded) {
+        document.getElementById("submenu"+item.id).classList.toggle("dropdownItem");
+        document.getElementById("arro-icon-"+item.id).classList.toggle("arrowIconOpened");
+      } else {
+        this.menuItems.forEach(itensSub => {
+          if(itensSub.submenu){
+            if(itensSub.id === item.id){
+              document.getElementById("submenu"+itensSub.id).classList.toggle("notExpanded");
+            }else {
+              document.getElementById("submenu"+itensSub.id).classList.remove("notExpanded");
+            }
+          }
+        })
+      }
     },
     openLink(item) {
       this.activeItem = item.id;
       this.activeSubItem = null;
       $nuxt.$router.push(item.route);
+      this.menuItems.forEach(itensSub => {
+        if(itensSub.submenu){
+          document.getElementById("submenu"+itensSub.id).classList.remove("notExpanded");
+        }
+      })
     },
   }
 }
@@ -169,6 +203,19 @@ export default {
 
 .dropdownItem.submenu {
   display: block;
+}
+
+.notExpanded.submenu {
+  display: block;
+  position: absolute;
+  margin: -43px 63px;
+  background: #fff;
+  padding: 0 15px;
+  border-radius: 8px;
+  min-width: 150px;
+  z-index: 1;
+  border: 1px solid #F1F1F2;
+  box-shadow: 0px 12px 23px rgb(53 55 60 / 10%);
 }
 
 .active .submenu div.subActive,
