@@ -7,8 +7,10 @@
     <div class="itens">
       <MenuNavItems />
     </div>
-    <div class="footer-nav">
-      NAV FOOTER
+    <div :class="['footer-nav', !expanded && 'footer-small']">
+      <img width="24" v-if="expanded" src="../../assets/img/theme-icons/sun-icon-gray.svg" alt="masters-logo">
+      <MenuToggleTheme />
+      <img width="24" v-if="expanded" src="../../assets/img/theme-icons/moon-icon-gray.svg" alt="masters-logo">
     </div>
   </nav>
 </template>
@@ -16,6 +18,11 @@
 <script>
 
 export default {
+  computed: {
+    expanded() {
+      return this.$store.state.expanded;
+    },
+  },
   methods: {
     retract() {
       this.$store.commit('setExpanded', !this.$store.state.expanded)
@@ -23,7 +30,6 @@ export default {
   }
 }
 </script>
-
 
 <style scoped>
 nav {
@@ -49,11 +55,23 @@ nav {
   position: absolute;
   bottom: 0;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   width: 100%;
   height: 72px;
   border-top: 1px solid #F1F1F2;
+  padding: 0 40px;
+}
+
+.footer-nav.footer-small {
+  justify-content: center;
+  padding: 0;
+}
+
+.footer-nav > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* Reduced Menu Settings */
