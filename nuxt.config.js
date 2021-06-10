@@ -38,11 +38,31 @@ export default {
   modules: [
     'bootstrap-vue/nuxt',
     '@nuxtjs/axios',
+    '@nuxtjs/auth'
   ],
 
   // Axios settings
   axios: {
     baseURL: 'https://njs-lms-api.herokuapp.com/api/'
+  },
+
+  auth: {
+    strategies: {
+      local: {
+        endpoints: {
+          login: { url: 'auth/adm', method: 'post', propertyName: 'auth_token'},
+          user: false,
+        }
+      },
+    },
+    redirect: {
+      logout: '/login',
+      home: '/dashboard/cursos'
+    }
+  },
+
+  router: {
+    middleware: ['auth']
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build

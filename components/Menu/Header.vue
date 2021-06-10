@@ -19,12 +19,12 @@
         <img height="40" width="40" src="../../assets/img/course-test/img-author.svg" alt="author">
         <span class="ml-3 text-left">
           <span class="d-block username">{{user.name}}</span>
-          <span class="d-block user-mail">{{user.email}}</span>
+          <span class="d-block user-mail">{{user.username}}</span>
         </span>
       </template>
       <b-dropdown-item @click=""><span class="profile-ico"></span>Meu perfil</b-dropdown-item>
       <b-dropdown-item @click=""><span class="settings-ico"></span>Configurações</b-dropdown-item>
-      <b-dropdown-item @click=""><span class="logoff-ico"></span>Sair</b-dropdown-item>
+      <b-dropdown-item @click="logout"><span class="logoff-ico"></span>Sair</b-dropdown-item>
     </b-dropdown>
   </header>
 </template>
@@ -33,9 +33,14 @@
 export default {
   computed: {
     user(){
-      return this.$store.state.user
+      return this.$auth.$storage.getLocalStorage('user')
     }
   },
+  methods:{
+    async logout() {
+      await this.$auth.logout();
+    },
+  }
 }
 </script>
 

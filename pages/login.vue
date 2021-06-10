@@ -12,7 +12,7 @@
 
     <div class="login-content-box align-self-center">
       <b-card align="left" class="mb-2">
-        <b-form id="login-form" @submit="executeForm">
+        <b-form id="login-form" @submit.prevent="enter">
           <h2 v-text="formOptions[formSelected].title"></h2>
           <small v-if="formSelected === 'login'">Ainda não tem cadastro? <a href="#" @click="formControl('new')">
             Crie sua conta agora</a>
@@ -20,19 +20,22 @@
 
           <div class="box-form">
 
-            <FormInput class="mt-4 position-relative" :isRequired="true" labelText="Nome completo" nameInput="name" size="lg"
-                        v-if="newRegister" :isNew="newRegister"/>
-            <FormInput class="mt-4 position-relative" typeInput="email" :isRequired="true" labelText="E-mail" nameInput="username"
+            <FormInput class="mt-4 position-relative" :isRequired="true" labelText="Nome completo" nameInput="name"
+                       size="lg"
+                       v-if="newRegister" :isNew="newRegister"/>
+            <FormInput class="mt-4 position-relative" typeInput="email" :isRequired="true" labelText="E-mail"
+                       nameInput="username"
                        size="lg" @value-model="setValue" :isNew="newRegister"/>
-            <FormInput class="mt-4 position-relative" typeInput="password" :isRequired="true" labelText="Senha" nameInput="password"
+            <FormInput class="mt-4 position-relative" typeInput="password" :isRequired="true" labelText="Senha"
+                       nameInput="password"
                        size="lg" @value-model="setValue" :isNew="newRegister"/>
 
-<!--            <lottie-animation :path='require("/assets/animations/save-success.json")' />-->
+            <!--            <lottie-animation :path='require("/assets/animations/save-success.json")' />-->
 
             <div class="text-center mt-4">
               <small v-if="formSelected === 'login'"><a href="#" @click="formControl('recover')">Esqueci minha senha</a></small>
 
-              <b-button type="submit" variant="primary" class="d-block mt-4 btn-purple">
+              <b-button type="submit" variant="primary" class="d-block w-100 mt-4 btn-purple lg">
                 {{ formOptions[formSelected].buttonText }}
               </b-button>
             </div>
@@ -48,7 +51,7 @@
 import LottieAnimation from "lottie-vuejs/src/LottieAnimation.vue"
 
 export default {
-  head(){
+  head() {
     return {
       title: "Login - Masters",
     }
@@ -60,7 +63,7 @@ export default {
   data() {
     return {
       formOptions: {
-        new: {title: "Cadatrar", buttonText: "Fazer cadastro", route: "/api/user"},
+        new: {title: "Cadatrar", buttonText: "Fazer cadastro", route: "/user"},
         recover: {title: "Redefinir senha", buttonText: "Redefinir minha senha", route: "/recovery"},
         login: {title: "Entrar", buttonText: "Acessar sua conta", route: "/auth/adm"}
       },
@@ -72,16 +75,51 @@ export default {
   },
   methods: {
     formControl(type) {
-
       this.newRegister = type === 'new';
       this.formSelected = type;
     },
     executeForm(e) {
       e.preventDefault();
-      this.$axios.$post(this.formOptions[this.formSelected], this.form).then(response => console.log(response));
+      this.$axios.$post(this.formOptions[this.formSelected].route, this.form).then(response => {
+        let user = {
+          name: "Usuário Teste",
+          email: "user@teste.com",
+          accessToken: response.accessToken
+        }
+        this.$store.commit('setUser', user)
+        this.$router.push('/dashboard/cursos')
+      });
     },
-    setValue (v) {
+    setValue(v) {
       this.form[v.model] = v.value;
+    },
+    async enter() {
+      try {
+        await this.$auth.loginWith('local', {
+          data: {...this.form},
+        }).then(response => {
+          let token = response.data.accessToken;
+          let user = {
+            ...this.parseJwt(token)
+          }
+          this.$auth.$storage.setLocalStorage('user', user);
+          this.$auth.setToken('local', 'Bearer ' + token);
+          this.$auth.setRefreshToken('local', token);
+          this.$axios.setHeader('Authorization', 'Bearer ' + token);
+          this.$auth.ctx.app.$axios.setHeader('Authorization', 'Bearer ' + token)
+        })
+      } catch (e) {
+        console.log(e)
+      }
+    },
+    parseJwt(token) {
+      let base64Url = token.split('.')[1];
+      let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      let jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+
+      return JSON.parse(jsonPayload);
     }
   },
 }
@@ -134,14 +172,6 @@ h2 {
   padding: 0px;
 }
 
-.btn {
-  font-size: 14px;
-  color: white;
-  padding: 18px 43px;
-  background: #6C5DD3;
-  border-radius: 16px;
-}
-
 .input-tip {
   font-size: 12px;
   font-family: "Inter Regular";
@@ -163,14 +193,7 @@ input.form-control {
 }
 
 input.form-control:focus, input.form-control:active {
-  box-shadow: 0px 0px 0 2px #6C5DD3;
-}
-
-button[type=submit] {
-  color: #6C5DD3;
-  text-decoration-line: underline;
-  line-height: 16px;
-  font-family: 'Inter Regular';
+  box-shadow: 0px 0px 0 2px #89238A;
 }
 
 .box-form {

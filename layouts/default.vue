@@ -22,7 +22,7 @@ export default {
     }
   },
   beforeMount() {
-    if(!this.user?.name) {
+    if(!this.$store.state.auth.loggedIn) {
       this.$router.push("/login")
     }
   }

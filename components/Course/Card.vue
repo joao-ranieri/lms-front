@@ -64,11 +64,14 @@ export default {
   width: 306px;
   height: 400px;
   border-radius: 32px;
-  border: 1px solid;
-  border: 4px solid #6C5DD3;
+  border: 4px solid transparent;
   background-blend-mode: multiply;
   overflow: hidden;
   margin-bottom: 23px;
+}
+
+.card:hover {
+  border-color: #89238A;
 }
 
 .card-img-overlay {
@@ -115,7 +118,7 @@ export default {
   background: white;
   font: 12px "Inter Regular";
   line-height: 16px;
-  color: #6C5DD3;
+  color: #89238A;
   border-radius: 100px;
 }
 

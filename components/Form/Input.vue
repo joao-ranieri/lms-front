@@ -85,7 +85,7 @@ export default {
       }
 
       // Devolve ao componente pai o valor do input caso seja válido
-      if (this.validated) {
+      if (this.validated || !this.isNew) {
         this.$emit('value-model', {model: this.nameInput, value: this.value})
       }
     },
@@ -139,7 +139,7 @@ input.form-control {
 }
 
 input.form-control:focus, input.form-control:active {
-  box-shadow: 0px 0px 0 2px #6C5DD3;
+  box-shadow: 0px 0px 0 2px #89238A;
 }
 
 .hasError input.form-control {
