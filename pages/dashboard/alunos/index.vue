@@ -1,7 +1,9 @@
 <template>
   <div>
     <div class="title-page">Alunos</div>
-    {{allStudents}}
+    <div class="mt-3">
+      <b-table head-variant="dark" hover class="table-students" :items="allStudents" :fields="fields"></b-table>
+    </div>
   </div>
 </template>
 
@@ -44,12 +46,19 @@ export default {
 
   data() {
     return {
+      fields: [
+        {key: 'name', label: 'Nome'},
+        {key: 'email', label: 'E-mail'},
+        {key: 'experiencePoints', label: 'Pontos de experiência'},
+        {key: 'coins', label: 'Moedas'},
+        {key: 'diamonds', label: 'Diamantes'},
+      ],
       allStudents: dataTeste,
       orderBy: 'name',
       direction: 'ASC',
       currentPage: 1,
       itemsPerPage: 10,
-      total: null
+      total: 200
     }
   },
 
@@ -65,7 +74,5 @@ export default {
 </script>
 
 <style scoped>
-.title-page {
-  font: 48px "Poppins SemiBold";
-}
+
 </style>

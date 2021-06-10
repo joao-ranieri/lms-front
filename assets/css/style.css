@@ -180,3 +180,8 @@ label, form small {
   font: 16px "Inter SemiBold";
   color: #090E11;
 }
+
+/* title page */
+.title-page {
+  font: 48px "Poppins SemiBold";
+}

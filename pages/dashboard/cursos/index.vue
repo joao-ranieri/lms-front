@@ -98,9 +98,4 @@ export default {
 .welcome-text {
   font: 24px "Poppins Regular";
 }
-
-.title-page {
-  font: 48px "Poppins SemiBold";
-}
-
 </style>
