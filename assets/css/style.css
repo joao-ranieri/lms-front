@@ -55,12 +55,19 @@ label, form small {
 }
 
 .btn {
-  font: 12px "Inter Bold";
+  font: 14px "Inter Bold";
 }
 
 .btn-purple {
-  background-color: #6C5DD3;
+  border: 1px solid transparent;
+  background-color: #89238A;
   color: white;
+}
+
+.btn-purple:hover {
+  border: 1px solid transparent;
+  background-color: #89238A;
+  filter: brightness(120%);
 }
 
 .btn.lg {
@@ -184,4 +191,13 @@ label, form small {
 /* title page */
 .title-page {
   font: 48px "Poppins SemiBold";
+}
+
+.dropdown .btn-menu.dropdown-grey {
+  height: auto;
+  background: #F1F1F2;
+  width: 204px;
+  color: #090E11;
+  padding-right: 63px;
+  margin-left: 15px;
 }
