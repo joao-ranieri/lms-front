@@ -1,12 +1,28 @@
 <template>
-  <label class="switch">
-    <input type="checkbox">
-    <span class="slider"></span>
-  </label>
+  <div class="toggle">
+    <img :width="!expanded ? '14px' : '24px'"
+        :src="require('../../assets/img/theme-icons/'+(themeDark ? 'sun-icon-gray.svg' : 'sun-icon-purple.svg'))"
+        alt="masters-logo">
+
+    <label :class="[!expanded && 'smallToggle', 'switch']" @change="themeDark = !themeDark">
+      <input type="checkbox">
+      <span class="slider"></span>
+    </label>
+
+    <img :width="!expanded ? '14px' : '24px'"
+        :src="require('../../assets/img/theme-icons/'+(!themeDark ? 'moon-icon-gray.svg' : 'moon-icon-purple.svg'))"
+        alt="masters-logo">
+  </div>
 </template>
 
 <script>
 export default {
+  data() {
+    return {
+      themeDark: false
+    }
+  },
+
   computed: {
     expanded() {
       return this.$store.state.expanded;
@@ -16,12 +32,24 @@ export default {
 </script>
 
 <style scoped>
+.toggle {
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .switch {
   position: relative;
   display: inline-block;
   width: 80px;
   height: 20px;
-  margin: 0;
+  margin: 0 6px;
+}
+
+.switch.smallToggle {
+  width: 40px;
+  height: 12px;
 }
 
 .switch input {
@@ -49,8 +77,8 @@ export default {
   height: 15px;
   width: 15px;
   left: 3px;
-  bottom: 2.7px;
-  background-color: #6C5DD3;
+  bottom: 2.6px;
+  background-color: #89238A;
   border: 3px solid white;
   box-sizing: border-box;
   -webkit-transition: .4s;
@@ -59,17 +87,38 @@ export default {
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.24);
 }
 
+.switch.smallToggle .slider:before {
+  height: 9px;
+  width: 9px;
+  bottom: 1.6px;
+  border: 2px solid white;
+}
+
 input:checked + .slider {
-  background-color: #6C5DD3;
+  background-color: #89238A;
 }
 
 input:focus + .slider {
   box-shadow: 0 0 1px ;
 }
 
-input:checked + .slider:before {
+.switch input:checked + .slider:before {
   -webkit-transform: translateX(58px);
   -ms-transform: translateX(58px);
   transform: translateX(58px);
+}
+
+.switch.smallToggle input:checked + .slider:before {
+  -webkit-transform: translateX(20px);
+  -ms-transform: translateX(20px);
+  transform: translateX(20px);
+}
+
+@media (max-width: 768px) {
+  .switch.smallToggle input:checked + .slider:before {
+    -webkit-transform: translateX(25px);
+    -ms-transform: translateX(25px);
+    transform: translateX(25px);
+  }
 }
 </style>

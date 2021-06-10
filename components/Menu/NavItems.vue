@@ -198,7 +198,7 @@ export default {
 /* active */
 .active .submenu div.subActive,
 .active .item {
-  color: #6C5DD3;
+  color: #89238A;
 }
 
 .dropdownItem.submenu {
