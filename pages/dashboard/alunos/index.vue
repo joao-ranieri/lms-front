@@ -1,21 +1,36 @@
 <template>
   <div>
     <div class="title-page">Alunos</div>
-    <div class="mt-3">
-      <b-row>
-        <b-col cols="12" md="3">
-          <b-form-group>
-            <b-form-input name="name" type="text" v-model="filters.name" placeholder="Filtrar por nome de aluno" @keyup="changeSearch" />
-          </b-form-group>
-        </b-col>
-        <b-col cols="12" md="3">
-          <b-form-group>
-            <b-form-input name="name" type="text" v-model="filters.email" placeholder="Filtrar por e-mail de aluno" @keyup="changeSearch" />
-          </b-form-group>
-        </b-col>
-        <b-col cols="12" md="3"> * </b-col>
-        <b-col cols="12" md="3"> * </b-col>
-      </b-row>
+    <div>
+      <div class="btn-filters">
+        <b-button v-b-toggle.filtros variant="success" class="d-block md">Filtros</b-button>
+      </div>
+      <b-collapse id="filtros" class="mt-2 collapse-filters">
+        <b-card>
+          <b-row>
+            <b-col cols="12" lg="3">
+              <b-form-group label="Nome:">
+                <b-form-input name="name" type="text" v-model="filters.name" placeholder="Filtrar por nome de aluno" @keyup="changeSearch" />
+              </b-form-group>
+            </b-col>
+            <b-col cols="12" lg="3">
+              <b-form-group label="E-mail:">
+                <b-form-input name="name" type="text" v-model="filters.email" placeholder="Filtrar por e-mail de aluno" @keyup="changeSearch" />
+              </b-form-group>
+            </b-col>
+            <b-col cols="12" lg="3">
+              <b-form-group label="Ordenar por: ">
+                <b-form-select v-model="orderBy"  @change="changeSearch" :options="filters.orderBy" />
+              </b-form-group>
+            </b-col>
+            <b-col cols="12" lg="3">
+              <b-form-group label="Ordenação:">
+                <b-form-select  v-model="direction" @change="changeSearch" :options="filters.direction" />
+              </b-form-group>
+            </b-col>
+          </b-row>
+        </b-card>
+      </b-collapse>
     </div>
 
     <div class="mt-2">
@@ -72,7 +87,15 @@ export default {
 
       filters: {
         name: '',
-        email: ''
+        email: '',
+        direction: [
+          { value: 'ASC', text: 'Crescente' },
+          { value: 'DESC', text: 'Decrescente ' },
+        ],
+        orderBy: [
+          { value: 'name', text: 'Nome' },
+          { value: 'email', text: 'E-mail ' },
+        ],
       }
     }
   },
@@ -106,21 +129,18 @@ export default {
       };
 
       if(this.filters.name !== '') obj.name = this.filters.name;
-      if(this.filters.email !== '') obj.email = this.filters.email;
 
       //caso tenha email, valida antes de fazer a requisição
       const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       const isValid = obj.email ? re.test(String(obj.email).toLowerCase()) : false
-      const doRequest = ((obj.email && isValid) || !obj.email) ? true : false;
+      if(this.filters.email !== '' && isValid) obj.email = this.filters.email;
 
-      if(doRequest){
-        const query = Object.entries(obj).map(([key, val]) => `${key}=${val}`).join('&');
-        this.$axios.$get(`student/all?${query}`).then(response => {
-          this.allStudents = response.data;
-          this.total = response.total;
-          this.total = 1;
-        });
-      }
+      const query = Object.entries(obj).map(([key, val]) => `${key}=${val}`).join('&');
+      this.$axios.$get(`student/all?${query}`).then(response => {
+        this.allStudents = response.data;
+        this.total = response.total;
+        this.total = 1;
+      });
     }
   }
 }
@@ -136,7 +156,6 @@ export default {
 }
 
 .table-students.table th{
-
   background: #89238A;
   Border-color: #89238A;
 }
@@ -157,5 +176,14 @@ export default {
   background-color: #89238A;
   border-color: #89238A;
   color: #fff;
+}
+.collapse-filters {
+  font-family: 'Inter Regular';
+  font-weight: bolder;
+}
+
+.btn-filters {
+  display: flex;
+  justify-content: flex-end;
 }
 </style>
