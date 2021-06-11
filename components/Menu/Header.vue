@@ -39,6 +39,10 @@ export default {
   methods:{
     async logout() {
       await this.$auth.logout();
+      let strategy = this.$auth.getRefreshToken('strategy');
+      this.$auth.$storage.setLocalStorage('user', null);
+      this.$auth.setToken(strategy, null);
+      this.$auth.setRefreshToken(strategy, null);
     },
   }
 }

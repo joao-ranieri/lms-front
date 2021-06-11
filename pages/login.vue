@@ -12,31 +12,46 @@
 
     <div class="login-content-box align-self-center">
       <b-card align="left" class="mb-2">
-        <b-form id="login-form" @submit.prevent="enter">
-          <h2 v-text="formOptions[formSelected].title"></h2>
-          <small v-if="formSelected === 'login'">Ainda não tem cadastro? <a href="#" @click="formControl('new')">
+        <b-form id="login-form" @submit.prevent="executeForm">
+          <h2 v-text="formScreen[formSelected].title"></h2>
+          <small v-if="formSelected === 'login' && !isAdmin">Ainda não tem cadastro? <a href="#"
+                                                                                        @click="formControl('new')">
             Crie sua conta agora</a>
           </small>
 
           <div class="box-form">
+            <span v-if="!registeredSuccess">
+              <FormInput class="mt-4 position-relative" @value-model="setValue" :isRequired="true"
+                         labelText="Nome completo" nameInput="name" size="lg" v-if="newRegister" :isNew="newRegister"/>
 
-            <FormInput class="mt-4 position-relative" :isRequired="true" labelText="Nome completo" nameInput="name"
-                       size="lg"
-                       v-if="newRegister" :isNew="newRegister"/>
-            <FormInput class="mt-4 position-relative" typeInput="email" :isRequired="true" labelText="E-mail"
-                       nameInput="username"
-                       size="lg" @value-model="setValue" :isNew="newRegister"/>
-            <FormInput class="mt-4 position-relative" typeInput="password" :isRequired="true" labelText="Senha"
-                       nameInput="password"
-                       size="lg" @value-model="setValue" :isNew="newRegister"/>
+              <FormInput class="mt-4 position-relative" typeInput="cpf" :isRequired="true" labelText="CPF"
+                         nameInput="cpf" size="lg" @value-model="setValue" v-if="newRegister" :isNew="newRegister"/>
 
-            <!--            <lottie-animation :path='require("/assets/animations/save-success.json")' />-->
+              <FormInput class="mt-4 position-relative" typeInput="email" :isRequired="true" labelText="E-mail"
+                         :nameInput="newRegister ? 'email' : 'username'" size="lg" @value-model="setValue"
+                         :isNew="newRegister"/>
 
+              <FormInput class="mt-4 position-relative" typeInput="password" :isRequired="true" labelText="Senha"
+                         nameInput="password" size="lg" @value-model="setValue" :isNew="newRegister"/>
+            </span>
+            <span v-else>
+              <div class="svg-box">
+                <lottie-animation :path='require("/assets/animations/save-success.json")' />
+              </div>
+
+              <span class="confirm-account-text">
+                <span>Cadastro efetuado com sucesso!</span>
+                Agora você só precisa confirmar sua conta. Acesse o link enviado por e-mail para <strong>{{ form.email }}</strong>
+              </span>
+              <span class="resend-link">
+                Se o link não chegar em até 30 segundos, tente reenviar.
+              </span>
+            </span>
             <div class="text-center mt-4">
               <small v-if="formSelected === 'login'"><a href="#" @click="formControl('recover')">Esqueci minha senha</a></small>
 
-              <b-button type="submit" variant="primary" class="d-block w-100 mt-4 btn-purple lg">
-                {{ formOptions[formSelected].buttonText }}
+              <b-button type="submit" variant="primary" :class="['d-block w-100 mt-4 btn-purple lg', {'btn-grey': registeredSuccess}]">
+                {{ !registeredSuccess? formScreen[formSelected].buttonText : "Voltar para o login"}}
               </b-button>
             </div>
           </div>
@@ -51,6 +66,7 @@
 import LottieAnimation from "lottie-vuejs/src/LottieAnimation.vue"
 
 export default {
+  auth: false,
   head() {
     return {
       title: "Login - Masters",
@@ -62,40 +78,55 @@ export default {
   layout: 'login',
   data() {
     return {
-      formOptions: {
-        new: {title: "Cadatrar", buttonText: "Fazer cadastro", route: "/user"},
+      formScreen: {
+        new: {title: "Cadatrar", buttonText: "Fazer cadastro", route: "/student"},
         recover: {title: "Redefinir senha", buttonText: "Redefinir minha senha", route: "/recovery"},
         login: {title: "Entrar", buttonText: "Acessar sua conta", route: "/auth/adm"}
       },
       form: {},
       formSelected: 'login',
-      isAdmin: false,
-      newRegister: false
+      isAdmin: location.pathname.includes('admin'),
+      newRegister: false,
+      registeredSuccess: false
     }
   },
   methods: {
     formControl(type) {
       this.newRegister = type === 'new';
       this.formSelected = type;
+      this.form = {};
+      setTimeout(() => {
+        document.getElementById("login-form").reset();
+      }, 20);
     },
-    executeForm(e) {
-      e.preventDefault();
-      this.$axios.$post(this.formOptions[this.formSelected].route, this.form).then(response => {
-        let user = {
-          name: "Usuário Teste",
-          email: "user@teste.com",
-          accessToken: response.accessToken
+    executeForm() {
+      if(this.registeredSuccess) {
+        this.registeredSuccess = false;
+        this.formSelected = "login";
+        return;
+      }
+
+      if (this.isAdmin) {
+        this.enter();
+      } else {
+        if (this.newRegister) {
+          this.form['image'] = null
         }
-        this.$store.commit('setUser', user)
-        this.$router.push('/dashboard/cursos')
-      });
+
+        this.$axios.$post(this.formScreen[this.formSelected].route, this.form).then(response => {
+          this.registeredSuccess = true;
+          console.log(response)
+        });
+      }
     },
     setValue(v) {
       this.form[v.model] = v.value;
     },
+    // Processa a autenticação do usuário
     async enter() {
+      let strategy = this.isAdmin ? 'admin' : 'student'
       try {
-        await this.$auth.loginWith('local', {
+        await this.$auth.loginWith(strategy, {
           data: {...this.form},
         }).then(response => {
           let token = response.data.accessToken;
@@ -103,8 +134,9 @@ export default {
             ...this.parseJwt(token)
           }
           this.$auth.$storage.setLocalStorage('user', user);
-          this.$auth.setToken('local', 'Bearer ' + token);
-          this.$auth.setRefreshToken('local', token);
+          this.$auth.setToken(strategy, 'Bearer ' + token);
+          this.$auth.setRefreshToken(strategy, token);
+          this.$auth.setRefreshToken('strategy', strategy);
           this.$axios.setHeader('Authorization', 'Bearer ' + token);
           this.$auth.ctx.app.$axios.setHeader('Authorization', 'Bearer ' + token)
         })
@@ -112,6 +144,7 @@ export default {
         console.log(e)
       }
     },
+    // Recupera as informações do token JWT
     parseJwt(token) {
       let base64Url = token.split('.')[1];
       let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -199,8 +232,41 @@ input.form-control:focus, input.form-control:active {
 .box-form {
   overflow-x: hidden;
   overflow-y: auto;
-  height: 337px;
+  height: 338px;
   padding: 0px 5px 3px;
+}
+
+span.confirm-account-text {
+  display: block;
+  font-family: "Inter Regular";
+  font-size: 13px;
+  line-height: 18px;
+  color: #525359;
+  text-align: center;
+}
+
+span.confirm-account-text > span {
+  display: block;
+  font-family: "Poppins Regular";
+  font-size: 18px;
+  line-height: 24px;
+  color: #7FBA7A;
+}
+
+span.resend-link {
+  display: block;
+  margin-top: 46px;
+  font-family: "Inter Regular";
+  font-size: 12px;
+  line-height: 16px;
+  color: #8A8C92;
+  text-align: center;
+}
+
+.svg-box {
+  height: 180px;
+  width: 180px;
+  margin: 0 auto;
 }
 
 @media (max-width: 920px) {

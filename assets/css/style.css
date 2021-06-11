@@ -70,6 +70,18 @@ label, form small {
   filter: brightness(120%);
 }
 
+.btn-grey {
+  border: 1px solid transparent;
+  background-color: #F1F1F2;
+  color: #525359;
+}
+
+.btn-grey:hover {
+  border: 1px solid transparent;
+  background-color: #525359;
+  filter: brightness(120%);
+}
+
 .btn.lg {
   border-radius: 8px;
   padding: 18px;

@@ -1,6 +1,3 @@
-import createPersistedState from "vuex-persistedstate"
-import Cookies from "js-cookie"
-
 export const state = () => ({
   expanded: true,
 })
