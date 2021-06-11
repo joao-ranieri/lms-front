@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="title-page">Alunos</div>
+    <div class="title-page">Categorias</div>
     <div>
       <div class="btn-filters">
         <b-button v-b-toggle.filtros variant="success" class="d-block md">Filtros</b-button>
@@ -8,22 +8,12 @@
       <b-collapse id="filtros" class="mt-2 collapse-filters">
         <b-card>
           <b-row>
-            <b-col cols="12" lg="3">
+            <b-col cols="12" lg="6">
               <b-form-group label="Nome:">
                 <b-form-input name="name" type="text" v-model="filters.name" placeholder="Filtrar por nome de aluno" @keyup="changeSearch" />
               </b-form-group>
             </b-col>
-            <b-col cols="12" lg="3">
-              <b-form-group label="E-mail:">
-                <b-form-input name="name" type="text" v-model="filters.email" placeholder="Filtrar por e-mail de aluno" @keyup="changeSearch" />
-              </b-form-group>
-            </b-col>
-            <b-col cols="12" lg="3">
-              <b-form-group label="Ordenar por: ">
-                <b-form-select v-model="orderBy"  @change="changeSearch" :options="filters.orderBy" />
-              </b-form-group>
-            </b-col>
-            <b-col cols="12" lg="3">
+            <b-col cols="12" lg="6">
               <b-form-group label="Ordenação:">
                 <b-form-select  v-model="direction" @change="changeSearch" :options="filters.direction" />
               </b-form-group>
@@ -34,9 +24,9 @@
     </div>
 
     <div class="mt-2">
-      <b-table hover striped class="table-students" head-variant="dark" :items="allStudents" :fields="fields">
+      <b-table hover striped class="table-category" head-variant="dark" :items="allCategory" :fields="fields">
         <template #cell()="data" v-b-modal.modal-details>
-          <div v-b-modal.modal-details @click="studentDetails(data.item.id)">
+          <div v-b-modal.modal-details @click="categoryDetails(data.item.id)">
               {{ data.value }}
           </div>
         </template>
@@ -54,11 +44,7 @@
         align="right"/>
     </div>
 
-    <b-modal id="modal-details" centered hide-footer :title="studentSelected.name">
-      <p><strong>E-mail:</strong> {{studentSelected.email}}</p>
-      <p><strong>Pontos de experiência:</strong> {{studentSelected.experiencePoints}}</p>
-      <p><strong>Moedas:</strong> {{studentSelected.coins}}</p>
-      <p><strong>Diamantes:</strong> {{studentSelected.diamonds}}</p>
+    <b-modal id="modal-details" centered hide-footer :title="studentCategory.name">
     </b-modal>
   </div>
 </template>
@@ -67,18 +53,17 @@
 export default {
   head(){
     return {
-      title: "Alunos - Masters",
+      title: "Categorias - Masters",
     }
   },
 
   data() {
     return {
       fields: [
-        {key: 'name', label: 'Nome'},
-        {key: 'email', label: 'E-mail'},
+        {key: 'name', label: 'Nome'}
       ],
-      allStudents: [],
-      studentSelected: {},
+      allCategory: [],
+      studentCategory: {},
       orderBy: 'name',
       direction: 'ASC',
       currentPage: 1,
@@ -87,38 +72,33 @@ export default {
 
       filters: {
         name: '',
-        email: '',
         direction: [
           { value: 'ASC', text: 'Crescente' },
           { value: 'DESC', text: 'Decrescente ' },
-        ],
-        orderBy: [
-          { value: 'name', text: 'Nome' },
-          { value: 'email', text: 'E-mail ' },
         ],
       }
     }
   },
 
   mounted() {
-    this.getAllStudent();
+    this.getAllCategory();
   },
 
   methods: {
-    getAllStudent() {
-      this.$axios.$get(`student/all?page=${this.currentPage}&size=${this.itemsPerPage}&orderBy=${this.orderBy}&direction=${this.direction}`).then(response => {
-        this.allStudents = response.data;
+    getAllCategory() {
+      this.$axios.$get(`/category/all?page=${this.currentPage}&size=${this.itemsPerPage}&orderBy=${this.orderBy}&direction=${this.direction}`).then(response => {
+        this.allCategory = response.data;
         this.total = response.total;
       });
     },
-    studentDetails(id) {
-      this.$axios.$get(`student?id=${id}`).then(response => {
-        this.studentSelected = response.data;
+    categoryDetails(id) {
+      this.$axios.$get(`category?id=${id}`).then(response => {
+        this.studentCategory = response.data;
       });
     },
     changePage(value) {
       this.currentPage = value;
-      this.getAllStudent();
+      this.getAllCategory();
     },
     changeSearch() {
       const obj = {
@@ -130,14 +110,9 @@ export default {
 
       if(this.filters.name !== '') obj.name = this.filters.name;
 
-      //caso tenha email, valida antes de fazer a requisição
-      const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      const isValid = obj.email ? re.test(String(obj.email).toLowerCase()) : false
-      if(this.filters.email !== '' && isValid) obj.email = this.filters.email;
-
       const query = Object.entries(obj).map(([key, val]) => `${key}=${val}`).join('&');
-      this.$axios.$get(`student/all?${query}`).then(response => {
-        this.allStudents = response.data;
+      this.$axios.$get(`category/all?${query}`).then(response => {
+        this.allCategory = response.data;
         this.total = response.total;
         this.page = 1;
       });
@@ -147,24 +122,24 @@ export default {
 </script>
 
 <style>
-.table-students.table th,
-.table-students.table td {
+.table-category.table th,
+.table-category.table td {
   font-size: 14px;
   font-weight: 600;
   line-height: 20px;
   font-family: 'Inter SemiBold';
 }
 
-.table-students.table th{
+.table-category.table th{
   background: #89238A;
   Border-color: #89238A;
 }
 
-.table-students.table td{
+.table-category.table td{
   padding: 0;
 }
 
-.table-students.table td > div{
+.table-category.table td > div{
   padding: 0.75rem;
 }
 
