@@ -82,6 +82,14 @@ export default {
             this.validated = true;
           }
         }
+        else if (this.nameInput === "cpf") {
+          if (value === '') {
+            this.message = "Informe um CPF válido";
+            this.hasError = true;
+          } else {
+            this.validated = true;
+          }
+        }
       }
 
       // Devolve ao componente pai o valor do input caso seja válido

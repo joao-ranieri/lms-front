@@ -48,9 +48,17 @@ export default {
 
   auth: {
     strategies: {
-      local: {
+      admin: {
+        _scheme: 'local',
         endpoints: {
-          login: { url: 'auth/adm', method: 'post', propertyName: 'auth_token'},
+          login: { url: 'auth/adm', method: 'post'},
+          user: false,
+        }
+      },
+      student: {
+        _scheme: 'local',
+        endpoints: {
+          login: { url: 'auth/student', method: 'post'},
           user: false,
         }
       },
@@ -62,7 +70,14 @@ export default {
   },
 
   router: {
-    middleware: ['auth']
+    middleware: ['auth'],
+    extendRoutes(routes, resolve) {
+      routes.push({
+        name: 'admin/login',
+        path: '*',
+        component: resolve(__dirname, 'pages/login.vue')
+      })
+    }
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build

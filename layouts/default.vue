@@ -22,8 +22,10 @@ export default {
     }
   },
   beforeMount() {
-    if(!this.$store.state.auth.loggedIn) {
-      this.$router.push("/login")
+    let url = location.pathname;
+    console.log(url)
+    if(!this.$store.state.auth.loggedIn && url !== "/admin/login") {
+      this.$router.push("/login");
     }
   }
 }
