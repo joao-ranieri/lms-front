@@ -47,6 +47,10 @@ export default {
   },
 
   auth: {
+    redirect: {
+      logout: '/login',
+      home: '/dashboard/cursos'
+    },
     strategies: {
       admin: {
         _scheme: 'local',
@@ -63,18 +67,14 @@ export default {
         }
       },
     },
-    redirect: {
-      logout: '/login',
-      home: '/dashboard/cursos'
-    }
   },
 
   router: {
     middleware: ['auth'],
     extendRoutes(routes, resolve) {
       routes.push({
-        name: 'admin/login',
-        path: '*',
+        name: 'Login Administrador',
+        path: '/admin/login',
         component: resolve(__dirname, 'pages/login.vue')
       })
     }

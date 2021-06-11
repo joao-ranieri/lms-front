@@ -12,7 +12,7 @@
 
     <div class="login-content-box align-self-center">
       <b-card align="left" class="mb-2">
-        <b-form id="login-form" @submit.prevent="executeForm">
+        <b-form id="login-form" @submit.prevent="enter">
           <h2 v-text="formScreen[formSelected].title"></h2>
           <small v-if="formSelected === 'login' && !isAdmin">Ainda não tem cadastro? <a href="#"
                                                                                         @click="formControl('new')">
@@ -106,17 +106,16 @@ export default {
         return;
       }
 
-      if (this.isAdmin) {
-        this.enter();
-      } else {
+      if (this.newRegister) {
         if (this.newRegister) {
           this.form['image'] = null
         }
-
         this.$axios.$post(this.formScreen[this.formSelected].route, this.form).then(response => {
           this.registeredSuccess = true;
           console.log(response)
         });
+      } else {
+        this.enter();
       }
     },
     setValue(v) {
@@ -124,8 +123,8 @@ export default {
     },
     // Processa a autenticação do usuário
     async enter() {
-      let strategy = this.isAdmin ? 'admin' : 'student'
       try {
+        let strategy = this.isAdmin ? 'admin' : 'student';
         await this.$auth.loginWith(strategy, {
           data: {...this.form},
         }).then(response => {
@@ -138,7 +137,8 @@ export default {
           this.$auth.setRefreshToken(strategy, token);
           this.$auth.setRefreshToken('strategy', strategy);
           this.$axios.setHeader('Authorization', 'Bearer ' + token);
-          this.$auth.ctx.app.$axios.setHeader('Authorization', 'Bearer ' + token)
+          this.$auth.ctx.app.$axios.setHeader('Authorization', 'Bearer ' + token);
+          this.$auth.redirect('home');
         })
       } catch (e) {
         console.log(e)
