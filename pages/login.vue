@@ -1,4 +1,4 @@
-<template>
+<template xmlns="http://www.w3.org/1999/html">
   <div class="login-content">
 
     <div class="login-content-box logo-box">
@@ -13,10 +13,10 @@
     <div class="login-content-box align-self-center">
       <b-card align="left" class="mb-2">
         <b-form id="login-form" @submit.prevent="enter">
-          <h2 v-text="formScreen[formSelected].title"></h2>
-          <small v-if="formSelected === 'login' && !isAdmin">Ainda não tem cadastro? <a href="#"
-                                                                                        @click="formControl('new')">
-            Crie sua conta agora</a>
+          <h3 v-text="formText[formSelected].title"></h3>
+          <small v-if="['login','recover'].includes(formSelected) && !isAdmin && !registeredSuccess">Ainda não tem
+            cadastro?
+            <a href="#" @click="formControl('new')">Crie sua conta agora</a>
           </small>
 
           <div class="box-form">
@@ -27,31 +27,45 @@
               <FormInput class="mt-4 position-relative" typeInput="cpf" :isRequired="true" labelText="CPF"
                          nameInput="cpf" size="lg" @value-model="setValue" v-if="newRegister" :isNew="newRegister"/>
 
-              <FormInput class="mt-4 position-relative" typeInput="email" :isRequired="true" labelText="E-mail"
-                         :nameInput="newRegister ? 'email' : 'username'" size="lg" @value-model="setValue"
+              <FormInput class="mt-4 position-relative" typeInput="email" :isRequired="true" @value-model="setValue"
+                         :labelText="formSelected === 'recover' ? 'Informe o e-mail cadastrado' : 'E-mail'"
+                         :nameInput="newRegister || formSelected === 'recover' ? 'email' : 'username'" size="lg"
                          :isNew="newRegister"/>
 
               <FormInput class="mt-4 position-relative" typeInput="password" :isRequired="true" labelText="Senha"
-                         nameInput="password" size="lg" @value-model="setValue" :isNew="newRegister"/>
+                         nameInput="password" size="lg" v-if="formSelected !== 'recover'" @value-model="setValue"
+                         :isNew="newRegister"/>
+              <span class="error-login" v-if="notification" v-text="notification"></span>
             </span>
             <span v-else>
               <div class="svg-box">
-                <lottie-animation :path='require("/assets/animations/save-success.json")' />
+                <UtilsAnimation src="/animations/save-success.json"/>
               </div>
 
               <span class="confirm-account-text">
-                <span>Cadastro efetuado com sucesso!</span>
-                Agora você só precisa confirmar sua conta. Acesse o link enviado por e-mail para <strong>{{ form.email }}</strong>
+                <span v-if="formSelected === 'new'">
+                  <span class="green-text">Cadastro efetuado com sucesso!</span>
+                  Agora você só precisa confirmar sua conta. Acesse o link enviado por e-mail para <strong>{{
+                    formData.email
+                  }}</strong>
+                </span>
+                <span v-else>
+                  Enviamos um e-mail para <strong>{{ formData.email }}</strong> com as instruções para redefinir sua senha.
+                </span>
+
               </span>
+
               <span class="resend-link">
-                Se o link não chegar em até 30 segundos, tente reenviar.
+                Se o link não chegar em até 30 segundos, <a href="#" @click="sendPass">tente reenviar</a>.
               </span>
             </span>
             <div class="text-center mt-4">
               <small v-if="formSelected === 'login'"><a href="#" @click="formControl('recover')">Esqueci minha senha</a></small>
 
-              <b-button type="submit" variant="primary" :class="['d-block w-100 mt-4 btn-purple lg', {'btn-grey': registeredSuccess}]">
-                {{ !registeredSuccess? formScreen[formSelected].buttonText : "Voltar para o login"}}
+              <b-button type="submit" :disabled="isLoading"
+                        :class="['d-block w-100 mt-4 btn-purple lg', {'btn-grey': registeredSuccess}]">
+                <UtilsLoading v-if="isLoading"/>
+                <span v-else>{{ registeredSuccess ? "Voltar para o login" : formText[formSelected].buttonText }}</span>
               </b-button>
             </div>
           </div>
@@ -63,7 +77,6 @@
 </template>
 
 <script>
-import LottieAnimation from "lottie-vuejs/src/LottieAnimation.vue"
 
 export default {
   auth: false,
@@ -72,76 +85,106 @@ export default {
       title: "Login - Masters",
     }
   },
-  components: {
-    'lottie-animation': LottieAnimation
-  },
   layout: 'login',
   data() {
     return {
-      formScreen: {
-        new: {title: "Cadatrar", buttonText: "Fazer cadastro", route: "/student"},
-        recover: {title: "Redefinir senha", buttonText: "Redefinir minha senha", route: "/recovery"},
-        login: {title: "Entrar", buttonText: "Acessar sua conta", route: "/auth/adm"}
+      isLoading: false,
+      formData: {},
+      formText: {
+        new: {title: "Cadatrar", buttonText: "Fazer cadastro"},
+        recover: {
+          title: "Redefinir senha",
+          buttonText: "Redefinir minha senha",
+          student: "/auth/reset-password",
+          admin: "/auth/reset-password"
+        },
+        login: {title: "Entrar", buttonText: "Acessar sua conta"}
       },
-      form: {},
       formSelected: 'login',
       isAdmin: location.pathname.includes('admin'),
       newRegister: false,
-      registeredSuccess: false
+      registeredSuccess: false,
+      notification: null
     }
   },
   methods: {
+    // Altera a exibição do formulário e dá reset variáveis
     formControl(type) {
       this.newRegister = type === 'new';
       this.formSelected = type;
-      this.form = {};
+      this.formData = {};
+      this.notification = null;
+      this.isLoading = false;
+
       setTimeout(() => {
         document.getElementById("login-form").reset();
       }, 20);
     },
-    executeForm() {
-      if(this.registeredSuccess) {
+    // Recupera os valores do input no componente e atribui ao objeto do formulário
+    setValue(v) {
+      this.formData[v.model] = v.value;
+    },
+    // Processa a autenticação do usuário
+    async enter() {
+      this.notification = null;
+      this.isLoading = true;
+
+      // Função para voltar à tela de login
+      if (this.registeredSuccess) {
         this.registeredSuccess = false;
-        this.formSelected = "login";
+        this.formControl("login");
         return;
       }
-
+      // Processa a inserção de um novo estudante
       if (this.newRegister) {
         if (this.newRegister) {
           this.form['image'] = null
         }
-        this.$axios.$post(this.formScreen[this.formSelected].route, this.form).then(response => {
+        this.$axios.$post("/student", this.formData).then(response => {
           this.registeredSuccess = true;
-          console.log(response)
+        }).finally(() => {
+          this.isLoading = false;
         });
-      } else {
-        this.enter();
       }
-    },
-    setValue(v) {
-      this.form[v.model] = v.value;
-    },
-    // Processa a autenticação do usuário
-    async enter() {
-      try {
-        let strategy = this.isAdmin ? 'admin' : 'student';
-        await this.$auth.loginWith(strategy, {
-          data: {...this.form},
-        }).then(response => {
-          let token = response.data.accessToken;
-          let user = {
-            ...this.parseJwt(token)
-          }
-          this.$auth.$storage.setLocalStorage('user', user);
-          this.$auth.setToken(strategy, 'Bearer ' + token);
-          this.$auth.setRefreshToken(strategy, token);
-          this.$auth.setRefreshToken('strategy', strategy);
-          this.$axios.setHeader('Authorization', 'Bearer ' + token);
-          this.$auth.ctx.app.$axios.setHeader('Authorization', 'Bearer ' + token);
-          this.$auth.redirect('home');
-        })
-      } catch (e) {
-        console.log(e)
+      // Recuperação da senha
+      else if (this.formSelected === 'recover') {
+        this.sendPass()
+      }
+      // Processa o login
+      else {
+        try {
+          let strategy = this.isAdmin ? 'admin' : 'student';
+          await this.$auth.loginWith(strategy, {
+            data: {...this.formData},
+          }).then(response => {
+            let token = response.data.accessToken;
+            let user = {
+              ...this.parseJwt(token)
+            }
+
+            this.$auth.$storage.setLocalStorage('user', user);
+            this.$auth.setToken(strategy, 'Bearer ' + token);
+            this.$auth.setRefreshToken(strategy, token);
+            this.$auth.$storage.setLocalStorage('strategy', strategy);
+            this.$axios.setHeader('Authorization', 'Bearer ' + token);
+            this.$auth.ctx.app.$axios.setHeader('Authorization', 'Bearer ' + token);
+            this.$auth.redirect('home');
+          })
+            .catch(e => {
+              console.log(e)
+              if (e.response.data.data.statusCode === 401) {
+                this.notification = e.response.data.data.error[0];
+                this.isLoading = false;
+              } else {
+                this.notification = "Email e/ou senha inválidas. Por favor, verifique os dados informados.";
+              }
+            })
+            .finally(() => {
+              this.isLoading = false;
+            });
+        } catch (e) {
+          console.log(e)
+        }
       }
     },
     // Recupera as informações do token JWT
@@ -153,8 +196,21 @@ export default {
       }).join(''));
 
       return JSON.parse(jsonPayload);
+    },
+    // Envia/Reenvia a requisição de recuperação de senha
+    sendPass() {
+      this.$axios.$put(this.formText.recover[this.isAdmin ? 'admin' : 'student'], this.formData).then(response => {
+        this.registeredSuccess = true;
+      }).finally(() => {
+        this.isLoading = false;
+      });
     }
   },
+  beforeMount() {
+    if (this.$store.state.auth.loggedIn) {
+      this.$auth.redirect('home');
+    }
+  }
 }
 </script>
 
@@ -187,10 +243,8 @@ export default {
   align-self: center;
 }
 
-h2 {
-  font-family: "Poppins SemiBold";
-  font-weight: 600;
-  font-size: 40px;
+a {
+  color: #89238A;
 }
 
 .card {
@@ -199,6 +253,7 @@ h2 {
   border-radius: 40px;
   width: 464px;
   height: 515px;
+  overflow-y: auto;
 }
 
 .card .card-body {
@@ -236,7 +291,7 @@ input.form-control:focus, input.form-control:active {
   padding: 0px 5px 3px;
 }
 
-span.confirm-account-text {
+.confirm-account-text {
   display: block;
   font-family: "Inter Regular";
   font-size: 13px;
@@ -245,7 +300,7 @@ span.confirm-account-text {
   text-align: center;
 }
 
-span.confirm-account-text > span {
+.confirm-account-text .green-text {
   display: block;
   font-family: "Poppins Regular";
   font-size: 18px;
@@ -253,7 +308,7 @@ span.confirm-account-text > span {
   color: #7FBA7A;
 }
 
-span.resend-link {
+.resend-link {
   display: block;
   margin-top: 46px;
   font-family: "Inter Regular";
@@ -263,10 +318,23 @@ span.resend-link {
   text-align: center;
 }
 
+.resend-link a {
+  color: #8A8C92;
+  text-decoration: underline;
+}
+
 .svg-box {
-  height: 180px;
-  width: 180px;
+  height: 158px;
+  width: 158px;
   margin: 0 auto;
+}
+
+.error-login {
+  display: block;
+  margin-top: 10px;
+  color: #F44545;
+  font: 12px "Inter Regular";
+  line-height: 16px;
 }
 
 @media (max-width: 920px) {
