@@ -22,7 +22,7 @@
         :class="[(activeItem === item.id && expanded) && 'dropdownItem', 'submenu']">
         <div v-for="subMenuItem in item.submenu" :key="subMenuItem.id"
           :class="activeSubItem === subMenuItem.id && 'subActive'"
-          @click="activeSubMenuRoute(item, subMenuItem)">
+          @click="activeSubItem !== subMenuItem.id && activeSubMenuRoute(item, subMenuItem)">
           {{subMenuItem.text}}
         </div>
       </div>
@@ -34,9 +34,13 @@
 <script>
 
 const items = [
-  {id: 1, text: 'Cursos', icon: 'folder', route: '/dashboard/cursos'},
+  {id: 1, text: 'Conteúdo', icon: 'folder', submenu: [
+    {id: 11, text: 'Cursos', route: '/dashboard/cursos'},
+    {id: 12, text: 'Autores', route: '/dashboard/autores'},
+    {id: 13, text: 'Categorias', route: '/dashboard/categorias'},
+  ]},
   {id: 2, text: 'Alunos', icon: 'profile', route: '/dashboard/alunos'},
-  {id: 3, text: 'Marketing', icon: 'live', submenu: [{id: 31, text: 'item 1', route: '/dashboard/marketing'}, {id: 32, text: 'item 2', route: '/dashboard/teste'}]},
+  {id: 3, text: 'Marketing', icon: 'live', submenu: [{id: 31, text: 'item 1', route: '/dashboard/marketing'}]},
   {id: 4, text: 'Comunicação', icon: 'chat', submenu: [{id: 41, text: 'item 1', route: '/dashboard/comunicacao'}]},
 ]
 
@@ -91,7 +95,7 @@ export default {
       this.activeItem = item.id;
       this.activeSubItem = subMenuItem.id;
       $nuxt.$router.push(subMenuItem.route);
-      document.getElementById("submenu"+item.id).classList.toggle("notExpanded");
+      !this.expanded && document.getElementById("submenu"+item.id).classList.toggle("notExpanded");
     },
     dropSubmenu(item) {
       if(this.expanded) {
