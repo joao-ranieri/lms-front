@@ -22,8 +22,10 @@
           <span class="d-block user-mail">{{user.username}}</span>
         </span>
       </template>
-      <b-dropdown-item @click=""><span class="profile-ico"></span>Meu perfil</b-dropdown-item>
-      <b-dropdown-item @click=""><span class="settings-ico"></span>Configurações</b-dropdown-item>
+      <b-dropdown-item>
+        <router-link to="/dashboard/profile"><span class="profile-ico"></span>Meu perfil</router-link>
+      </b-dropdown-item>
+      <b-dropdown-item><span class="settings-ico"></span>Configurações</b-dropdown-item>
       <b-dropdown-item @click="logout"><span class="logoff-ico"></span>Sair</b-dropdown-item>
     </b-dropdown>
   </header>
@@ -39,7 +41,7 @@ export default {
   methods:{
     async logout() {
       await this.$auth.logout();
-      let strategy = this.$auth.getRefreshToken('strategy');
+      let strategy = this.$auth.$storage.setLocalStorage('strategy');
       this.$auth.$storage.setLocalStorage('user', null);
       this.$auth.setToken(strategy, null);
       this.$auth.setRefreshToken(strategy, null);

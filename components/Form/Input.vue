@@ -2,10 +2,10 @@
   <div>
     <b-form-group :label="labelText" :label-for="nameInput"
                   :class="[size, {hasError}, {validated}, {'isPass': typeInput === 'password'}]">
-      <b-form-input :name="nameInput" :type="typeInput" v-model="value" :required="isRequired"
-                    :placeholder="placeholder" @change="validate">
+      <b-form-input :name="nameInput" :type="typeInput" :value="value" :required="isRequired"
+                    :placeholder="placeholder" @change="validate" :readonly="readOnly">
       </b-form-input>
-      <span class="ico-input" @click="inputAction(hasError)" :title="hasError ? 'Limpar campo' : ''">
+      <span class="ico-input" @click="inputAction" :title="hasError ? 'Limpar campo' : ''">
         <img src="" alt="ico-input">
       </span>
     </b-form-group>
@@ -19,32 +19,28 @@
 export default {
   props: {
     labelText: {type: String},
+    value: {type: String, default: null},
     nameInput: {type: String},
     placeholder: {type: String},
     typeInput: {type: String, default: "text"},
     size: {type: String},
     isRequired: {type: Boolean, default: false},
-    isNew: {type: Boolean, default: false}
+    isNew: {type: Boolean, default: false},
+    readOnly: {type: Boolean, default: false}
   },
   data() {
     return {
-      value: null,
       message: "Sua senha deve ter no mínimo 8 caracteres, composta por letras e números.",
       hasError: false,
       validated: false
     }
   },
   methods: {
-    validate() {
-      let value = this.value;
+    validate(value) {
       this.validated = this.hasError = false;
 
-      if (value === null || value === undefined || value === '') {
-        return false;
-      }
-
       // Valida o input do formulário em caso de novo cadastro
-      if (this.isNew) {
+      if (this.isNew && value) {
         if (this.nameInput === "name") {
           if (value.split(" ").length < 2) {
             this.message = "Informe seu nome e sobrenome.";
@@ -94,11 +90,11 @@ export default {
 
       // Devolve ao componente pai o valor do input caso seja válido
       if (this.validated || !this.isNew) {
-        this.$emit('value-model', {model: this.nameInput, value: this.value})
+        this.$emit('value-model', {model: this.nameInput, value: value})
       }
     },
-    inputAction(hasError) {
-      if (hasError) {
+    inputAction() {
+      if (this.hasError) {
         this.hasError = false;
         this.value = '';
         document.getElementsByName(this.nameInput)[0].focus();
@@ -168,7 +164,7 @@ input.form-control:focus, input.form-control:active {
   display: flex;
   justify-content: center;
   align-items: center;
-  top: 44px;
+  top: 36px;
   right: 18px;
   height: 17px;
 }
@@ -178,7 +174,7 @@ input.form-control:focus, input.form-control:active {
 }
 
 .lg .ico-input {
-  top: 44px;
+  top: 36px;
 }
 
 .hasError .ico-input img {

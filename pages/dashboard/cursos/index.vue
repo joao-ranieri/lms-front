@@ -12,9 +12,7 @@
         </b-dropdown>
       </div>
 
-      <b-button href="#" class="d-block btn-purple lg">
-      Editar Curso
-      </b-button>
+      <b-button href="#" class="d-block btn-purple lg">Criar novo curso</b-button>
 
     </div>
     <div class="d-flex flex-wrap justify-content-between">
@@ -44,7 +42,6 @@ export default {
   },
   computed: {
     user(){
-      console.log(this.$auth.$storage.getLocalStorage('user'))
       return this.$auth.$storage.getLocalStorage('user')
     }
   },

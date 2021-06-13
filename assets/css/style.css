@@ -54,8 +54,44 @@ label, form small {
   height: 16px;
 }
 
+/* Head settings*/
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Poppins SemiBold";
+}
+
+h1 {
+  font-size: 56px;
+}
+
+h2 {
+  font-size: 48px;
+}
+
+h3 {
+  font-size: 40px;
+}
+
+h4 {
+  font-size: 32px;
+}
+
+h5 {
+  font-size: 24px;
+}
+
+h6 {
+  font-size: 18px;
+}
+
+/* Button settings*/
 .btn {
   font: 14px "Inter Bold";
+  padding: 18px 43px;
+  border-radius: 8px;
+}
+
+.btn.squad {
+  padding: 18px 18px;
 }
 
 .btn-purple {
@@ -64,10 +100,36 @@ label, form small {
   color: white;
 }
 
+.btn-purple.squad {
+  padding: 18px 18px;
+}
+
 .btn-purple:hover {
   border: 1px solid transparent;
+  background-color: #A75BAA;
+}
+
+.btn-purple:disabled {
   background-color: #89238A;
-  filter: brightness(120%);
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+.btn-rounded-purple {
+  border: 1px solid #89238A;
+  background-color: transparent;
+  color: #89238A;
+}
+
+.btn-rounded-purple:hover {
+  border: 1px solid #A75BAA;
+  background-color: transparent;
+  color: #A75BAA;
+}
+
+.btn-rounded-purple:disabled {
+  pointer-events: none;
+  opacity: 0.3;
 }
 
 .btn-grey {
@@ -80,11 +142,6 @@ label, form small {
   border: 1px solid transparent;
   background-color: #525359;
   filter: brightness(120%);
-}
-
-.btn.lg {
-  border-radius: 8px;
-  padding: 18px;
 }
 
 /*Icon toggle Courses*/
@@ -146,7 +203,7 @@ label, form small {
   border-color: transparent;
 }
 
-  /* Dropdown settings - PROFILE */
+/* Dropdown settings - PROFILE */
 .message-btn,
 .notification-btn,
 .profile-btn {
@@ -195,9 +252,11 @@ label, form small {
   min-width: 100%;
 }
 
-.profile-box .dropdown-item {
+.profile-box .dropdown-item,
+.profile-box .dropdown-item a {
   font: 16px "Inter SemiBold";
   color: #090E11;
+  text-decoration: none;
 }
 
 /* title page */
@@ -212,4 +271,31 @@ label, form small {
   color: #090E11;
   padding-right: 63px;
   margin-left: 15px;
+}
+
+/* Utils */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.cropper {
+  max-height: 300px;
+  width: 100%;
+}
+
+
+@media (max-width: 640px) {
+  /* Head settings*/
+  h1 {
+    font-size: 46px;
+  }
+
+  h2 {
+    font-size: 38px;
+  }
+
+  h3 {
+    font-size: 30px;
+  }
+
 }
