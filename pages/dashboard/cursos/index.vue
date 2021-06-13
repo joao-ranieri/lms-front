@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="welcome-text">Boas vindas, {{user.name.split(' ')[0]}}!</div>
-    <div class="title-page"> Veja seus cursos</div>
+    <h3> Veja seus cursos</h3>
     <div class="filter-bar">
-      <FormInput class="position-relative w-50" placeholder="Pesquise por curso, instrutor ou categoria" :isRequired="true" nameInput="search" size="lg" />
+      <FormInput class="position-relative" placeholder="Pesquise por curso, instrutor ou categoria" :isRequired="true" nameInput="search" size="lg" />
 
       <div class="order-by-box">
         <label>Ordenar por:</label>
@@ -12,7 +12,7 @@
         </b-dropdown>
       </div>
 
-      <b-button href="#" class="d-block btn-purple lg">Criar novo curso</b-button>
+      <b-button class="d-block btn-purple">Criar novo curso</b-button>
 
     </div>
     <div class="d-flex flex-wrap justify-content-between">

@@ -1,9 +1,10 @@
 <template>
   <div>
-    <div class="title-page">Categorias</div>
+    <h3>Categorias</h3>
     <div>
       <div class="btn-filters">
-        <b-button v-b-toggle.filtros variant="success" class="d-block md">Filtros</b-button>
+        <b-button v-b-toggle.filtros class="d-block btn-rounded-purple md">Filtros</b-button>
+        <b-button v-b-toggle.filtros class="d-block btn-rounded-purple squad ml-3" title="Adicionar">+</b-button>
       </div>
       <b-collapse id="filtros" class="mt-2 collapse-filters">
         <b-card>

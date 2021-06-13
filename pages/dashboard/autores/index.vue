@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="title-page">Autores</div>
+    <h3>Autores</h3>
   </div>
 </template>
 
