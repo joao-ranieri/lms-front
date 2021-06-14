@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div class="title-page">Alunos</div>
+    <h3>Alunos</h3>
     <div>
       <div class="btn-filters">
-        <b-button v-b-toggle.filtros variant="success" class="d-block md">Filtros</b-button>
+        <b-button v-b-toggle.filtros class="d-block btn-rounded-purple md">Filtros</b-button>
       </div>
       <b-collapse id="filtros" class="mt-2 collapse-filters">
         <b-card>
