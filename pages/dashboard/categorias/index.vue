@@ -4,7 +4,7 @@
     <div>
       <div class="btn-filters">
         <b-button v-b-toggle.filtros class="d-block btn-rounded-purple md">Filtros</b-button>
-        <b-button v-b-toggle.filtros class="d-block btn-rounded-purple squad ml-3" title="Adicionar">+</b-button>
+        <b-button class="d-block btn-rounded-purple squad ml-3" v-b-modal.modal-addCategoria title="Adicionar">+</b-button>
       </div>
       <b-collapse id="filtros" class="mt-2 collapse-filters">
         <b-card>
@@ -26,9 +26,14 @@
 
     <div class="mt-2">
       <b-table hover striped class="table-category" head-variant="dark" :items="allCategory" :fields="fields">
-        <template #cell()="data" v-b-modal.modal-details>
-          <div v-b-modal.modal-details @click="categoryDetails(data.item.id)">
-              {{ data.value }}
+        <template #cell(name)="data">
+          <div>
+            <span>{{data.value}}</span>
+          </div>
+        </template>
+        <template #cell(delete)="data">
+          <div @click="deleteCategory(data.item.id)">
+            <span>Delete</span>
           </div>
         </template>
       </b-table>
@@ -45,8 +50,20 @@
         align="right"/>
     </div>
 
-    <b-modal id="modal-details" centered hide-footer :title="studentCategory.name">
+    <b-modal id="modal-addCategoria" hide-footer centered no-close-on-esc no-close-on-backdrop title="Adicionar categoria">
+      <template #default="{ hide }">
+        <FormInput class="position-relative" @value-model="setValue" placeholder="Nome da categoria" :isRequired="true" nameInput="addCategoryName" size="lg" />
+        <div class="footer-modalCategory">
+          <b-button @click="hide()">Cancelar</b-button>
+          <b-button size="sm" class="d-block btn-purple squad ml-3" :disabled="isLoading"
+            @click="addCategoty()">
+            <UtilsLoading v-if="isLoading"/>
+            <span style="margin-left: 10px">Adicionar categoria</span>
+          </b-button>
+        </div>
+      </template>
     </b-modal>
+
   </div>
 </template>
 
@@ -61,7 +78,8 @@ export default {
   data() {
     return {
       fields: [
-        {key: 'name', label: 'Nome'}
+        {key: 'name', label: 'Nome'},
+        {key: 'delete', label: 'Apagar'}
       ],
       allCategory: [],
       studentCategory: {},
@@ -70,6 +88,9 @@ export default {
       currentPage: 1,
       itemsPerPage: 10,
       total: 0,
+
+      isLoading: false,
+      userEdit: {},
 
       filters: {
         name: '',
@@ -117,6 +138,41 @@ export default {
         this.total = response.total;
         this.page = 1;
       });
+    },
+    setValue(v) {
+      if(v.value) {
+        this.userEdit[v.model] = v.value;
+      }
+      else {
+        delete this.userEdit[v.model];
+      }
+    },
+    async addCategoty(){
+      this.isLoading = true;
+      const data = {
+        name: this.userEdit.addCategoryName
+      }
+
+      await this.$axios.$post(`/category`, data).then(response => {
+        this.currentPage = 1;
+        this.getAllCategory();
+        console.log('Adicionado');
+      }).catch( err => {
+        console.log(err);
+      }).finally(() => {
+        this.isLoading = false;
+        this.$bvModal.hide('modal-addCategoria');
+      });
+    },
+    async deleteCategory(id) {
+      await this.$axios.$delete(`/category/${id}`)
+      .then(response => {
+        this.getAllCategory();
+        this.userEdit.addCategoryName = '';
+        console.log('Deletado');
+      }).catch( err => {
+        console.log(err);
+      })
     }
   }
 }
@@ -129,6 +185,23 @@ export default {
   font-weight: 600;
   line-height: 20px;
   font-family: 'Inter SemiBold';
+}
+
+.table-category.table th:last-child,
+.table-category.table td:last-child {
+  text-align: center;
+  width: 10%;
+}
+
+
+.table-category.table td:last-child {
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.table-category.table td:last-child:hover {
+  background: #D92626;
+  color: #eee;
 }
 
 .table-category.table th{
@@ -159,6 +232,12 @@ export default {
 }
 
 .btn-filters {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.footer-modalCategory {
+  margin-top: 20px;
   display: flex;
   justify-content: flex-end;
 }

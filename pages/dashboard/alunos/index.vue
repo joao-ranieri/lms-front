@@ -35,7 +35,7 @@
 
     <div class="mt-2">
       <b-table hover striped class="table-students" head-variant="dark" :items="allStudents" :fields="fields">
-        <template #cell()="data" v-b-modal.modal-details>
+        <template #cell()="data">
           <div v-b-modal.modal-details @click="studentDetails(data.item.id)">
               {{ data.value }}
           </div>
@@ -54,7 +54,7 @@
         align="right"/>
     </div>
 
-    <b-modal id="modal-details" centered hide-footer :title="studentSelected.name">
+    <b-modal id="modal-details" no-close-on-esc no-close-on-backdrop centered hide-footer :title="studentSelected.name">
       <p><strong>E-mail:</strong> {{studentSelected.email}}</p>
       <p><strong>Pontos de experiência:</strong> {{studentSelected.experiencePoints}}</p>
       <p><strong>Moedas:</strong> {{studentSelected.coins}}</p>
