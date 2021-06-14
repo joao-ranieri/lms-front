@@ -86,6 +86,9 @@ export default {
             this.validated = true;
           }
         }
+        else {
+          this.validated = true;
+        }
       }
 
       // Devolve ao componente pai o valor do input caso seja válido
@@ -108,42 +111,6 @@ export default {
 
 .form-group {
   margin-bottom: 0;
-}
-
-input.form-control {
-  background: #F1F1F2;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 20px;
-  font-family: 'Inter SemiBold';
-  border: none;
-}
-
-::-webkit-input-placeholder {
-  color: #8A8C92;
-}
-
-:-moz-placeholder { /* Firefox 18- */
-  color: #8A8C92;
-}
-
-::-moz-placeholder { /* Firefox 19+ */
-  color: #8A8C92;
-}
-
-:-ms-input-placeholder {
-  color: #8A8C92;
-}
-
-
-.lg input {
-  padding: 18px 23px;
-  height: 56px;
-}
-
-input.form-control:focus, input.form-control:active {
-  box-shadow: 0px 0px 0 2px #89238A;
 }
 
 .hasError input.form-control {

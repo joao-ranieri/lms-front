@@ -143,17 +143,4 @@ export default {
   border-radius: 50%;
 }
 
-
-.share-ico {
-  content: url("../../assets/img/utils/ico-share.svg");
-}
-
-.star-ico {
-  content: url("../../assets/img/utils/ico-star.svg");
-}
-
-.trash-ico {
-  content: url("../../assets/img/utils/ico-trash.svg");
-}
-
 </style>

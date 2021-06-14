@@ -24,7 +24,7 @@
               <FormInput class="mt-4 position-relative" @value-model="setValue" :isRequired="true"
                          labelText="Nome completo" nameInput="name" size="lg" v-if="newRegister" :isNew="newRegister"/>
 
-              <FormInput class="mt-4 position-relative" typeInput="cpf" :isRequired="true" labelText="CPF"
+              <FormInput class="mt-4 position-relative" :isRequired="true" labelText="CPF"
                          nameInput="cpf" size="lg" @value-model="setValue" v-if="newRegister" :isNew="newRegister"/>
 
               <FormInput class="mt-4 position-relative" typeInput="email" :isRequired="true" @value-model="setValue"

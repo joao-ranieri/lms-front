@@ -1,11 +1,22 @@
 <template>
   <div>
-    <b-modal id="choose-image" title="Nova imagem de perfil" centered no-close-on-esc no-close-on-backdrop size="lg">
-      <span class="d-block mb-3">Tamanho sugerido: 250px de altura 250px de largura</span>
+    <b-modal id="choose-image" title="Nova imagem" modal-class="screen-background-modal" centered no-close-on-esc
+             no-close-on-backdrop size="lg" header-class="border-0" hide-footer>
       <input style="display: none" ref="fileInput" type="file" @change="getImg" enctype="multipart/form-data">
       <b-button @click="$refs.fileInput.click()" class="btn-rounded-purple">Escolher imagem</b-button>
+
       <div class="crop-image mt-3">
         <cropper ref="cropper" class="cropper" :src="url"/>
+      </div>
+
+      <div class="mt-4 d-flex justify-content-center">
+        <b-button class="w-25 btn-grey lg" @click="$bvModal.hide('author')">
+          Cancelar
+        </b-button>
+        <b-button type="submit" :disabled="isLoading" class="w-25 btn-purple lg ml-2">
+          <UtilsLoading v-if="isLoading"/>
+          <span v-else>Salvar Dados</span>
+        </b-button>
       </div>
     </b-modal>
   </div>
@@ -20,6 +31,7 @@ export default {
   },
   data() {
     return {
+      isLoading: false,
       file: null,
       url: null
     }
@@ -27,7 +39,6 @@ export default {
   methods: {
     getImg(e) {
       this.file = e.target.files[0];
-
       this.url = window.URL.createObjectURL(this.file);
     },
     change({coordinates, canvas}) {

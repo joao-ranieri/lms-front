@@ -94,7 +94,8 @@ h6 {
   padding: 18px 18px;
 }
 
-.btn-purple {
+.btn-purple,
+.btn.btn-purple:active {
   border: 2px solid transparent;
   background-color: #89238A;
   color: white;
@@ -115,7 +116,8 @@ h6 {
   opacity: 0.3;
 }
 
-.btn-rounded-purple {
+.btn-rounded-purple,
+.btn-rounded-purple:active {
   border: 2px solid #89238A;
   background-color: transparent;
   color: #89238A;
@@ -132,7 +134,8 @@ h6 {
   opacity: 0.3;
 }
 
-.btn-grey {
+.btn-grey,
+.btn-grey:active{
   border: 1px solid transparent;
   background-color: #F1F1F2;
   color: #525359;
@@ -278,6 +281,73 @@ h6 {
   width: 100%;
 }
 
+
+/* Modal Settings */
+.modal-author {
+  width: 412px;
+}
+
+.screen-background-modal {
+  background: #000000d9;
+}
+
+/* Input Setting */
+input.form-control {
+  background: #F1F1F2;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  font-family: 'Inter Regular';
+  font-weight: bold;
+  border: none;
+}
+
+::-webkit-input-placeholder {
+  color: #A7A7AB;
+}
+
+:-moz-placeholder { /* Firefox 18- */
+  color: #A7A7AB;
+}
+
+::-moz-placeholder { /* Firefox 19+ */
+  color: #A7A7AB;
+}
+
+:-ms-input-placeholder {
+  color: #A7A7AB;
+}
+
+.lg input {
+  padding: 18px 23px;
+  height: 56px;
+}
+
+input.form-control:focus, input.form-control:active {
+  box-shadow: 0px 0px 0 2px #89238A;
+}
+/* End */
+
+/*Pagination*/
+.paginate-style .page-item.active .page-link{
+  background-color: #89238A;
+  border-color: #89238A;
+}
+
+
+/* Icons */
+.share-ico {
+  content: url("../../assets/img/utils/ico-share.svg");
+}
+
+.star-ico {
+  content: url("../../assets/img/utils/ico-star.svg");
+}
+
+.trash-ico {
+  content: url("../../assets/img/utils/ico-trash.svg");
+}
 
 @media (max-width: 640px) {
   /* Head settings*/
