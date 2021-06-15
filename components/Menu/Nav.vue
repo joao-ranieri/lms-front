@@ -71,10 +71,4 @@ nav {
 .reduced-menu .header-nav > img {
   display: none;
 }
-
-@media (max-width: 768px) {
-  .header-nav {
-    margin: 20px;
-  }
-}
 </style>

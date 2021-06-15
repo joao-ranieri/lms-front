@@ -11,7 +11,6 @@
 </template>
 
 <script>
-
 export default {
   computed: {
     expanded() {
@@ -36,7 +35,11 @@ main {
   flex: 1;
   padding: 40px 66px;
   height: calc(100vh - 96px);
-  overflow-y: auto;
+  overflow: auto;
+}
+
+main > div {
+  overflow: auto;
 }
 
 .container-layout {
@@ -57,4 +60,17 @@ main {
   }
 }
 
+@media (max-width: 768px) {
+  main {
+    padding: 20px 20px;
+    height: 100vh;
+  }
+  .container-layout {
+    display: block;
+  }
+  .container-layout nav,
+  .container-layout header {
+    display: none;
+  }
+}
 </style>

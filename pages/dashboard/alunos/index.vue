@@ -10,22 +10,22 @@
           <b-row>
             <b-col cols="12" lg="3">
               <b-form-group label="Nome:">
-                <b-form-input name="name" type="text" v-model="filters.name" placeholder="Filtrar por nome de aluno" @keyup="changeSearch" />
+                <b-form-input name="name" type="text" v-model="filters.name" placeholder="Filtrar por nome de aluno" @keyup="changeSearch()" />
               </b-form-group>
             </b-col>
             <b-col cols="12" lg="3">
               <b-form-group label="E-mail:">
-                <b-form-input name="name" type="text" v-model="filters.email" placeholder="Filtrar por e-mail de aluno" @keyup="changeSearch" />
+                <b-form-input name="name" type="text" v-model="filters.email" placeholder="Filtrar por e-mail de aluno" @keyup="changeSearch('email')" />
               </b-form-group>
             </b-col>
             <b-col cols="12" lg="3">
               <b-form-group label="Ordenar por: ">
-                <b-form-select v-model="orderBy"  @change="changeSearch" :options="filters.orderBy" />
+                <b-form-select v-model="orderBy"  @change="changeSearch()" :options="filters.orderBy" />
               </b-form-group>
             </b-col>
             <b-col cols="12" lg="3">
               <b-form-group label="Ordenação:">
-                <b-form-select  v-model="direction" @change="changeSearch" :options="filters.direction" />
+                <b-form-select  v-model="direction" @change="changeSearch()" :options="filters.direction" />
               </b-form-group>
             </b-col>
           </b-row>
@@ -120,7 +120,7 @@ export default {
       this.currentPage = value;
       this.getAllStudent();
     },
-    changeSearch() {
+    changeSearch(type = null) {
       const obj = {
         page: 1,
         size: this.itemsPerPage,
@@ -132,15 +132,18 @@ export default {
 
       //caso tenha email, valida antes de fazer a requisição
       const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      const isValid = obj.email ? re.test(String(obj.email).toLowerCase()) : false
-      if(this.filters.email !== '' && isValid) obj.email = this.filters.email;
+      const isValid = this.filters.email ? re.test(String(this.filters.email).toLowerCase()) : false
+      if(isValid) obj.email = this.filters.email;
 
+      const doRequest = ((type && isValid) || !type) ? true : false;
       const query = Object.entries(obj).map(([key, val]) => `${key}=${val}`).join('&');
-      this.$axios.$get(`student/all?${query}`).then(response => {
-        this.allStudents = response.data;
-        this.total = response.total;
-        this.page = 1;
-      });
+      if(doRequest){
+        this.$axios.$get(`student/all?${query}`).then(response => {
+          this.allStudents = response.data;
+          this.total = response.total;
+          this.page = 1;
+        });
+      }
     }
   }
 }

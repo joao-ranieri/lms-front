@@ -84,10 +84,4 @@ header {
 .logoff-ico {
   content: url("../../assets/img/utils/ico-arrow-left.svg");
 }
-
-@media (max-width: 768px) {
-  header {
-    display: none;
-  }
-}
 </style>
