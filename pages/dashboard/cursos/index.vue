@@ -96,10 +96,4 @@ export default {
 .welcome-text {
   font: 24px "Poppins Regular";
 }
-
-@media (max-width: 768px) {
-  /* .filter-bar {
-    display: block;
-  } */
-}
 </style>

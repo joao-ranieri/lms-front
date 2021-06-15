@@ -52,13 +52,12 @@ main > div {
   grid-template-columns: 87px 1fr;
 }
 
-@media (min-width: 768px) {
-  .container-layout {
-    display: grid;
-    grid-template-columns: 256px 1fr;
-    grid-template-rows: 1fr auto;
-  }
+.container-layout {
+  display: grid;
+  grid-template-columns: 256px 1fr;
+  grid-template-rows: 1fr auto;
 }
+
 
 @media (max-width: 768px) {
   main {
