@@ -11,7 +11,6 @@
 </template>
 
 <script>
-
 export default {
   computed: {
     expanded() {
@@ -35,7 +34,11 @@ main {
   flex: 1;
   padding: 40px 66px;
   height: calc(100vh - 96px);
-  overflow-y: auto;
+  overflow: auto;
+}
+
+main > div {
+  overflow: auto;
 }
 
 .container-layout {
@@ -48,12 +51,24 @@ main {
   grid-template-columns: 87px 1fr;
 }
 
-@media (min-width: 768px) {
-  .container-layout {
-    display: grid;
-    grid-template-columns: 256px 1fr;
-    grid-template-rows: 1fr auto;
-  }
+.container-layout {
+  display: grid;
+  grid-template-columns: 256px 1fr;
+  grid-template-rows: 1fr auto;
 }
 
+
+@media (max-width: 768px) {
+  main {
+    padding: 20px 20px;
+    height: 100vh;
+  }
+  .container-layout {
+    display: block;
+  }
+  .container-layout nav,
+  .container-layout header {
+    display: none;
+  }
+}
 </style>
