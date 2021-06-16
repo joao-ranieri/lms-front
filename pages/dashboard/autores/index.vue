@@ -5,17 +5,18 @@
     <div class="filter-bar lg">
       <b-form-input class="w-50" v-model="nameSearch" placeholder="Pesquisar por nome" @keypress="getAuthors"/>
 
-      <b-button @click="openModalAuthor" class="d-block btn-rounded-purple squad" v-b-tooltip="'Adicionar autor'">+
+      <b-button @click="openModalAuthor" class="d-block btn-purple" v-b-tooltip="'Adicionar autor'">
+        Cadastrar autor
       </b-button>
     </div>
 
-    <div>
+    <div class="d-flex flex-wrap" style="gap: 20px;">
       <AuthorCard v-for="(author, index) in authors" :key="index" :name="author.name" :resume="author.description"
-                  :image="image" :idAuthor="author.id"/>
+                  :image="image" :idAuthor="author.id" @open-modal="openModalAuthor"/>
 
-      <b-pagination v-if="authors.length > 0" class="paginate-style mt-4" pills align="center" @change="getByPage" v-model="currentPage"
-                    :total-rows="total" :per-page="perPage"/>
     </div>
+    <b-pagination v-if="authors.length > 0" class="paginate-style mt-4" pills align="center" @change="getByPage" v-model="currentPage"
+                  :total-rows="total" :per-page="perPage"/>
 
     <ModalAuthor/>
   </div>
@@ -30,6 +31,11 @@ export default {
   },
   data() {
     return {
+      authorEdit: {
+        name: 'null',
+        description: 'null',
+        image: 'null'
+      },
       nameSearch: null,
       authors: [],
       currentPage: 1,
@@ -39,7 +45,12 @@ export default {
     }
   },
   methods: {
-    openModalAuthor() {
+    openModalAuthor(id) {
+      if(typeof id === "string") {
+        this.$axios.get('/author', {params: {id: id}}).then(response => {
+          this.$root.$emit('getAuthorData', {...response.data.data});
+        })
+      }
       this.$bvModal.show('author');
     },
     getAuthors() {
@@ -50,9 +61,8 @@ export default {
       }
 
       this.$axios.$get('author/all?' + params).then(response => {
-        this.total = response.total;
+        this.total = Math.ceil(response.total / this.perPage);
         this.authors = response.data;
-        console.log(response.data)
       })
         .catch(e => {
           console.log(e)
@@ -60,7 +70,7 @@ export default {
     },
     getByPage(page) {
       this.currentPage = page;
-    }
+    },
   },
   mounted() {
     this.getAuthors();

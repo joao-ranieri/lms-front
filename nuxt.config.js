@@ -27,6 +27,7 @@ export default {
   plugins: [
     '~/plugins/route',
     '~/plugins/lottie-player',
+    '~plugins/mask.js'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -50,8 +51,8 @@ export default {
 
   auth: {
     redirect: {
-      logout: '/login',
-      home: '/dashboard/cursos'
+      home: '/dashboard/cursos',
+      logout: '/admin/login'
     },
     strategies: {
       admin: {
@@ -66,6 +67,7 @@ export default {
         endpoints: {
           login: { url: 'auth/student', method: 'post'},
           user: false,
+          logout: '/login'
         }
       },
     },

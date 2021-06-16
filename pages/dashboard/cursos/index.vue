@@ -15,7 +15,7 @@
       <b-button class="d-block btn-purple">Criar novo curso</b-button>
 
     </div>
-    <div class="d-flex flex-wrap justify-content-between">
+    <div class="d-flex flex-wrap" style="gap: 12px;">
       <CourseCard/>
       <CourseCard/>
       <CourseCard/>

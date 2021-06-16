@@ -108,6 +108,7 @@ h6 {
 .btn-purple:hover {
   border: 2px solid transparent;
   background-color: #A75BAA;
+  color: #fff;
 }
 
 .btn-purple:disabled {

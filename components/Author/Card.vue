@@ -1,5 +1,5 @@
 <template>
-  <b-card overlay>
+  <b-card>
     <div class="card-content">
       <b-dropdown class="menu-card" right toggle-class="btn-menu btn-white squad">
         <template #button-content>
@@ -9,7 +9,7 @@
         <b-dropdown-item @click="remove"><i class="trash-ico mr-1"></i>Remover</b-dropdown-item>
       </b-dropdown>
       <div class="author-image">
-        <img class="w-100 mr-auto ml-auto" width="130" height="130" src="../../assets/img/course-test/img-author.svg" alt="author">
+        <img class="w-100 mr-auto ml-auto" width="100" height="100" src="../../assets/img/course-test/img-author.svg" alt="author">
       </div>
 
       <div class="author-info">
@@ -17,7 +17,6 @@
         <span class="resume mb-3" v-text="resume"></span>
       </div>
     </div>
-    <ModalAuthor :author="author"/>
     <ModalConfirmation :idAuthor="idAuthor" route="/author/" title="Exclusão de autor" :msg="'Deseja remover o autor '+ name+'?'" />
   </b-card>
 </template>
@@ -38,12 +37,7 @@ export default {
   },
   methods:{
     edit() {
-      this.$axios.get('/author', {params: {id: this.idAuthor}}).then(response => {
-        console.log(response)
-        this.author = {...response.data}
-      }).finally(()=>{
-        this.$bvModal.show('author');
-      })
+      this.$emit('open-modal', this.idAuthor)
     },
     remove(){
       this.$bvModal.show('confirmation');
@@ -52,10 +46,10 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .card {
   position: relative;
-  width: 280px;
+  width: 255px;
   height: 380px;
   border-radius: 32px;
   border: 2px solid #89238A;
@@ -70,9 +64,12 @@ export default {
 
 .author-info .resume {
   display: block;
+  text-align: justify;
+  font: 14px "Poppins Regular";
   width: 100%;
   height: 140px;
   overflow-y: auto;
+  color: #8A8C92;
 }
 
 

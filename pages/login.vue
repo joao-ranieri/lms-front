@@ -91,7 +91,7 @@ export default {
       isLoading: false,
       formData: {},
       formText: {
-        new: {title: "Cadatrar", buttonText: "Fazer cadastro"},
+        new: {title: "Cadastrar", buttonText: "Fazer cadastro"},
         recover: {
           title: "Redefinir senha",
           buttonText: "Redefinir minha senha",
@@ -287,7 +287,7 @@ input.form-control:focus, input.form-control:active {
 .box-form {
   overflow-x: hidden;
   overflow-y: auto;
-  height: 338px;
+  height: 342px;
   padding: 0px 5px 3px;
 }
 

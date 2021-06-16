@@ -2,7 +2,7 @@
   <b-card overlay :img-src="require('../../assets/img/course-test/image.png')">
     <span class="course-status">Publicado</span>
 
-    <b-dropdown class="menu-card" right toggle-class="btn-menu btn-white">
+    <b-dropdown class="menu-card" right toggle-class="btn-menu btn-white squad">
       <template #button-content>
         <img src="../../assets/img/utils/three-points.svg" alt="author">
       </template>

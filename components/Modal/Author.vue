@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-modal id="author" title="Cadastrar" centered no-close-on-esc no-close-on-backdrop hide-footer
+    <b-modal id="author" :title="formText[formType].title" centered no-close-on-esc no-close-on-backdrop hide-footer
              header-class="border-0" dialog-class="modal-author" ref="modalAuthor">
       <b-form id="login-form" @submit.prevent="executeForm">
 
@@ -25,17 +25,17 @@
 
             <FormInput class="mt-4 position-relative" @value-model="setValue" :isRequired="true" labelText="Nome"
                        nameInput="name" size="lg" :isNew="true" placeholder="Digite nome e sobrenome"
-                       :value="author && author.name ? author.name : null"/>
+                       :value="author.name"/>
 
             <FormInput class="mt-4 position-relative" @value-model="setValue" :isRequired="true" labelText="Descrição"
-                       nameInput="description" size="lg" :isNew="true" :value="author && author.description ? author.description : null"
+                       nameInput="description" size="lg" :isNew="true" :value="author.description"
                        placeholder="Faça uma pequena descrição para essa pessoa"/>
 
             <span class="error-login" v-if="notification" v-text="notification"></span>
               </span>
           <span v-else-if="isSuccess">
           <UtilsAnimation src="/animations/save-success.json" :cssGroup="{'transform': 'scale(1.5)'}"/>
-          <span class="green-text text-center d-block">Cadastro realizado com sucesso!</span>
+          <span class="green-text text-center d-block">{{ formText[formType].sucessMsg }}</span>
         </span>
 
           <div class="mt-5 mb-2 d-flex justify-content-around">
@@ -44,7 +44,7 @@
             </b-button>
             <b-button variant="none" type="submit" :disabled="isLoading" class="btn-purple lg ml-2">
               <UtilsLoading v-if="isLoading"/>
-              <span v-else>{{ isSuccess ? 'Novo cadastro' : 'Adicionar autor' }}</span>
+              <span v-else>{{ isSuccess ? "Novo Cadastro" : formText[formType].btnTitle }}</span>
             </b-button>
           </div>
         </div>
@@ -55,12 +55,16 @@
 
 <script>
 export default {
-  props: {
-    author: {type: Object}
-  },
   data() {
     return {
-      authorForm: {
+      formText: {
+        new: {title: "Cadastrar", sucessMsg: "Cadastro realizado com sucesso!", btnTitle: "Cadastrar autor"},
+        edit: {title: "Editar", sucessMsg: "Dados editados com sucesso!", btnTitle: "Salvar alterações"}
+      },
+      formType: 'new',
+      author: {
+        name:'',
+        description: '',
         image: '../../assets/img/utils/photo-drop.svg'
       },
       imageURL: require('../../assets/img/utils/photo-drop.svg'),
@@ -70,45 +74,67 @@ export default {
     }
   },
   methods: {
+    getAuthor(author) {
+      if(author) {
+        this.formType = 'edit',
+        this.author.id = author.id;
+        this.author.name = author.name;
+        this.author.description = author.description;
+        this.author.image = author.image ? author.image : this.author.image;
+      }
+    },
     setValue(v) {
-      this.authorForm[v.model] = v.value;
-      console.log(this.authorForm)
+      this.author[v.model] = v.value;
     },
     setImage(e) {
       this.imageURL = window.URL.createObjectURL(e.dataTransfer.files[0]);
-      this.authorForm['image'] = 'url';
+      this.author['image'] = 'url';
     },
     executeForm() {
       if (this.isSuccess) {
         this.isSuccess = false;
-        this.authorForm = {image: null}
         return;
       }
 
       this.isLoading = true;
 
-      if (this.author && this.author.id) {
-        console.log('aqui')
-      } else {
-        this.$axios.$post('/author', this.authorForm).then(response => {
+      if (this.author.id) {
+        this.$axios.$put('/author/'+this.author.id, this.author).then(response => {
           this.isSuccess = true;
-          console.log(response)
-        })
-        .catch(e => {
-          console.log(e)
-        })
-        .finally(()=>{
-          this.isLoading = false;
-        })
+        }).catch(e => {
+            console.log(e)
+          }).finally(() => {
+            this.resetData();
+            this.isLoading = false;
+          })
+      }
+      else {
+        this.$axios.$post('/author', this.author).then(response => {
+          this.isSuccess = true;
+        }).catch(e => {
+            console.log(e)
+          }).finally(() => {
+            this.resetData();
+            this.isLoading = false;
+          })
       }
     },
-    close(){
+    close() {
       this.$bvModal.hide('author');
+    },
+    resetData(){
+      this.author = {
+        name:'',
+        description: '',
+        image: '../../assets/img/utils/photo-drop.svg'
+      }
       this.$root.$emit('refresh-authors');
     }
   },
   mounted() {
-
+    this.$root.$on('getAuthorData', (id) => {
+      this.getAuthor(id)
+    });
   }
 }
 </script>

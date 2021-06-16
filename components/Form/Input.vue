@@ -3,7 +3,7 @@
     <b-form-group :label="labelText" :label-for="nameInput"
                   :class="[size, {hasError}, {validated}, {'isPass': typeInput === 'password'}]">
       <b-form-input :name="nameInput" :type="typeInput" :value="value" :required="isRequired"
-                    :placeholder="placeholder" @change="validate" :readonly="readOnly">
+                    :placeholder="placeholder" @change="validate" :readonly="readOnly" :mask="['###.###.###-##']">
       </b-form-input>
       <span class="ico-input" @click="inputAction" :title="hasError ? 'Limpar campo' : ''">
         <img src="" alt="ico-input">
@@ -16,6 +16,8 @@
 </template>
 
 <script>
+import { cpf } from 'cpf-cnpj-validator';
+
 export default {
   props: {
     labelText: {type: String},
@@ -44,6 +46,14 @@ export default {
         if (this.nameInput === "name") {
           if (value.split(" ").length < 2) {
             this.message = "Informe seu nome e sobrenome.";
+            this.hasError = true;
+          } else {
+            this.validated = true;
+          }
+        }
+        else if (this.nameInput === "cpf") {
+          if (!cpf.isValid(value)) {
+            this.message = "CPF inválido";
             this.hasError = true;
           } else {
             this.validated = true;

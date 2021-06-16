@@ -23,7 +23,6 @@ export default {
   },
   beforeMount() {
     let url = location.pathname;
-    console.log(url)
     if(!this.$store.state.auth.loggedIn && url !== "/admin/login") {
       this.$router.push("/login");
     }
