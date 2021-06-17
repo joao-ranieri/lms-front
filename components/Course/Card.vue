@@ -62,7 +62,7 @@ export default {
 .card {
   position: relative;
   width: 306px;
-  height: 400px;
+  height: auto;
   border-radius: 32px;
   border: 4px solid transparent;
   background-blend-mode: multiply;

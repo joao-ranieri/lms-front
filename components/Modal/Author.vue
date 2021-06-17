@@ -86,9 +86,9 @@ export default {
     setValue(v) {
       this.author[v.model] = v.value;
     },
-    setImage(e) {
+    async setImage(e) {
       this.imageURL = window.URL.createObjectURL(e.dataTransfer.files[0]);
-      this.author['image'] = 'url';
+      await this.toBase64(e.dataTransfer.files[0]);
     },
     executeForm() {
       if (this.isSuccess) {
@@ -119,7 +119,21 @@ export default {
           })
       }
     },
+    toBase64 (file) {
+      let image;
+      new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+      }).then(response => {
+        image = response;
+        }).finally(()=>{
+        this.author['image'] = image;
+      })
+    },
     close() {
+      this.isSuccess = false;
       this.$bvModal.hide('author');
     },
     resetData(){

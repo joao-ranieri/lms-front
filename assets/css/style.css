@@ -350,6 +350,13 @@ input.form-control:focus, input.form-control:active {
   content: url("../../assets/img/utils/ico-trash.svg");
 }
 
+.loading-content {
+  width: 100%;
+  display: block;
+  text-align: center;
+  padding: 150px 0 200px;
+}
+
 @media (max-width: 640px) {
   /* Head settings*/
   h1 {

@@ -1,21 +1,25 @@
 <template>
-  <div>
+  <div class="p-1">
     <h3>Autores</h3>
 
     <div class="filter-bar lg">
-      <b-form-input class="w-50" v-model="nameSearch" placeholder="Pesquisar por nome" @keypress="getAuthors"/>
+      <b-form-input class="w-50" v-model="nameSearch" placeholder="Pesquisar por nome" @keyup="getAuthors"/>
 
       <b-button @click="openModalAuthor" class="d-block btn-purple" v-b-tooltip="'Adicionar autor'">
         Cadastrar autor
       </b-button>
     </div>
 
-    <div class="d-flex flex-wrap" style="gap: 20px;">
-      <AuthorCard v-for="(author, index) in authors" :key="index" :name="author.name" :resume="author.description"
-                  :image="image" :idAuthor="author.id" @open-modal="openModalAuthor"/>
-
+    <div>
+      <div class="loading-content" v-if="loadingContent">
+        <UtilsLoading color="dark" size="large"/>
+      </div>
+      <div v-else class="d-flex flex-wrap pt-5" style="gap: 40px;">
+        <AuthorCard v-for="(author, index) in authors" :key="index" :name="author.name" :resume="author.description"
+                    :image="author.image" :idAuthor="author.id" @open-modal="openModalAuthor"/>
+      </div>
     </div>
-    <b-pagination v-if="authors.length > 0" class="paginate-style mt-4" pills align="center" @change="getByPage" v-model="currentPage"
+    <b-pagination v-if="authors.length > 0" class="paginate-style mt-4" pills align="right" @change="getByPage" v-model="currentPage"
                   :total-rows="total" :per-page="perPage"/>
 
     <ModalAuthor/>
@@ -31,10 +35,11 @@ export default {
   },
   data() {
     return {
+      loadingContent: false,
       authorEdit: {
-        name: 'null',
-        description: 'null',
-        image: 'null'
+        name: '',
+        description: '',
+        image: ''
       },
       nameSearch: null,
       authors: [],
@@ -54,6 +59,7 @@ export default {
       this.$bvModal.show('author');
     },
     getAuthors() {
+      this.loadingContent = true;
       let params = `direction=ASC&page=${this.currentPage}&size=${this.perPage}&orderBy=name`;
 
       if (this.nameSearch) {
@@ -66,7 +72,9 @@ export default {
       })
         .catch(e => {
           console.log(e)
-        })
+        }).finally(()=>{
+        this.loadingContent = false;
+      })
     },
     getByPage(page) {
       this.currentPage = page;

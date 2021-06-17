@@ -11,7 +11,7 @@
     </div>
 
     <div class="login-content-box align-self-center">
-      <b-card align="left" class="mb-2">
+      <b-card align="left">
         <b-form id="login-form" @submit.prevent="enter">
           <h3 v-text="formText[formSelected].title"></h3>
           <small v-if="['login','recover'].includes(formSelected) && !isAdmin && !registeredSuccess">Ainda não tem
@@ -229,7 +229,7 @@ export default {
 
 .login-content-box {
   display: flex;
-  padding: 51px 51px 72px;
+  padding: 51px 51px 86px;
   flex-direction: column;
   height: 660px;
 }

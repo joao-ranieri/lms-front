@@ -1,6 +1,15 @@
 <template>
-    <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+    <div :class="['lds-ring', color, size]"><div></div><div></div><div></div><div></div></div>
 </template>
+
+<script>
+export default {
+  props: {
+    color: {type: String},
+    size: {type: String}
+  }
+}
+</script>
 
 <style scoped>
 .lds-ring {
@@ -22,14 +31,27 @@
   border-color: #fff transparent transparent transparent;
 }
 
+.dark.lds-ring div {
+  border: 2px solid #89238A;
+  border-color: #89238A transparent transparent transparent;
+}
+
+.large.lds-ring div {
+  width: 50px;
+  height: 50px;
+}
+
 .lds-ring div:nth-child(1) {
   animation-delay: -0.45s;
+  filter: blur(1);
 }
 .lds-ring div:nth-child(2) {
   animation-delay: -0.3s;
+  filter: blur(1);
 }
 .lds-ring div:nth-child(3) {
   animation-delay: -0.15s;
+  filter: blur(1);
 }
 @keyframes lds-ring {
   0% {
