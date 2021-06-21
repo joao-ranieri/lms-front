@@ -46,7 +46,7 @@ export default {
 
   // Axios settings
   axios: {
-    baseURL: 'https://njs-lms-api.herokuapp.com/api/'
+    baseURL: 'https://lms-masters-api.herokuapp.com/api/'
   },
 
   auth: {
