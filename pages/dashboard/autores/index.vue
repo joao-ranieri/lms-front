@@ -1,5 +1,5 @@
 <template>
-  <div class="p-1">
+  <div class="content">
     <h3>Autores</h3>
 
     <div class="filter-bar lg">

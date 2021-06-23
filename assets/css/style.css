@@ -83,6 +83,10 @@ h6 {
   font-size: 18px;
 }
 
+.content {
+  padding: 40px 66px;
+}
+
 /* Button settings*/
 .btn {
   font: 14px "Inter Bold";

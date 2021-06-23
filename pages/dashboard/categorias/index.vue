@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="content">
     <h3>Categorias</h3>
     <div>
       <div class="btn-filters">

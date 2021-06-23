@@ -1,6 +1,6 @@
 <template>
   <div class="content">
-    <div class="welcome-text">Boas vindas, {{user.name.split(' ')[0]}}!</div>
+    <!-- <div class="welcome-text">Boas vindas, {{user.name.split(' ')[0]}}!</div> -->
     <h3> Veja seus cursos</h3>
     <div class="filter-bar">
       <FormInput class="position-relative mb-3" placeholder="Pesquise por curso, instrutor ou categoria" :isRequired="true" nameInput="search" size="lg" />
@@ -12,7 +12,9 @@
         </b-dropdown>
       </div>
 
-      <b-button variant="none" class="d-block btn-purple mb-3">Criar novo curso</b-button>
+      <b-button variant="none" class="d-block btn-purple mb-3" @click="$nuxt.$router.push('/dashboard/cursos/adicionar')">
+        Criar novo curso
+      </b-button>
 
     </div>
     <div class="d-flex flex-wrap mt-5" style="gap: 12px;">
