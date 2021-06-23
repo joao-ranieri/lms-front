@@ -5,11 +5,12 @@
 
       <b-dropdown class="menu-card" right toggle-class="btn-menu btn-white squad">
         <template #button-content>
-          <img width="16" src="../../assets/img/utils/three-points.svg" alt="três pontos">
+          <img width="16" :src="require('@/assets/img/utils/three-points.svg')" alt="três pontos">
         </template>
         <b-dropdown-item @click="share"><i class="share-ico mr-1"></i>Compartilhar</b-dropdown-item>
         <b-dropdown-item @click="remove"><i class="trash-ico mr-1"></i>Deletar</b-dropdown-item>
-        <b-dropdown-item @click="favorite"><i class="star-ico mr-1"></i>Salvar como favorito</b-dropdown-item>
+        <b-dropdown-item @click="favorite"><i :class="['star-ico', {'star-full-ico': isFavorite}, 'mr-1']"></i>
+          {{isFavorite ? 'Remover dos favoritos' : 'Salvar como favorito'}}</b-dropdown-item>
       </b-dropdown>
 
       <div class="card-content">
@@ -46,6 +47,11 @@ export default {
     isPublished: {type: Boolean},
     author: {type: Object}
   },
+  data(){
+    return {
+      isFavorite: false
+    }
+  },
   methods: {
     share(){
 
@@ -54,7 +60,7 @@ export default {
 
     },
     favorite(){
-
+      this.isFavorite = !this.isFavorite;
     },
     edit(){
 

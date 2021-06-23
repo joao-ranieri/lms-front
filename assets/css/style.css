@@ -28,6 +28,7 @@ body {
   width: auto;
   height: auto;
   margin: 0;
+  font: 16px "Inter Regular";
 }
 
 *, ::after, ::before {
@@ -296,6 +297,7 @@ h6 {
 }
 
 /* Input Setting */
+select.custom-select,
 input.form-control {
   background: #F1F1F2;
   border-radius: 8px;
@@ -303,8 +305,15 @@ input.form-control {
   line-height: 20px;
   padding: 12px;
   height: unset;
+  color: #373740;
   font-family: 'Inter Regular';
   border: none;
+}
+
+select.input-border,
+input.input-border {
+  background: transparent;
+  border: 1px solid #A7A7AB;
 }
 
 ::-webkit-input-placeholder {
@@ -334,6 +343,10 @@ input.form-control:focus, input.form-control:active {
   border-color: #89238A;
 }
 
+.grey-neutral {
+  color: #A7A7AB;
+}
+
 
 /* Icons */
 .share-ico {
@@ -342,6 +355,10 @@ input.form-control:focus, input.form-control:active {
 
 .star-ico {
   content: url("../../assets/img/utils/ico-star.svg");
+}
+
+.star-full-ico {
+  content: url("../../assets/img/utils/ico-star-full.svg");
 }
 
 .trash-ico {

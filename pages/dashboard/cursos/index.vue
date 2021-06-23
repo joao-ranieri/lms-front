@@ -7,11 +7,9 @@
                  :isRequired="true" nameInput="search" size="lg"/>
 
       <div class="group-btn-action">
-        <div class="d-inline-block mr-3">
-          <label>Ordenar por:</label>
-          <b-dropdown class="order-by-select" :text="selectedOrderBy.text" right toggle-class="btn-menu dropdown-grey w-100">
-            <b-dropdown-item v-for="(o, index) in ordinations" :key="index" @click="orderingBy(index)">{{o.text}}</b-dropdown-item>
-          </b-dropdown>
+        <span class="mr-2 grey-neutral">Ordenar por:</span>
+        <div class="d-inline-block font-weight-normal mr-3">
+          <b-form-select class="font-weight-bold input-border" v-model="orderingBy" :options="ordinations"></b-form-select>
         </div>
 
         <b-button variant="none" class="d-inline-block btn-purple">Criar novo curso</b-button>
@@ -55,7 +53,7 @@ export default {
           text: "Mais recentes"
         }
       ],
-      selectedOrderBy: {}
+      orderingBy: "recent"
     }
   },
   beforeMount() {
