@@ -32,7 +32,6 @@ export default {
 <style scoped>
 main {
   flex: 1;
-  padding: 40px 66px;
   height: calc(100vh - 96px);
   overflow: auto;
 }

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="content">
     <h3>Alunos</h3>
     <div>
       <div class="btn-filters">
@@ -135,7 +135,7 @@ export default {
       const isValid = this.filters.email ? re.test(String(this.filters.email).toLowerCase()) : false
       if(isValid) obj.email = this.filters.email;
 
-      const doRequest = ((type && isValid) || !type) ? true : false;
+      const doRequest = ((type && isValid) || !type);
       const query = Object.entries(obj).map(([key, val]) => `${key}=${val}`).join('&');
       if(doRequest){
         this.$axios.$get(`student/all?${query}`).then(response => {

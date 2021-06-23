@@ -22,7 +22,6 @@
       <CourseCard/>
       <CourseCard/>
       <CourseCard/>
-      <CourseCard/>
     </div>
 
   </div>

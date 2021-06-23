@@ -1,6 +1,6 @@
 <template>
-  <div class="p-1">
-    <h1>Autores</h1>
+  <div class="content p-1">
+    <h3>Autores</h3>
 
     <div class="filter-bar lg">
       <b-form-input class="w-50" v-model="nameSearch" placeholder="Pesquisar por nome" @keyup="getAuthors"/>
