@@ -1,21 +1,24 @@
 <template>
-  <div class="content">
-    <div class="welcome-text">Boas vindas, {{user.name.split(' ')[0]}}!</div>
-    <h3> Veja seus cursos</h3>
-    <div class="filter-bar">
-      <FormInput class="position-relative mb-3" placeholder="Pesquise por curso, instrutor ou categoria" :isRequired="true" nameInput="search" size="lg" />
+  <div class="content p-1">
+    <h5>Boas vindas, {{user.name.split(' ')[0]}}!</h5>
+    <h2> Veja seus cursos</h2>
+    <div class="filter-bar mb-3">
+      <FormInput class="position-relative w-50" placeholder="Pesquise por curso, instrutor ou categoria"
+                 :isRequired="true" nameInput="search" size="lg"/>
 
-      <div class="order-by-box mb-3">
-        <label>Ordenar por:</label>
-        <b-dropdown class="order-by-select h-100" :text="selectedOrderBy.text" right toggle-class="btn-menu dropdown-grey w-100">
-          <b-dropdown-item v-for="(o, index) in ordinations" :key="index" @click="orderingBy(index)">{{o.text}}</b-dropdown-item>
-        </b-dropdown>
+      <div class="group-btn-action">
+        <div class="d-inline-block mr-3">
+          <label>Ordenar por:</label>
+          <b-dropdown class="order-by-select" :text="selectedOrderBy.text" right toggle-class="btn-menu dropdown-grey w-100">
+            <b-dropdown-item v-for="(o, index) in ordinations" :key="index" @click="orderingBy(index)">{{o.text}}</b-dropdown-item>
+          </b-dropdown>
+        </div>
+
+        <b-button variant="none" class="d-inline-block btn-purple">Criar novo curso</b-button>
       </div>
-
-      <b-button variant="none" class="d-block btn-purple mb-3">Criar novo curso</b-button>
-
     </div>
     <div class="d-flex flex-wrap mt-5" style="gap: 12px;">
+      <CourseCard/>
       <CourseCard/>
       <CourseCard/>
       <CourseCard/>
@@ -70,20 +73,21 @@ export default {
 <style scoped>
 
 .filter-bar {
-  display: grid;
-  grid-template-columns: 385px 340px 205px;
+  display: inline-flex;
+  width: 100%;
   padding: 24px 0 0;
   justify-content: space-between;
 }
 
-.order-by-box label {
-  font: 14px "Inter Bold";
-  color: #8A8C92;
+.group-btn-action label {
+  font: 14px "Inter Regular";
+  color: #A7A7AB;
 }
 
-.order-by-box .order-by-select {
-  font: 14px "Inter Bold";
-  color: #090E11;
+.group-btn-action .order-by-select {
+  font: 14px "Inter Regular";
+  font-weight: 500;
+  color: #373740;
 }
 
 .welcome-text {

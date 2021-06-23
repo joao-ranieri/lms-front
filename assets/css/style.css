@@ -60,38 +60,34 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 {
-  font-size: 56px;
+  font-size: 36px;
 }
 
 h2 {
-  font-size: 48px;
-}
-
-h3 {
-  font-size: 40px;
-}
-
-h4 {
   font-size: 32px;
 }
 
-h5 {
+h3 {
+  font-size: 28px;
+}
+
+h4 {
   font-size: 24px;
 }
 
+h5 {
+  font-size: 20px;
+}
+
 h6 {
-  font-size: 18px;
+  font-size: 16px;
 }
 
 /* Button settings*/
 .btn {
   font: 14px "Inter Bold";
-  padding: 18px 43px;
+  padding: 12px 12px;
   border-radius: 8px;
-}
-
-.btn.squad {
-  padding: 18px 18px;
 }
 
 .btn-purple,
@@ -99,10 +95,6 @@ h6 {
   border: 2px solid transparent;
   background-color: #89238A;
   color: white;
-}
-
-.btn-purple.squad {
-  padding: 18px 18px;
 }
 
 .btn-purple:hover {
@@ -154,8 +146,8 @@ h6 {
   justify-content: center;
   align-items: center;
   background: white;
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
   border-radius: 8px;
   border: none;
 }
@@ -170,11 +162,18 @@ h6 {
 .dropdown-item {
   display: flex;
   align-items: center;
+  font: 14px "Inter Regular";
+  padding: 6px 10px;
 }
 
 .dropdown-item span {
   margin-right: 12px;
   width: 17px;
+}
+
+.dropdown-item i {
+  width: 16px;
+  height: auto;
 }
 
 .dropdown-menu {
@@ -297,10 +296,10 @@ input.form-control {
   background: #F1F1F2;
   border-radius: 8px;
   font-size: 14px;
-  font-weight: 600;
   line-height: 20px;
+  padding: 12px;
+  height: unset;
   font-family: 'Inter Regular';
-  font-weight: bold;
   border: none;
 }
 
@@ -318,11 +317,6 @@ input.form-control {
 
 :-ms-input-placeholder {
   color: #A7A7AB;
-}
-
-.lg input {
-  padding: 18px 23px;
-  height: 56px;
 }
 
 input.form-control:focus, input.form-control:active {
@@ -348,6 +342,10 @@ input.form-control:focus, input.form-control:active {
 
 .trash-ico {
   content: url("../../assets/img/utils/ico-trash.svg");
+}
+
+.pencil-ico {
+  content: url("../../assets/img/utils/ico-pencil.svg");
 }
 
 .loading-content {

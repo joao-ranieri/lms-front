@@ -13,7 +13,7 @@
     <div class="login-content-box align-self-center">
       <b-card align="left">
         <b-form id="login-form" @submit.prevent="enter">
-          <h3 v-text="formText[formSelected].title"></h3>
+          <h1 v-text="formText[formSelected].title"></h1>
           <small v-if="['login','recover'].includes(formSelected) && !isAdmin && !registeredSuccess">Ainda não tem
             cadastro?
             <a href="#" @click="formControl('new')">Crie sua conta agora</a>
@@ -22,18 +22,18 @@
           <div class="box-form">
             <span v-if="!registeredSuccess">
               <FormInput class="mt-4 position-relative" @value-model="setValue" :isRequired="true"
-                         labelText="Nome completo" nameInput="name" size="lg" v-if="newRegister" :isNew="newRegister"/>
+                         labelText="Nome completo" nameInput="name" v-if="newRegister" :isNew="newRegister"/>
 
               <FormInput class="mt-4 position-relative" :isRequired="true" labelText="CPF"
-                         nameInput="cpf" size="lg" @value-model="setValue" v-if="newRegister" :isNew="newRegister"/>
+                         nameInput="cpf" @value-model="setValue" v-if="newRegister" :isNew="newRegister"/>
 
               <FormInput class="mt-4 position-relative" typeInput="email" :isRequired="true" @value-model="setValue"
                          :labelText="formSelected === 'recover' ? 'Informe o e-mail cadastrado' : 'E-mail'"
-                         :nameInput="newRegister || formSelected === 'recover' ? 'email' : 'username'" size="lg"
+                         :nameInput="newRegister || formSelected === 'recover' ? 'email' : 'username'"
                          :isNew="newRegister"/>
 
               <FormInput class="mt-4 position-relative" typeInput="password" :isRequired="true" labelText="Senha"
-                         nameInput="password" size="lg" v-if="formSelected !== 'recover'" @value-model="setValue"
+                         nameInput="password" v-if="formSelected !== 'recover'" @value-model="setValue"
                          :isNew="newRegister"/>
               <span class="error-login" v-if="notification" v-text="notification"></span>
             </span>
