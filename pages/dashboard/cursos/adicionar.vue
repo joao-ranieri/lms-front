@@ -39,7 +39,7 @@
       </div>
     </div>
 
-    <CourseSideProgressAdd />
+    <CourseSideProgressAdd :itensProgress="itensProgress"/>
 
     <footer>
       <div class="progress-cadastro">
@@ -66,6 +66,38 @@ export default {
       title: "Adicionar Curso - Masters",
     }
   },
+  data(){
+    return {
+      itensProgress: [
+        {
+          title: "Sobre o curso",
+          subItems: [
+            {title: 'Título'},
+            {title: 'Categoria'},
+            {title: 'Autores'},
+            {title: 'Acesso'},
+            {title: 'Imagem'},
+          ],
+        },
+        {
+          title: "Opções do aluno",
+          subItems: [
+            {title: 'Página de suporte'},
+            {title: 'Permissões'},
+            {title: 'Termos e condições'},
+          ],
+        },
+        {
+          title: "Módulos e aulas",
+          subItems: [
+            {title: 'Adicionar módulos'},
+            {title: 'Adicionar aulas'},
+          ],
+        },
+
+      ],
+    }
+  },
 }
 </script>
 
@@ -85,7 +117,8 @@ export default {
 .content-addCurso-form {
   display: block;
   height: 100%;
-  overflow: auto;
+  overflow-y: auto;
+  padding-bottom: 40px;
 }
 
 /* footer */
