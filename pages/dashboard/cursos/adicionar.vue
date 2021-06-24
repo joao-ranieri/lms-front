@@ -63,7 +63,7 @@
       </div>
     </div>
 
-    <CourseSideProgressAdd/>
+    <CourseSideProgressAdd :itensProgress="itensProgress"/>
 
     <footer>
       <div class="progress-cadastro">
@@ -93,7 +93,35 @@ export default {
   },
   data(){
     return {
-      position: 1
+      position: 1,
+      itensProgress: [
+        {
+          title: "Sobre o curso",
+          subItems: [
+            {title: 'Título'},
+            {title: 'Categoria'},
+            {title: 'Autores'},
+            {title: 'Acesso'},
+            {title: 'Imagem'},
+          ],
+        },
+        {
+          title: "Opções do aluno",
+          subItems: [
+            {title: 'Página de suporte'},
+            {title: 'Permissões'},
+            {title: 'Termos e condições'},
+          ],
+        },
+        {
+          title: "Módulos e aulas",
+          subItems: [
+            {title: 'Adicionar módulos'},
+            {title: 'Adicionar aulas'},
+          ],
+        },
+
+      ],
     }
   },
   methods:{
@@ -131,6 +159,7 @@ export default {
   padding-top: 30px;
   height: calc(100% - 16px);
   overflow: auto;
+  padding-bottom: 40px;
 }
 
 .group-inputs-carousel {
