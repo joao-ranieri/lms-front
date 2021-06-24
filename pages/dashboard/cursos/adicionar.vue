@@ -1,13 +1,11 @@
 <template>
   <div class="form-addCurso">
-    <div class="content">
+    <div class="main-form">
       <header>
         <h4>Vamos cadastrar seu novo curso!</h4>
         <span>Primeiro precisamos de alguns dados básicos</span>
       </header>
-    </div>
 
-    <div class="content-addCurso">
       <div class="content-addCurso-form">
         <div>teste</div>
         <div>teste</div>
@@ -39,10 +37,9 @@
         <div>teste</div>
         <div>teste</div>
       </div>
-      <div style="width: 300px">
-        testeee
-      </div>
     </div>
+
+    <CourseSideProgressAdd />
 
     <footer>
       <div class="progress-cadastro">
@@ -75,24 +72,27 @@ export default {
 <style scoped>
 .form-addCurso {
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto;
 }
 
-/* content add */
-.content-addCurso {
-  display: flex;
-  overflow: auto;
+.form-addCurso .main-form {
+  padding: 40px 0 40px 66px;
+  max-height: 100%;
+  overflow: hidden;
 }
 
-.content-addCurso .content-addCurso-form {
-  padding: 0 66px;
+.content-addCurso-form {
+  display: block;
+  height: 100%;
   overflow: auto;
-  flex: 1;
 }
 
 /* footer */
+footer {
+  grid-column: 1/-1;
+}
+
 footer .progress-cadastro {
   background: #F2F2F2;
   width: 100%;
