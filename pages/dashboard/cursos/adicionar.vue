@@ -159,7 +159,6 @@ export default {
   padding-top: 30px;
   height: calc(100% - 16px);
   overflow: auto;
-  padding-bottom: 40px;
 }
 
 .group-inputs-carousel {
