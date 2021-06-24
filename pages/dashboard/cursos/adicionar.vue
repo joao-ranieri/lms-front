@@ -1,14 +1,13 @@
 <template>
   <div class="form-addCurso">
     <div class="main-form">
-      <header>
+      <header style="padding-left: 2px;">
         <h4>Vamos cadastrar seu novo curso!</h4>
         <span class="sub-text-form">Primeiro precisamos de alguns dados básicos</span>
       </header>
 
       <div class="content-addCurso-form overflow-hidden">
         <div class="h-100 position-relative">
-
           <div class="group-inputs-carousel">
             <div :class="['input-step-group', {'active': position === 1}]" v-if="position <= 1">
               <label class="d-block">Como seu curso será chamado?</label>
@@ -61,23 +60,22 @@
           <button class="btn btn-purple pl-4 pr-4 mt-4" @click="nextPosition">Ok</button>
         </div>
       </div>
+
+      <footer>
+        <div class="progress-cadastro">
+          <div class="state-progress" :style="{width: '30%'}"/>
+        </div>
+        <div class="content-footer">
+          <b-button class="d-block" @click="$nuxt.$router.push('/dashboard/cursos')" v-b-tooltip="'Voltar'">
+            Voltar
+          </b-button>
+          <b-button class="d-block btn-rounded-purple" v-b-tooltip="'Salvar rascunho'">
+            Salvar rascunho
+          </b-button>
+        </div>
+      </footer>
     </div>
-
     <CourseSideProgressAdd :itensProgress="itensProgress"/>
-
-    <footer>
-      <div class="progress-cadastro">
-        <div class="state-progress" :style="{width: '30%'}"/>
-      </div>
-      <div class="content-footer">
-        <b-button class="d-block" @click="$nuxt.$router.push('/dashboard/cursos')" v-b-tooltip="'Voltar'">
-          Voltar
-        </b-button>
-        <b-button class="d-block btn-rounded-purple" v-b-tooltip="'Salvar rascunho'">
-          Salvar rascunho
-        </b-button>
-      </div>
-    </footer>
   </div>
 </template>
 
@@ -127,7 +125,7 @@ export default {
   methods:{
     nextPosition(){
       this.position += 1;
-      if(this.position === 5) {
+      if(this.position === 6) {
         this.position = 1;
       }
     }
@@ -157,8 +155,7 @@ export default {
   display: grid;
   grid-template-columns: 1fr 152px;
   padding-top: 30px;
-  height: calc(100% - 16px);
-  overflow: auto;
+  height: calc(100% - 121px);
 }
 
 .group-inputs-carousel {
@@ -169,10 +166,12 @@ export default {
 
 .group-inputs-carousel .input-step-group {
   position: relative;
+  z-index: -1;
 }
 
 .group-inputs-carousel .input-step-group.active {
   position: absolute;
+  padding-left: 2px;
   width: 100%;
   top: calc(-100vh + 391px);
 }
@@ -185,13 +184,12 @@ export default {
   padding: 32px;
 }
 
-
-
 /* footer */
 footer {
   grid-column: 1/-1;
-  z-index: 1;
-  box-shadow: 18px -13px 20px 5px rgb(255 255 255);
+  z-index: 5;
+  box-shadow: -19px -20px 20px 5px rgb(255 255 255);
+  height: 108px;
 }
 
 footer .progress-cadastro {

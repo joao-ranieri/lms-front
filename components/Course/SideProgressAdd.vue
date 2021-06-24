@@ -15,7 +15,7 @@
 <script>
 export default {
   props: {
-    itensProgress: {type: String}
+    itensProgress: {type: Array}
   },
 }
 </script>

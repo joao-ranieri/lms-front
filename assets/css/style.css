@@ -333,6 +333,7 @@ input.input-border {
 }
 
 input.form-control:focus, input.form-control:active {
+  border: none;
   box-shadow: 0 0 0 2px #89238A;
 }
 
