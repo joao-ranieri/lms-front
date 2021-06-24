@@ -335,6 +335,10 @@ input.input-border {
 input.form-control:focus, input.form-control:active {
   box-shadow: 0 0 0 2px #89238A;
 }
+
+select.select-arrow {
+  background: url("assets/img/utils/ico-arrow-dropdown-grey.svg") no-repeat 93% 19px;
+}
 /* End */
 
 /*Pagination*/
@@ -346,7 +350,6 @@ input.form-control:focus, input.form-control:active {
 .grey-neutral {
   color: #A7A7AB;
 }
-
 
 /* Icons */
 .share-ico {

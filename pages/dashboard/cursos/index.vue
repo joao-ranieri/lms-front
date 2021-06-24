@@ -2,25 +2,25 @@
   <div class="content">
     <!-- <h5>Boas vindas, {{user.name.split(' ')[0]}}!</h5> -->
     <h2> Veja seus cursos</h2>
-    <div class="filter-bar mb-3">
-      <FormInput class="position-relative w-50" placeholder="Pesquise por curso, instrutor ou categoria"
-                 :isRequired="true" nameInput="search" size="lg"/>
+
+    <div class="filter-bar">
+      <b-form-group class="search-input">
+        <b-form-input class="input-border" v-model="search" type="text"
+                      placeholder="Pesquise por curso, instrutor ou categoria" />
+      </b-form-group>
 
       <div class="group-btn-action">
         <span class="mr-2 grey-neutral">Ordenar por:</span>
-        <div class="d-inline-block font-weight-normal mr-3">
-          <b-form-select class="font-weight-bold input-border" v-model="orderingBy" :options="ordinations"></b-form-select>
+        <div class="d-inline-block font-weight-normal mr-4" style="width: 204px">
+          <b-form-select class="font-weight-bold input-border select-arrow" v-model="orderBy" :options="ordinations"></b-form-select>
         </div>
 
-        <b-button
-          variant="none"
-          class="d-inline-block btn-purple"
-          @click="$nuxt.$router.push('/dashboard/cursos/adicionar')">
+        <b-button variant="none" class="d-inline-block btn-purple" @click="$nuxt.$router.push('/dashboard/cursos/adicionar')">
           Criar novo curso
         </b-button>
       </div>
     </div>
-    <div class="d-flex flex-wrap mt-5" style="gap: 12px;">
+    <div class="d-flex flex-wrap" style="gap: 20px;">
       <CourseCard/>
       <CourseCard/>
       <CourseCard/>
@@ -58,7 +58,8 @@ export default {
           text: "Mais recentes"
         }
       ],
-      orderingBy: "recent"
+      orderBy: "recent",
+      search: null
     }
   },
   beforeMount() {
@@ -79,6 +80,23 @@ export default {
   width: 100%;
   padding: 24px 0 0;
   justify-content: space-between;
+  margin-bottom: 40px;
+}
+
+.search-input {
+  position: relative;
+  width: 370px;
+}
+
+.search-input input {
+  padding-right: 35px;
+}
+
+.search-input:after {
+  position: absolute;
+  content: url("assets/img/utils/ico-search.svg");
+  top: 11px;
+  right: 14.65px;
 }
 
 .group-btn-action label {

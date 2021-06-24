@@ -102,7 +102,7 @@ export default {
 
 .card:hover .card-img {
   filter: blur(.75px);
-  transform: scale(1.1);
+  transform: scale(1.025);
 }
 
 .menu-card {
