@@ -88,17 +88,6 @@ export default {
   width: 370px;
 }
 
-.search-input input {
-  padding-right: 35px;
-}
-
-.search-input:after {
-  position: absolute;
-  content: url("assets/img/utils/ico-search.svg");
-  top: 11px;
-  right: 14.65px;
-}
-
 .group-btn-action label {
   font: 14px "Inter Regular";
   color: #A7A7AB;

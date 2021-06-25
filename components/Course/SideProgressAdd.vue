@@ -22,7 +22,7 @@ export default {
 
 <style scoped>
 .side-progress {
-  max-width: 220px;
+  width: 220px;
   padding: 24px;
   overflow-y: scroll;
   background: #FBFBFB;

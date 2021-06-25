@@ -89,10 +89,11 @@ h6 {
 }
 
 /* Button settings*/
-.btn {
+.btn, .btn:hover, .btn:active {
   font: 14px "Inter Bold";
   padding: 12px 12px;
   border-radius: 8px;
+  box-shadow: none !important;
 }
 
 .btn-purple,
@@ -100,6 +101,7 @@ h6 {
   border: 2px solid transparent;
   background-color: #89238A;
   color: white;
+
 }
 
 .btn-purple:hover {
@@ -115,10 +117,13 @@ h6 {
 }
 
 .btn-rounded-purple,
+.btn-rounded-purple:focus,
 .btn-rounded-purple:active {
   border: 2px solid #89238A;
   background-color: transparent;
   color: #89238A;
+  outline: none;
+  box-shadow: none;
 }
 
 .btn-rounded-purple:hover {
@@ -137,12 +142,21 @@ h6 {
   border: 1px solid transparent;
   background-color: #F1F1F2;
   color: #525359;
+  box-shadow: none;
 }
 
 .btn-grey:hover {
   border: 1px solid transparent;
   background-color: #525359;
   filter: brightness(120%);
+}
+
+.btn-search, btn-search:active {
+  width: 44px;
+  height: 44px;
+  background: #FBFBFB;
+  border: 1px solid #F2F2F2;
+  color: #828287;
 }
 
 /*Icon toggle Courses*/
@@ -333,8 +347,8 @@ input.input-border {
 }
 
 input.form-control:focus, input.form-control:active {
-  border: none;
-  box-shadow: 0 0 0 2px #89238A;
+  border: 1px solid #89238A;;
+  box-shadow: 0 0 0 1px #89238A;
 }
 
 select.select-arrow {
@@ -382,6 +396,17 @@ select.select-arrow {
   display: block;
   text-align: center;
   padding: 150px 0 200px;
+}
+
+.search-input input {
+  padding-right: 35px;
+}
+
+.search-input:after {
+  position: absolute;
+  content: url("assets/img/utils/ico-search.svg");
+  top: 11px;
+  right: 14.65px;
 }
 
 @media (max-width: 640px) {

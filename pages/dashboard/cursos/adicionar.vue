@@ -10,41 +10,40 @@
         <div class="h-100 position-relative">
           <div class="group-inputs-carousel">
             <div :class="['input-step-group', {'active': position === 1}]" v-if="position <= 1">
-              <label class="d-block">Como seu curso será chamado?</label>
-              <b-form-group class="search-input">
-                <b-form-input class="input-border" type="text"
-                              placeholder="Tran Mau Tri Tam"/>
-              </b-form-group>
+                <label class="d-block">Como seu curso será chamado?</label>
+                <b-form-group>
+                  <b-form-input v-model="course.name" class="input-border" type="text" @keyup="validate(course.name)"
+                                placeholder="Tran Mau Tri Tam"/>
+                </b-form-group>
             </div>
 
             <div :class="['input-step-group', {'active': position === 2}]" v-if="position <= 2">
               <label class="d-block">Em qual categoria ele se encaixa?</label>
-              <b-form-group class="search-input">
-                <b-form-input class="input-border" type="text" placeholder="Selecione uma categoria"/>
-              </b-form-group>
+              <FormSelectSearch @return-selection="setCategory"/>
             </div>
 
             <div :class="['input-step-group', {'active': position === 3}]" v-if="position <= 3">
               <label class="d-block">Quem criou esse curso?</label>
-              <b-form-group class="search-input">
-                <b-form-input class="input-border" type="text" placeholder="Selecione os autores"/>
+              <b-form-group>
+                <b-form-input v-model="course.author" class="input-border" type="text" @change="validate(course.author)"
+                              placeholder="Selecione os autores"/>
               </b-form-group>
             </div>
 
             <div :class="['input-step-group', {'active': position === 4}]" v-if="position <= 4">
               <label class="d-block">Qual o tipo de acesso desse curso?</label>
               <b-form-group>
-                <b-form-radio name="some-radios" value="P"><strong>Pago -</strong> é necessário o pagamento para liberar
+                <b-form-radio name="some-radios" value="P" v-model="course.accessType" @change="validate(course.accessType)"><strong>Pago -</strong> é necessário o pagamento para liberar
                   acesso
                 </b-form-radio>
-                <b-form-radio name="some-radios" value="F"><strong>Gratuito -</strong> é necessário apenas o cadastro para
+                <b-form-radio name="some-radios" value="F" v-model="course.accessType" @change="validate(course.accessType)"><strong>Gratuito -</strong> é necessário apenas o cadastro para
                   liberar acesso
                 </b-form-radio>
               </b-form-group>
             </div>
 
             <div style="width: 572px" :class="['input-step-group', 'd-flex', {'active': position === 5}]" v-if="position <= 5">
-              <UtilsDropImage/>
+              <UtilsDropImage @send-image="validate"/>
               <div class="box-info-image ml-3">
                 <h6 class="grey-neutral-6">Escolha a imagem de capa do seu curso</h6>
                 <span class="d-block grey-neutral">
@@ -54,10 +53,10 @@
               </div>
             </div>
           </div>
-        </div>
 
-        <div class="pl-3">
-          <button class="btn btn-purple pl-4 pr-4 mt-4" @click="nextPosition">Ok</button>
+          <div style="position: relative; right: -588px; top: 1px">
+            <button class="btn btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok</button>
+          </div>
         </div>
       </div>
 
@@ -92,6 +91,14 @@ export default {
   data(){
     return {
       position: 1,
+      isDisabled: true,
+      course:{
+        name: null,
+        category: null,
+        author: '',
+        accessType: null,
+        image: null
+      },
       itensProgress: [
         {
           title: "Sobre o curso",
@@ -125,9 +132,24 @@ export default {
   methods:{
     nextPosition(){
       this.position += 1;
+      this.isDisabled = true;
       if(this.position === 6) {
         this.position = 1;
       }
+    },
+    validate(value) {
+      if(value.length > 0) {
+        this.isDisabled = false;
+      }
+    },
+    setCategory(value) {
+      this.course.category = value;
+
+      if(value){
+        this.isDisabled = false;
+      }
+      console.log(value)
+      console.log(this.course.category)
     }
   }
 }
@@ -152,28 +174,31 @@ export default {
 }
 
 .content-addCurso-form {
-  display: grid;
-  grid-template-columns: 1fr 152px;
+  display: block;
   padding-top: 30px;
   height: calc(100% - 121px);
 }
 
 .group-inputs-carousel {
   position: absolute;
-  bottom: -138px;
-  height: 200px;
+  bottom: 54px;
+  height: 100px;
+  max-width: 572px;
+  width: 100%;
 }
 
 .group-inputs-carousel .input-step-group {
   position: relative;
+  transition: .3s all;
+  padding-left: 2px;
   z-index: -1;
 }
 
 .group-inputs-carousel .input-step-group.active {
-  position: absolute;
-  padding-left: 2px;
+  align-items: center;
   width: 100%;
-  top: calc(-100vh + 391px);
+  z-index: 1;
+  top: calc(-100vh + 483px);
 }
 
 .group-inputs-carousel .box-info-image {

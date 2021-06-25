@@ -43,7 +43,7 @@ export default {
       }).then(response => {
         image = response;
       }).finally(()=>{
-        // this.$emit('send-image', image)
+        this.$emit('send-image', image)
       })
     },
   }
