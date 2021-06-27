@@ -19,20 +19,17 @@
 
             <div :class="['input-step-group', {'active': position === 2}]" v-if="position <= 2">
               <label class="d-block">Em qual categoria ele se encaixa?</label>
-              <FormSelectSearch @return-selection="setCategory"/>
+              <FormSelectSearch v-if="categoriesList" :items="categoriesList" type="categories" @return-selection="setProperty"/>
             </div>
 
             <div :class="['input-step-group', {'active': position === 3}]" v-if="position <= 3">
               <label class="d-block">Quem criou esse curso?</label>
-              <b-form-group>
-                <b-form-input v-model="course.author" class="input-border" type="text" @change="validate(course.author)"
-                              placeholder="Selecione os autores"/>
-              </b-form-group>
+              <FormSelectSearch v-if="authorList" :items="authorList" type="author" @return-selection="setProperty"/>
             </div>
 
             <div :class="['input-step-group', {'active': position === 4}]" v-if="position <= 4">
               <label class="d-block">Qual o tipo de acesso desse curso?</label>
-              <b-form-group>
+              <b-form-group class="radio-style">
                 <b-form-radio name="some-radios" value="P" v-model="course.accessType" @change="validate(course.accessType)"><strong>Pago -</strong> é necessário o pagamento para liberar
                   acesso
                 </b-form-radio>
@@ -43,7 +40,7 @@
             </div>
 
             <div style="width: 572px" :class="['input-step-group', 'd-flex', {'active': position === 5}]" v-if="position <= 5">
-              <UtilsDropImage @send-image="validate"/>
+              <UtilsDropImage @send-image="setProperty"/>
               <div class="box-info-image ml-3">
                 <h6 class="grey-neutral-6">Escolha a imagem de capa do seu curso</h6>
                 <span class="d-block grey-neutral">
@@ -68,9 +65,17 @@
           <b-button class="d-block" @click="$nuxt.$router.push('/dashboard/cursos')" v-b-tooltip="'Voltar'">
             Voltar
           </b-button>
-          <b-button class="d-block btn-rounded-purple" v-b-tooltip="'Salvar rascunho'">
-            Salvar rascunho
-          </b-button>
+
+          <div>
+            <b-button class="btn-rounded-purple mr-3" v-b-tooltip="'Salvar rascunho'">
+              Salvar rascunho
+            </b-button>
+
+            <b-button class="btn-purple" v-b-tooltip="'Publicar curso'" :disabled="position < 5 || isDisabled">
+              Publicar curso
+            </b-button>
+          </div>
+
         </div>
       </footer>
     </div>
@@ -92,12 +97,38 @@ export default {
     return {
       position: 1,
       isDisabled: true,
+      categoriesList: [
+        {name: 'Item 1', selected: false},
+        {name: 'Item 2', selected: false},
+        {name: 'Item 3', selected: false},
+        {name: 'Item 4', selected: false},
+        {name: 'Item 5', selected: false},
+        {name: 'Item 6', selected: false},
+        {name: 'Item 7', selected: false},
+        {name: 'Item 8', selected: false},
+        {name: 'Item 9', selected: false},
+        {name: 'Item 10', selected: false},
+        {name: 'Item 11', selected: false},
+      ],
+      authorList: [
+        {name: 'Item 1', selected: false},
+        {name: 'Item 2', selected: false},
+        {name: 'Item 3', selected: false},
+        {name: 'Item 4', selected: false},
+        {name: 'Item 5', selected: false},
+        {name: 'Item 6', selected: false},
+        {name: 'Item 7', selected: false},
+        {name: 'Item 8', selected: false},
+        {name: 'Item 9', selected: false},
+        {name: 'Item 10', selected: false},
+        {name: 'Item 11', selected: false},
+      ],
       course:{
         name: null,
-        category: null,
-        author: '',
+        categories: [],
+        author: [],
         accessType: null,
-        image: null
+        image: null,
       },
       itensProgress: [
         {
@@ -142,14 +173,15 @@ export default {
         this.isDisabled = false;
       }
     },
-    setCategory(value) {
-      this.course.category = value;
+    setProperty(value) {
+      this.course[value.prop] = value.collection ? value.collection : value.item;
 
-      if(value){
+      if(this.course[value.prop] && this.course[value.prop].length > 0){
         this.isDisabled = false;
       }
-      console.log(value)
-      console.log(this.course.category)
+      else {
+        this.isDisabled = true;
+      }
     }
   }
 }

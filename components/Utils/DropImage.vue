@@ -15,7 +15,7 @@
 
     <div v-if="imageURL" class="actions-group size-default">
       <button type="button" class="mb-3 mr-3" @click="$refs.fileInput.click()" v-b-tooltip="'Editar'"><i class="pencil-ico"></i></button>
-      <button type="button" class="mb-3" @click="imageURL = null" v-b-tooltip="'Remover'"><i class="trash-ico"></i></button>
+      <button type="button" class="mb-3" @click="removeImage" v-b-tooltip="'Remover'"><i class="trash-ico"></i></button>
     </div>
 
   </div>
@@ -43,9 +43,13 @@ export default {
       }).then(response => {
         image = response;
       }).finally(()=>{
-        this.$emit('send-image', image)
+        this.$emit('send-image', {prop: 'image', item: image})
       })
     },
+    removeImage(){
+      this.imageURL = null;
+      this.$emit('send-image', {prop: 'image', item: null})
+    }
   }
 }
 </script>
