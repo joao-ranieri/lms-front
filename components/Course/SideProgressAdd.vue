@@ -1,12 +1,17 @@
 <template>
   <div class="side-progress">
     <div v-for="(item, index) in itensProgress" :key="index">
-      <div class="title-item">
+      <div @click="$emit('change-input', {indexItem: index, indexSubItem: null})"
+        :class="['title-item', {'active': item.isActive}]">
         <span>{{index + 1}}</span>
         <span>{{ item.title }}</span>
       </div>
-      <ul v-for="(subItem, index) in item.subItems" :key="index">
-        <li>{{subItem.title}}</li>
+      <ul v-for="(subItem, indexSub) in item.subItems" :key="indexSub">
+        <li @click="$emit('change-input', {indexItem: index, indexSubItem: indexSub})"
+          :class="[{'done': subItem.isDone},{'active': item.subItemActive === subItem.title}]">
+          <img v-if="subItem.isDone" :src="require('/assets/img/utils/checked-gray.svg')" alt="">
+          {{subItem.title}}
+        </li>
       </ul>
     </div>
   </div>
@@ -15,7 +20,7 @@
 <script>
 export default {
   props: {
-    itensProgress: {type: Array}
+    itensProgress: {type: Array},
   },
 }
 </script>
@@ -36,7 +41,14 @@ export default {
   font-size: 14px;
   line-height: 20px;
   color: #828287;
-  margin-bottom: 25px;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.side-progress .title-item:hover {
+  background: #F2F2F2;
 }
 
 .side-progress .title-item span:nth-child(1) {
@@ -53,6 +65,7 @@ export default {
 
 .side-progress ul {
   padding: 0;
+  margin: 3px 0;
   list-style: none;
   color: #828287;
   font-size: 12px;
@@ -61,8 +74,16 @@ export default {
 .side-progress ul li {
   display: flex;
   align-items: center;
-  margin-left: 16px;
-  margin-bottom: 25px;
+  min-height: 40px;
+  margin: 0;
+  padding: 8px 0 8px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.side-progress ul li:hover {
+  background: #F2F2F2;
 }
 
 .side-progress ul li::before {
@@ -73,6 +94,14 @@ export default {
   box-sizing: border-box;
   border-radius: 50%;
   margin-right: 16px;
+}
+
+.side-progress ul li.done img {
+  margin-right: 10px;
+}
+
+.side-progress ul li.done::before {
+  display: none;
 }
 
 /* active */

@@ -74,7 +74,9 @@
         </div>
       </footer>
     </div>
-    <CourseSideProgressAdd :itensProgress="itensProgress"/>
+    <CourseSideProgressAdd
+      @change-input="changeInputProgress"
+      :itensProgress="itensProgress"/>
   </div>
 </template>
 
@@ -102,27 +104,33 @@ export default {
       itensProgress: [
         {
           title: "Sobre o curso",
+          isActive: true,
+          subItemActive: "Título",
           subItems: [
-            {title: 'Título'},
-            {title: 'Categoria'},
-            {title: 'Autores'},
-            {title: 'Acesso'},
-            {title: 'Imagem'},
+            {title: 'Título', isDone: false},
+            {title: 'Categoria', isDone: false},
+            {title: 'Autores', isDone: false},
+            {title: 'Acesso', isDone: false},
+            {title: 'Imagem', isDone: false},
           ],
         },
         {
           title: "Opções do aluno",
+          isActive: false,
+          subItemActive: null,
           subItems: [
-            {title: 'Página de suporte'},
-            {title: 'Permissões'},
-            {title: 'Termos e condições'},
+            {title: 'Página de suporte', isDone: false},
+            {title: 'Permissões', isDone: false},
+            {title: 'Termos e condições', isDone: false},
           ],
         },
         {
           title: "Módulos e aulas",
+          isActive: false,
+          subItemActive: null,
           subItems: [
-            {title: 'Adicionar módulos'},
-            {title: 'Adicionar aulas'},
+            {title: 'Adicionar módulos', isDone: false},
+            {title: 'Adicionar aulas', isDone: false},
           ],
         },
 
@@ -150,6 +158,27 @@ export default {
       }
       console.log(value)
       console.log(this.course.category)
+    },
+    changeInputProgress(e) {
+      this.itensProgress.forEach((item, index) => {
+        if(index === e.indexItem) {
+          this.itensProgress[e.indexItem].isActive = true;
+
+          if(e.indexSubItem){
+            this.itensProgress[e.indexItem].subItems.forEach((subItem, indexSub) => {
+              if(indexSub === e.indexSubItem) {
+                this.itensProgress[e.indexItem].subItemActive = subItem.title;
+                this.itensProgress[e.indexItem].subItems[indexSub].isDone = false
+              }
+            });
+          } else {
+            this.itensProgress[e.indexItem].subItemActive = this.itensProgress[e.indexItem].subItems[0].title;
+          }
+        } else {
+          this.itensProgress[index].isActive = false,
+          this.itensProgress[index].subItemActive = null;
+        }
+      });
     }
   }
 }
