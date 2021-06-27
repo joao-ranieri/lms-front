@@ -2,13 +2,13 @@
   <div class="form-addCurso">
     <div class="main-form">
       <header style="padding-left: 2px;">
-        <h4>Vamos cadastrar seu novo curso!</h4>
-        <span class="sub-text-form">Primeiro precisamos de alguns dados básicos</span>
+        <h4 v-text="title"></h4>
+        <span class="sub-text-form" v-text="subtitle"></span>
       </header>
 
       <div class="content-addCurso-form overflow-hidden">
         <div class="h-100 position-relative">
-          <div class="group-inputs-carousel">
+          <div class="group-inputs-carousel" v-if="step === 1">
             <div :class="['input-step-group', {'active': position === 1}]" v-if="position <= 1">
                 <label class="d-block">Como seu curso será chamado?</label>
                 <b-form-group>
@@ -20,6 +20,53 @@
             <div :class="['input-step-group', {'active': position === 2}]" v-if="position <= 2">
               <label class="d-block">Em qual categoria ele se encaixa?</label>
               <FormSelectSearch v-if="categoriesList" :items="categoriesList" type="categories" @return-selection="setProperty"/>
+            </div>
+
+            <div :class="['input-step-group', {'active': position === 3}]" v-if="position <= 3">
+              <label class="d-block">Quem criou esse curso?</label>
+              <FormSelectSearch v-if="authorList" :items="authorList" type="author" @return-selection="setProperty"/>
+            </div>
+
+            <div :class="['input-step-group', {'active': position === 4}]" v-if="position <= 4">
+              <label class="d-block">Qual o tipo de acesso desse curso?</label>
+              <b-form-group class="radio-style">
+                <b-form-radio name="some-radios" value="P" v-model="course.accessType" @change="validate(course.accessType)"><strong>Pago -</strong> é necessário o pagamento para liberar
+                  acesso
+                </b-form-radio>
+                <b-form-radio name="some-radios" value="F" v-model="course.accessType" @change="validate(course.accessType)"><strong>Gratuito -</strong> é necessário apenas o cadastro para
+                  liberar acesso
+                </b-form-radio>
+              </b-form-group>
+            </div>
+
+            <div style="width: 572px" :class="['input-step-group', 'd-flex', {'active': position === 5}]" v-if="position <= 5">
+              <UtilsDropImage @send-image="setProperty"/>
+              <div class="box-info-image ml-3">
+                <h6 class="grey-neutral-6">Escolha a imagem de capa do seu curso</h6>
+                <span class="d-block grey-neutral">
+                Essa será imagem aparecerá como capa no catálogo de cursos. <br><br><br>
+                Use uma imagem de alta qualidade, em formato vertical e com <strong>dimensão mínima de 300x400 pixels</strong> para garantir uma boa visualização.
+              </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="group-inputs-carousel" v-if="step === 2">
+            <div :class="['input-step-group', {'active': position === 1}]" v-if="position <= 1">
+              <label class="d-block">O curso possui alguma Central de Ajuda ou página de Suporte?</label>
+              <b-form-group>
+                <b-form-input v-model="course.name" class="input-border" type="text" @keyup="validate(course.name)"
+                              placeholder="Insira o link da página de ajuda"/>
+              </b-form-group>
+              <label class="d-block mt-2">Se não houver, você pode pular essa etapa.</label>
+            </div>
+
+            <div :class="['input-step-group', {'active': position === 2}]" v-if="position <= 2">
+              <label class="d-block">No seu curso, os alunos podem:</label>
+              <b-form-group class="checkbox-style">
+                <b-form-checkbox-group :options="permissionOptions">
+                </b-form-checkbox-group>
+              </b-form-group>
             </div>
 
             <div :class="['input-step-group', {'active': position === 3}]" v-if="position <= 3">
@@ -96,6 +143,9 @@ export default {
   data(){
     return {
       position: 1,
+      step: 1,
+      title: 'Vamos cadastrar seu novo curso!',
+      subtitle: 'Primeiro precisamos de alguns dados básicos',
       isDisabled: true,
       categoriesList: [
         {name: 'Item 1', selected: false},
@@ -122,6 +172,12 @@ export default {
         {name: 'Item 9', selected: false},
         {name: 'Item 10', selected: false},
         {name: 'Item 11', selected: false},
+      ],
+      permissionOptions: [
+        { text: 'Marcar aula como assistida', value: 'M' },
+        { text: 'Acessar simultâneamente por mais de um dispositivo', value: 'A' },
+        { text: 'Ver o progresso do curso em porcentagem e quantidade de aulas concluídas', value: 'V' },
+        { text: 'Emitir certificado automaticamente', value: 'C' }
       ],
       course:{
         name: null,
@@ -165,7 +221,11 @@ export default {
       this.position += 1;
       this.isDisabled = true;
       if(this.position === 6) {
+        this.title = 'Legal! Agora algumas configurações avançadas';
+        this.subtitle = 'Vamos configurar algumas opções para os seus alunos';
+        this.step = 2;
         this.position = 1;
+        this.isDisabled = false;
       }
     },
     validate(value) {

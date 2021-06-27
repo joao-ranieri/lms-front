@@ -426,14 +426,20 @@ select.select-arrow {
 }
 
 /* Radio button */
-.radio-style .custom-control {
+.radio-style .custom-control,
+.checkbox-style .custom-control {
   padding: 12px 38px;
   background: #FBFBFB;
   margin-bottom: 8px;
   font-size: 14px;
 }
 
-.radio-style .custom-control-label  {
+.checkbox-style .custom-control {
+  display: block;
+}
+
+.radio-style .custom-control-label,
+.checkbox-style .custom-control-label  {
   font-size: 14px;
 }
 
