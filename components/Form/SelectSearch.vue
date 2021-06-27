@@ -1,29 +1,26 @@
 <template>
   <div :class="['collect-items', {isOpened}]">
-    <div class="selected-items" @click="isOpened = true">{{selected ? selected : 'Selecione uma categoria'}}</div>
+    <div class="selected-items" @click="isOpened = true">
+      <span class="item" v-for="(item, index) in collection" :key="index" @click="selectItem(item)">
+        <img v-if="type === 'author'" :src="require('@/assets/img/course-test/img-author.svg')" alt="">{{item.name}}
+      </span>
+    </div>
 
     <div class="search-items" v-if="isOpened">
       <div class="d-flex align-items-center">
         <b-form-group class="position-relative d-inline-block w-100 mb-0 search-input">
           <b-form-input v-model="search" class="input-border search-input w-100" type="text" @keyup="filter(search)"
-                        placeholder="Tran Mau Tri Tam"/>
+                        placeholder="Pesquisar"/>
         </b-form-group>
         <button class="btn btn-search ml-2">+</button>
       </div>
 
       <div class="list-data">
-        <span class="item-list" @click="selectItem('Items')">Items</span>
-        <span class="item-list" @click="selectItem('Items')">Items</span>
-        <span class="item-list" @click="selectItem('Items')">Items</span>
-        <span class="item-list" @click="selectItem('Items')">Items</span>
-        <span class="item-list" @click="selectItem('Items')">Items</span>
-        <span class="item-list" @click="selectItem('Items')">Items</span>
-        <span class="item-list" @click="selectItem('Items')">Items</span>
-        <span class="item-list" @click="selectItem('Items')">Items</span>
-        <span class="item-list" @click="selectItem('Items')">Items</span>
-        <span class="item-list" @click="selectItem('Items')">Items</span>
+        <span v-for="(item, index) in filtered" :key="index" @click="selectItem(item)"
+              :class="['item-list', {'selected': item.selected}]">
+          <img v-if="type === 'author'" :src="require('@/assets/img/course-test/img-author.svg')">{{item.name}}
+        </span>
       </div>
-
 
     </div>
   </div>
@@ -31,22 +28,51 @@
 
 <script>
 export default {
+  props:{
+    type: {type: String, required:true},
+    items: {type: Array, default:[]}
+  },
   data(){
     return {
       search: null,
       isOpened: false,
-      selected: ''
+      collection: [],
+      filtered: [],
     }
   },
   methods: {
-    filter(value){
+    filter(text){
+      if(this.search){
+        this.filtered = this.items.filter(item =>{
+          if(item.name.includes(text)){
 
+          }
+          return item.name.includes(text);
+        });
+      }
+      else {
+        this.filtered = [...this.items];
+      }
     },
-    selectItem(value){
+    selectItem(item){
+      let index = this.collection.indexOf(item);
+
+      if(this.collection.length > 0 && index > -1) {
+        this.collection.splice(index, 1);
+        item.selected = false;
+      }
+      else {
+        item.selected = true;
+        this.collection.push(item);
+        item.selected = true;
+      }
+
       this.isOpened = false;
-      this.selected = value;
-      this.$emit('return-selection', value);
+      this.$emit('return-selection', {prop: this.type, collection: this.collection});
     }
+  },
+  mounted() {
+    this.filtered = [...this.items];
   }
 }
 </script>
@@ -64,7 +90,21 @@ export default {
 
 .selected-items {
   height: 44px;
-  padding: 12px 16px;
+  padding: 7px 6px;
+}
+
+.item {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  background: #F2F2F2;
+  border-radius: 4px;
+  font: 12px "Inter Regular";
+  padding: 0px 8px;
+  margin-right: 4px;
+  color: #5C5C64;
+  height: 32px;
+  line-height: 12px;
 }
 
 .collect-items.isOpened {
@@ -79,7 +119,7 @@ export default {
   border-radius: 8px;
   position: absolute;
   top: 48px;
-  padding: 16px;
+  padding: 6px;
   width: 100%;
 }
 
@@ -94,6 +134,27 @@ export default {
   cursor: pointer;
   display: block;
   line-height: 20px;
-  margin-bottom: 24px;
+  margin-bottom: 8px;
+  padding: 8px;
+  color: #373740;
+}
+
+.item-list.selected {
+  background: #FBFBFB;
+}
+
+.item-list.selected:after {
+  content: url("../../assets/img/utils/check-grey.svg");
+  position: absolute;
+  right: 9px;
+}
+
+.item img,
+.item-list img {
+  position: relative;
+  margin-right: 8px;
+  border-radius: 2px;
+  width: 24px;
+  height: 24px;
 }
 </style>

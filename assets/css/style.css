@@ -424,3 +424,51 @@ select.select-arrow {
   }
 
 }
+
+/* Radio button */
+.radio-style .custom-control,
+.checkbox-style .custom-control {
+  padding: 12px 38px;
+  background: #FBFBFB;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.checkbox-style .custom-control {
+  display: block;
+}
+
+.radio-style .custom-control-label,
+.checkbox-style .custom-control-label  {
+  font-size: 14px;
+}
+
+.radio-style .custom-control-label::before {
+  top: -1px;
+  left: -30px;
+  width: 20px;
+  height: 20px;
+}
+
+.radio-style .custom-control-label::after {
+  top: 3px;
+  left: -26px;
+  width: 10px;
+  height: 10px;
+  content: "";
+  background: unset;
+}
+
+.radio-style .custom-control-input:focus ~ .custom-control-label::before {
+  box-shadow: unset;
+}
+
+.radio-style .custom-control-input:checked ~ .custom-control-label::before {
+  color: #fff;
+  border-color: #89238A;
+  background-color: #89238A;
+}
+
+.radio-style .custom-control-input:checked ~ .custom-control-label {
+  color: #89238A;;
+}
