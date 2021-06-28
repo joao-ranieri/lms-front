@@ -30,8 +30,10 @@ export default {
   },
   methods:{
     async setImage(e) {
-      this.imageURL = window.URL.createObjectURL(e.dataTransfer.files[0]);
-      await this.toBase64(e.dataTransfer.files[0]);
+      let img = e.dataTransfer ? e.dataTransfer.files[0] : e.target.files[0];
+
+      this.imageURL = window.URL.createObjectURL(img);
+      await this.toBase64(img);
     },
     toBase64 (file) {
       let image;

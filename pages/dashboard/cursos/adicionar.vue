@@ -55,7 +55,7 @@
             <div :class="['input-step-group', {'active': position === 1}]" v-if="position <= 1">
               <label class="d-block">O curso possui alguma Central de Ajuda ou página de Suporte?</label>
               <b-form-group>
-                <b-form-input v-model="course.name" class="input-border" type="text" @keyup="validate(course.name)"
+                <b-form-input v-model="course.link" class="input-border" type="text"
                               placeholder="Insira o link da página de ajuda"/>
               </b-form-group>
               <label class="d-block mt-2">Se não houver, você pode pular essa etapa.</label>
@@ -64,42 +64,39 @@
             <div :class="['input-step-group', {'active': position === 2}]" v-if="position <= 2">
               <label class="d-block">No seu curso, os alunos podem:</label>
               <b-form-group class="checkbox-style">
-                <b-form-checkbox-group :options="permissionOptions">
+                <b-form-checkbox-group v-model="course.permissions" :options="permissionOptions" @change="validate(course.permissions)">
                 </b-form-checkbox-group>
+
+                <label class="d-block" v-if="course.permissions.includes('C')">Quanto precisa ser concluído para emissão do certificado?</label>
+                <b-form-group v-if="course.permissions.includes('C')">
+                  <b-form-input v-model="course.percent" class="input-border" type="text" @keyup="validate(course.percent)"
+                                placeholder="Insira uma porcentagem"/>
+                </b-form-group>
               </b-form-group>
             </div>
 
             <div :class="['input-step-group', {'active': position === 3}]" v-if="position <= 3">
-              <label class="d-block">Quem criou esse curso?</label>
-              <FormSelectSearch v-if="authorList" :items="authorList" type="author" @return-selection="setProperty"/>
-            </div>
-
-            <div :class="['input-step-group', {'active': position === 4}]" v-if="position <= 4">
-              <label class="d-block">Qual o tipo de acesso desse curso?</label>
+              <label class="d-block">Esse curso possui termos e condições?</label>
               <b-form-group class="radio-style">
-                <b-form-radio name="some-radios" value="P" v-model="course.accessType" @change="validate(course.accessType)"><strong>Pago -</strong> é necessário o pagamento para liberar
-                  acesso
+                <b-form-radio name="some-radios" value="N" v-model="course.term" @change="validate(course.term)">
+                  <strong>Não</strong>, não precisa de Termos e Condições
                 </b-form-radio>
-                <b-form-radio name="some-radios" value="F" v-model="course.accessType" @change="validate(course.accessType)"><strong>Gratuito -</strong> é necessário apenas o cadastro para
-                  liberar acesso
+                <b-form-radio name="some-radios" value="Y" v-model="course.term" @change="validate(course.term)">
+                  <strong>Sim</strong>, precisa de Termos e Condições
                 </b-form-radio>
               </b-form-group>
-            </div>
 
-            <div style="width: 572px" :class="['input-step-group', 'd-flex', {'active': position === 5}]" v-if="position <= 5">
-              <UtilsDropImage @send-image="setProperty"/>
-              <div class="box-info-image ml-3">
-                <h6 class="grey-neutral-6">Escolha a imagem de capa do seu curso</h6>
-                <span class="d-block grey-neutral">
-                Essa será imagem aparecerá como capa no catálogo de cursos. <br><br><br>
-                Use uma imagem de alta qualidade, em formato vertical e com <strong>dimensão mínima de 300x400 pixels</strong> para garantir uma boa visualização.
-              </span>
-              </div>
+              <b-form-textarea v-if="course.term === 'Y'" v-model="course.acceptanceText" rows="6"
+                               @keyup="validate(course.acceptanceText)" placeholder="Insira seus Termos e Condições">
+              </b-form-textarea>
+
             </div>
           </div>
 
-          <div style="position: relative; right: -588px; top: 1px">
-            <button class="btn btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok</button>
+          <div style="position: relative; right: -588px; top: 26px">
+            <button class="btn d-block btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Próximo</button>
+<!--            <button v-if="(step === 1 && position > 1) || step === 2" @click="returnPosition"-->
+<!--                    class="btn d-block btn-rounded-purple small-button pl-4 pr-4 mt-2">Anterior</button>-->
           </div>
         </div>
       </div>
@@ -118,7 +115,8 @@
               Salvar rascunho
             </b-button>
 
-            <b-button class="btn-purple" v-b-tooltip="'Publicar curso'" :disabled="position < 5 || isDisabled">
+            <b-button class="btn-purple" v-b-tooltip="'Publicar curso'" @click="sendForm"
+                      :disabled="(step === 1 && position < 5) || (step === 2 && position < 3) || isDisabled">
               Publicar curso
             </b-button>
           </div>
@@ -185,6 +183,11 @@ export default {
         author: [],
         accessType: null,
         image: null,
+        link: null,
+        permissions: [],
+        percent: null,
+        term: null,
+        acceptanceText: null
       },
       itensProgress: [
         {
@@ -220,6 +223,7 @@ export default {
     nextPosition(){
       this.position += 1;
       this.isDisabled = true;
+
       if(this.position === 6) {
         this.title = 'Legal! Agora algumas configurações avançadas';
         this.subtitle = 'Vamos configurar algumas opções para os seus alunos';
@@ -228,8 +232,24 @@ export default {
         this.isDisabled = false;
       }
     },
+    returnPosition(){
+      if(this.step === 1 && this.position > 1){
+        this.position -= 1;
+      }
+      else if (this.step === 2 && this.position === 1){
+        this.step = 1;
+        this.position = 5;
+      }
+
+      this.isDisabled = false;
+
+    },
     validate(value) {
-      if(value.length > 0) {
+      if ((this.course.permissions.length > 0 && this.course.permissions.includes('C') && !this.course.percent) ||
+         (this.course.term && this.course.term === 'Y' && !this.course.acceptanceText) || !value || value.length === 0) {
+        this.isDisabled = true;
+      }
+      else {
         this.isDisabled = false;
       }
     },
@@ -242,6 +262,9 @@ export default {
       else {
         this.isDisabled = true;
       }
+    },
+    sendForm(){
+      console.log(this.course)
     }
   }
 }

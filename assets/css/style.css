@@ -112,6 +112,7 @@ h6 {
 
 .btn-purple:disabled {
   background-color: #89238A;
+  border-color: #89238A;
   pointer-events: none;
   opacity: 0.3;
 }
@@ -157,6 +158,13 @@ h6 {
   background: #FBFBFB;
   border: 1px solid #F2F2F2;
   color: #828287;
+}
+
+.small-button {
+  border: 2px solid #A75BAA;
+  color: #A75BAA;
+  height: 31px;
+  padding: 0px;
 }
 
 /*Icon toggle Courses*/
@@ -441,8 +449,17 @@ select.select-arrow {
 .radio-style .custom-control-label,
 .checkbox-style .custom-control-label  {
   font-size: 14px;
+  display: inline;
 }
 
+.custom-radio .custom-control-input:checked ~ .custom-control-label::after {
+  top: -1px;
+  left: -30px;
+  width: 20px;
+  height: 20px;
+}
+
+.checkbox-style .custom-control-label::before,
 .radio-style .custom-control-label::before {
   top: -1px;
   left: -30px;
@@ -450,25 +467,60 @@ select.select-arrow {
   height: 20px;
 }
 
-.radio-style .custom-control-label::after {
-  top: 3px;
-  left: -26px;
-  width: 10px;
-  height: 10px;
-  content: "";
-  background: unset;
+.checkbox-style .custom-control-label::after {
+  top: 4px;
+  left: -25px;
 }
 
+.checkbox-style .custom-control-label::after {
+  background-size: 9px 12px;
+  width: 10px;
+  height: 10px;
+}
+
+.checkbox-style .custom-control-input:focus ~ .custom-control-label::before,
 .radio-style .custom-control-input:focus ~ .custom-control-label::before {
   box-shadow: unset;
 }
 
+.checkbox-style .custom-control-input:checked ~ .custom-control-label::before,
 .radio-style .custom-control-input:checked ~ .custom-control-label::before {
   color: #fff;
   border-color: #89238A;
   background-color: #89238A;
 }
 
+.checkbox-style .custom-control-input:checked ~ .custom-control-label,
 .radio-style .custom-control-input:checked ~ .custom-control-label {
   color: #89238A;;
+}
+
+.checkbox-style .custom-control-input:checked ~ .checkbox-style .custom-control ,
+.radio-style .custom-control-input:checked ~ .radio-style .custom-control{
+  background: #F9F5FA;
+}
+
+.checkbox-style .custom-control-input:checked ~ .custom-control-label::before {
+  color: #fff;
+  border-color: #89238A;
+  background-color: #89238A;
+}
+
+/* Textarea*/
+
+textarea.form-control {
+  position: relative;
+  border: 1px solid #A7A7AB;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #373740;
+  resize: none;
+}
+
+.form-control:focus {
+  color: #373740;;
+  background-color: #fff;
+  border-color: #89238A;
+  outline: 0;
+  box-shadow: unset;
 }
