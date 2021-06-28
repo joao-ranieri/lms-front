@@ -8,7 +8,8 @@
       </div>
       <ul v-for="(subItem, indexSub) in item.subItems" :key="indexSub">
         <li @click="$emit('change-position', {indexItem: index, indexSub: indexSub})"
-          :class="{'active': currentStep === index+1 && currentPosition === indexSub+1}">
+          :class="[{'checked': currentStep === index+1 && currentPosition > indexSub+1},
+            {'active': currentStep === index+1 && currentPosition === indexSub+1}]">
           {{subItem.title}}
         </li>
       </ul>
@@ -110,5 +111,12 @@ export default {
 .side-progress ul li.active::before {
   border: none;
   background: #89238A;
+}
+
+.side-progress ul li.checked::before {
+  content: url("../../assets/img/utils/check-grey.svg");
+  width: 10px;
+  height: 10px;
+  border: none;
 }
 </style>
