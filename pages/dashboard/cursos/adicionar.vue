@@ -101,6 +101,9 @@
         </div>
       </div>
 
+      <ModalAddCategory />
+      <ModalAuthor />
+
       <footer>
         <div class="progress-cadastro">
           <div class="state-progress" :style="{width: '30%'}"/>
@@ -124,7 +127,12 @@
         </div>
       </footer>
     </div>
-    <CourseSideProgressAdd :itensProgress="itensProgress"/>
+    <CourseSideProgressAdd
+      @change-position="changeInputProgress"
+      @change-step="changeStep"
+      :currentStep="step"
+      :currentPosition="position"
+      :itensProgress="itensProgress" />
   </div>
 </template>
 
@@ -265,6 +273,17 @@ export default {
     },
     sendForm(){
       console.log(this.course)
+      console.log(value)
+      console.log(this.course.category)
+    },
+    changeStep(step) {
+      this.step = step + 1;
+      this.position = 1;
+    },
+    changeInputProgress(e) {
+      if(e.indexItem + 1 !== this.step) { this.changeStep(e.indexItem) }
+      this.position = e.indexSub + 1;
+
     }
   }
 }

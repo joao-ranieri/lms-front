@@ -1,12 +1,16 @@
 <template>
   <div class="side-progress">
     <div v-for="(item, index) in itensProgress" :key="index">
-      <div class="title-item">
+      <div @click="$emit('change-step', index)"
+        :class="['title-item', {'active': currentStep === index+1}]">
         <span>{{index + 1}}</span>
         <span>{{ item.title }}</span>
       </div>
-      <ul v-for="(subItem, index) in item.subItems" :key="index">
-        <li>{{subItem.title}}</li>
+      <ul v-for="(subItem, indexSub) in item.subItems" :key="indexSub">
+        <li @click="$emit('change-position', {indexItem: index, indexSub: indexSub})"
+          :class="{'active': currentStep === index+1 && currentPosition === indexSub+1}">
+          {{subItem.title}}
+        </li>
       </ul>
     </div>
   </div>
@@ -15,7 +19,9 @@
 <script>
 export default {
   props: {
-    itensProgress: {type: Array}
+    itensProgress: {type: Array},
+    currentStep: {type: Number},
+    currentPosition: {type: Number},
   },
 }
 </script>
@@ -36,7 +42,14 @@ export default {
   font-size: 14px;
   line-height: 20px;
   color: #828287;
-  margin-bottom: 25px;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.side-progress .title-item:hover {
+  background: #F2F2F2;
 }
 
 .side-progress .title-item span:nth-child(1) {
@@ -53,6 +66,7 @@ export default {
 
 .side-progress ul {
   padding: 0;
+  margin: 3px 0;
   list-style: none;
   color: #828287;
   font-size: 12px;
@@ -61,8 +75,16 @@ export default {
 .side-progress ul li {
   display: flex;
   align-items: center;
-  margin-left: 16px;
-  margin-bottom: 25px;
+  min-height: 40px;
+  margin: 0;
+  padding: 8px 0 8px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.side-progress ul li:hover {
+  background: #F2F2F2;
 }
 
 .side-progress ul li::before {

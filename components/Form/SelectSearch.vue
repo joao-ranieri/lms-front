@@ -12,7 +12,7 @@
           <b-form-input v-model="search" class="input-border search-input w-100" type="text" @keyup="filter(search)"
                         placeholder="Pesquisar"/>
         </b-form-group>
-        <button class="btn btn-search ml-2">+</button>
+        <button @click="openModal" class="btn btn-search ml-2">+</button>
       </div>
 
       <div class="list-data">
@@ -21,7 +21,6 @@
           <img v-if="type === 'author'" :src="require('@/assets/img/course-test/img-author.svg')">{{item.name}}
         </span>
       </div>
-
     </div>
   </div>
 </template>
@@ -69,6 +68,13 @@ export default {
 
       this.isOpened = false;
       this.$emit('return-selection', {prop: this.type, collection: this.collection});
+    },
+    openModal() {
+      if(this.type === 'categories') {
+        this.$bvModal.show('modal-addCategoria');
+      } else if(this.type === 'author') {
+        this.$bvModal.show('author');
+      }
     }
   },
   mounted() {
