@@ -104,6 +104,9 @@
         </div>
       </div>
 
+      <ModalAddCategory />
+      <ModalAuthor />
+
       <footer>
         <div class="progress-cadastro">
           <div class="state-progress" :style="{width: '30%'}"/>
@@ -127,8 +130,11 @@
       </footer>
     </div>
     <CourseSideProgressAdd
-      @change-input="changeInputProgress"
-      :itensProgress="itensProgress"/>
+      @change-position="changeInputProgress"
+      @change-step="changeStep"
+      :currentStep="step"
+      :currentPosition="position"
+      :itensProgress="itensProgress" />
   </div>
 </template>
 
@@ -191,33 +197,27 @@ export default {
       itensProgress: [
         {
           title: "Sobre o curso",
-          isActive: true,
-          subItemActive: "Título",
           subItems: [
-            {title: 'Título', isDone: false},
-            {title: 'Categoria', isDone: false},
-            {title: 'Autores', isDone: false},
-            {title: 'Acesso', isDone: false},
-            {title: 'Imagem', isDone: false},
+            {title: 'Título'},
+            {title: 'Categoria'},
+            {title: 'Autores'},
+            {title: 'Acesso'},
+            {title: 'Imagem'},
           ],
         },
         {
           title: "Opções do aluno",
-          isActive: false,
-          subItemActive: null,
           subItems: [
-            {title: 'Página de suporte', isDone: false},
-            {title: 'Permissões', isDone: false},
-            {title: 'Termos e condições', isDone: false},
+            {title: 'Página de suporte'},
+            {title: 'Permissões'},
+            {title: 'Termos e condições'},
           ],
         },
         {
           title: "Módulos e aulas",
-          isActive: false,
-          subItemActive: null,
           subItems: [
-            {title: 'Adicionar módulos', isDone: false},
-            {title: 'Adicionar aulas', isDone: false},
+            {title: 'Adicionar módulos'},
+            {title: 'Adicionar aulas'},
           ],
         },
 
@@ -250,27 +250,14 @@ export default {
       console.log(value)
       console.log(this.course.category)
     },
+    changeStep(step) {
+      this.step = step + 1;
+      this.position = 1;
+    },
     changeInputProgress(e) {
-      this.itensProgress.forEach((item, index) => {
-        if(index === e.indexItem) {
-          this.itensProgress[e.indexItem].isActive = true;
+      if(e.indexItem + 1 !== this.step) { this.changeStep(e.indexItem) }
+      this.position = e.indexSub + 1;
 
-          if(e.indexSubItem){
-            this.itensProgress[e.indexItem].subItems.forEach((subItem, indexSub) => {
-              if(indexSub === e.indexSubItem) {
-                this.itensProgress[e.indexItem].subItemActive = subItem.title;
-                this.itensProgress[e.indexItem].subItems[indexSub].isDone = false
-              }
-            });
-          } else {
-            this.itensProgress[e.indexItem].subItemActive = this.itensProgress[e.indexItem].subItems[0].title;
-          }
-        } else {
-          this.itensProgress[index].isActive = false,
-          this.itensProgress[index].subItemActive = null;
-          this.isDisabled = true;
-        }
-      });
     }
   }
 }

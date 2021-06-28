@@ -1,15 +1,14 @@
 <template>
   <div class="side-progress">
     <div v-for="(item, index) in itensProgress" :key="index">
-      <div @click="$emit('change-input', {indexItem: index, indexSubItem: null})"
-        :class="['title-item', {'active': item.isActive}]">
+      <div @click="$emit('change-step', index)"
+        :class="['title-item', {'active': currentStep === index+1}]">
         <span>{{index + 1}}</span>
         <span>{{ item.title }}</span>
       </div>
       <ul v-for="(subItem, indexSub) in item.subItems" :key="indexSub">
-        <li @click="$emit('change-input', {indexItem: index, indexSubItem: indexSub})"
-          :class="[{'done': subItem.isDone},{'active': item.subItemActive === subItem.title}]">
-          <img v-if="subItem.isDone" :src="require('/assets/img/utils/checked-gray.svg')" alt="">
+        <li @click="$emit('change-position', {indexItem: index, indexSub: indexSub})"
+          :class="{'active': currentStep === index+1 && currentPosition === indexSub+1}">
           {{subItem.title}}
         </li>
       </ul>
@@ -21,6 +20,8 @@
 export default {
   props: {
     itensProgress: {type: Array},
+    currentStep: {type: Number},
+    currentPosition: {type: Number},
   },
 }
 </script>
@@ -94,14 +95,6 @@ export default {
   box-sizing: border-box;
   border-radius: 50%;
   margin-right: 16px;
-}
-
-.side-progress ul li.done img {
-  margin-right: 10px;
-}
-
-.side-progress ul li.done::before {
-  display: none;
 }
 
 /* active */
