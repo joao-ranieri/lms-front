@@ -64,11 +64,10 @@
             <div :class="['input-step-group', {'active': position === 2}]" v-if="position <= 2">
               <label class="d-block">No seu curso, os alunos podem:</label>
               <b-form-group class="checkbox-style">
-                <b-form-checkbox-group :options="permissionOptions" @change="checkOption">
-                </b-form-checkbox-group>
+                <b-form-checkbox-group v-model="permissions" :options="permissionOptions"></b-form-checkbox-group>
 
                 <label class="d-block" v-if="course.issueCertificate">Quanto precisa ser concluído para emissão do certificado?</label>
-                <b-form-group v-if="course.issueCertificate">
+                <b-form-group v-if="permissions.includes('issueCertificate')">
                   <b-form-input v-model="course.certificateIssuePercentage" class="input-border" type="text" @keyup="validate(course.certificateIssuePercentage)"
                                 placeholder="Insira uma porcentagem"/>
                 </b-form-group>
@@ -185,6 +184,7 @@ export default {
         { text: 'Ver o progresso do curso em porcentagem e quantidade de aulas concluídas', value: 'canDisplayProgress' },
         { text: 'Emitir certificado automaticamente', value: 'issueCertificate' }
       ],
+      permissions: [],
       course:{
         title: null,
         categories: [],
@@ -265,14 +265,6 @@ export default {
         this.isDisabled = false;
       }
     },
-    checkOption(options){
-      options.forEach(o => {
-        this.course[o] = !this.course[o];
-      })
-      console.log(value)
-      this.course[value] = !this.course[value];
-      console.log(this.course)
-    },
     setProperty(value) {
       this.course[value.prop] = value.collection ? value.collection : value.item;
 
@@ -284,9 +276,46 @@ export default {
       }
     },
     sendForm(){
+
+      let authors = [];
+      this.course.authors.forEach(author => {
+        authors.push(author.id);
+      });
+      this.course.authors = authors;
+
+      let categories = [];
+      this.course.categories.forEach(category => {
+        categories.push(category.id);
+      })
+      this.course.categories = categories;
+
+      this.permissions.forEach(option => {
+        this.course[option] = true;
+      })
+
       console.log(this.course)
-      console.log(value)
-      console.log(this.course.category)
+
+      return false;
+      if (this.author.id) {
+        this.$axios.$put('/course/'+this.course.id, this.course).then(response => {
+          this.isSuccess = true;
+        }).catch(e => {
+          console.log(e)
+        }).finally(() => {
+          this.resetData();
+          this.isLoading = false;
+        })
+      }
+      else {
+        this.$axios.$post('/course', this.course).then(response => {
+          this.isSuccess = true;
+        }).catch(e => {
+          console.log(e)
+        }).finally(() => {
+          this.resetData();
+          this.isLoading = false;
+        })
+      }
     },
     changeStep(step) {
       this.step = step + 1;

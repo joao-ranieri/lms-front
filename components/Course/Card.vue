@@ -119,7 +119,7 @@ export default {
   position: absolute;
   bottom: 16px;
   color: white;
-  padding-right: 16px;
+  width: calc(100% - 32px);
 }
 
 .tags-group {
@@ -150,12 +150,14 @@ export default {
 }
 
 .card .author {
-  display: inline;
+  display: inline-flex;
   background: rgba(255, 255, 255, 0.1);
   padding: 8px;
   width: 100%;
   font: 12px "Inter Regular";
   border-radius: 4px;
+  align-items: center;
+  width: auto;
 }
 
 .card .author img {
