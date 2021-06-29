@@ -12,7 +12,7 @@
             <div :class="['input-step-group', {'active': position === 1}]" v-if="position <= 1">
                 <label class="d-block">Como seu curso será chamado?</label>
                 <b-form-group>
-                  <b-form-input v-model="course.name" class="input-border" type="text" @keyup="validate(course.name)"
+                  <b-form-input v-model="course.title" class="input-border" type="text" @keyup="validate(course.title)"
                                 placeholder="Tran Mau Tri Tam"/>
                 </b-form-group>
             </div>
@@ -24,16 +24,16 @@
 
             <div :class="['input-step-group', {'active': position === 3}]" v-if="position <= 3">
               <label class="d-block">Quem criou esse curso?</label>
-              <FormSelectSearch v-if="authorList" :items="authorList" type="author" @return-selection="setProperty"/>
+              <FormSelectSearch v-if="authorList" :items="authorList" type="authors" @return-selection="setProperty"/>
             </div>
 
             <div :class="['input-step-group', {'active': position === 4}]" v-if="position <= 4">
               <label class="d-block">Qual o tipo de acesso desse curso?</label>
               <b-form-group class="radio-style">
-                <b-form-radio name="some-radios" value="P" v-model="course.accessType" @change="validate(course.accessType)"><strong>Pago -</strong> é necessário o pagamento para liberar
+                <b-form-radio name="some-radios" value="PAGO" v-model="course.accessType" @change="validate(course.accessType)"><strong>Pago -</strong> é necessário o pagamento para liberar
                   acesso
                 </b-form-radio>
-                <b-form-radio name="some-radios" value="F" v-model="course.accessType" @change="validate(course.accessType)"><strong>Gratuito -</strong> é necessário apenas o cadastro para
+                <b-form-radio name="some-radios" value="GRATUITO" v-model="course.accessType" @change="validate(course.accessType)"><strong>Gratuito -</strong> é necessário apenas o cadastro para
                   liberar acesso
                 </b-form-radio>
               </b-form-group>
@@ -55,7 +55,7 @@
             <div :class="['input-step-group', {'active': position === 1}]" v-if="position <= 1">
               <label class="d-block">O curso possui alguma Central de Ajuda ou página de Suporte?</label>
               <b-form-group>
-                <b-form-input v-model="course.link" class="input-border" type="text"
+                <b-form-input v-model="course.supportPage" class="input-border" type="text"
                               placeholder="Insira o link da página de ajuda"/>
               </b-form-group>
               <label class="d-block mt-2">Se não houver, você pode pular essa etapa.</label>
@@ -64,12 +64,12 @@
             <div :class="['input-step-group', {'active': position === 2}]" v-if="position <= 2">
               <label class="d-block">No seu curso, os alunos podem:</label>
               <b-form-group class="checkbox-style">
-                <b-form-checkbox-group v-model="course.permissions" :options="permissionOptions" @change="validate(course.permissions)">
+                <b-form-checkbox-group :options="permissionOptions" @change="checkOption">
                 </b-form-checkbox-group>
 
-                <label class="d-block" v-if="course.permissions.includes('C')">Quanto precisa ser concluído para emissão do certificado?</label>
-                <b-form-group v-if="course.permissions.includes('C')">
-                  <b-form-input v-model="course.percent" class="input-border" type="text" @keyup="validate(course.percent)"
+                <label class="d-block" v-if="course.issueCertificate">Quanto precisa ser concluído para emissão do certificado?</label>
+                <b-form-group v-if="course.issueCertificate">
+                  <b-form-input v-model="course.certificateIssuePercentage" class="input-border" type="text" @keyup="validate(course.certificateIssuePercentage)"
                                 placeholder="Insira uma porcentagem"/>
                 </b-form-group>
               </b-form-group>
@@ -94,7 +94,7 @@
           </div>
 
           <div style="position: relative; right: -588px; top: 26px">
-            <button class="btn d-block btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Próximo</button>
+            <button class="btn d-block btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok</button>
 <!--            <button v-if="(step === 1 && position > 1) || step === 2" @click="returnPosition"-->
 <!--                    class="btn d-block btn-rounded-purple small-button pl-4 pr-4 mt-2">Anterior</button>-->
           </div>
@@ -180,22 +180,26 @@ export default {
         {name: 'Item 11', selected: false},
       ],
       permissionOptions: [
-        { text: 'Marcar aula como assistida', value: 'M' },
-        { text: 'Acessar simultâneamente por mais de um dispositivo', value: 'A' },
-        { text: 'Ver o progresso do curso em porcentagem e quantidade de aulas concluídas', value: 'V' },
-        { text: 'Emitir certificado automaticamente', value: 'C' }
+        { text: 'Marcar aula como assistida', value: 'manualCheck' },
+        { text: 'Acessar simultâneamente por mais de um dispositivo', value: 'hasSimultaneousAccess' },
+        { text: 'Ver o progresso do curso em porcentagem e quantidade de aulas concluídas', value: 'canDisplayProgress' },
+        { text: 'Emitir certificado automaticamente', value: 'issueCertificate' }
       ],
       course:{
-        name: null,
+        title: null,
         categories: [],
-        author: [],
+        authors: [],
         accessType: null,
-        image: null,
-        link: null,
-        permissions: [],
-        percent: null,
+        coverImage: null,
+        supportPage: null,
+        manualCheck: false,
+        hasSimultaneousAccess: false,
+        canDisplayProgress: false,
+        issueCertificate: false,
+        certificateIssuePercentage: null,
         term: null,
-        acceptanceText: null
+        acceptanceText: null,
+        publishCourse: false
       },
       itensProgress: [
         {
@@ -253,13 +257,21 @@ export default {
 
     },
     validate(value) {
-      if ((this.course.permissions.length > 0 && this.course.permissions.includes('C') && !this.course.percent) ||
+      if ((this.course.issueCertificate && !this.course.certificateIssuePercentage) ||
          (this.course.term && this.course.term === 'Y' && !this.course.acceptanceText) || !value || value.length === 0) {
         this.isDisabled = true;
       }
       else {
         this.isDisabled = false;
       }
+    },
+    checkOption(options){
+      options.forEach(o => {
+        this.course[o] = !this.course[o];
+      })
+      console.log(value)
+      this.course[value] = !this.course[value];
+      console.log(this.course)
     },
     setProperty(value) {
       this.course[value.prop] = value.collection ? value.collection : value.item;

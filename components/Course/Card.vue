@@ -1,7 +1,7 @@
 <template>
-  <b-card overlay :img-src="require('../../assets/img/course-test/image.png')">
+  <b-card overlay :img-src="course.coverImage">
     <b-card-body class="p-3">
-      <span class="course-status">Publicado</span>
+      <span class="course-status">{{course.publishCourse ? 'Publicado' : 'Rascunho'}}</span>
 
       <b-dropdown class="menu-card" right toggle-class="btn-menu btn-white squad">
         <template #button-content>
@@ -15,19 +15,18 @@
 
       <div class="card-content">
         <div class="tags-group">
-          <span class="tag">Idiomas</span>
-          <span class="tag">Preparatório</span>
+          <span class="tag" v-for="(t, index) in course.categories" :key="index" v-text="t.name"></span>
         </div>
 
         <div class="title">
-          Como preparar alunos para exames internacionais
+          {{course.title}}
         </div>
 
-        <span class="author mb-3">
-        <img class="mr-2" src="../../assets/img/course-test/img-author.svg" alt="author">Yvelize Wielewicki
-      </span>
+        <span v-for="(a, index) in course.authors" :key="index" class="author mb-3">
+          <img class="mr-2" :src="a.image" alt="author">{{a.name}}
+        </span>
 
-        <b-button @click="edit" href="#" class="d-block btn-purple lg mt-3">
+        <b-button @click="edit(course.id)" href="#" class="d-block btn-purple lg mt-3">
           Editar Curso
         </b-button>
       </div>
@@ -41,11 +40,12 @@
 <script>
 export default {
   props: {
-    idCourse: {type: Number},
+    course: {type: Object},
+    idCourse: {type: String},
     courseTitle: {type: String},
     tags: {type: Array},
     isPublished: {type: Boolean},
-    author: {type: Object}
+    authors: {type: Array}
   },
   data(){
     return {
@@ -62,7 +62,7 @@ export default {
     favorite(){
       this.isFavorite = !this.isFavorite;
     },
-    edit(){
+    edit(id){
 
     }
   }
@@ -75,10 +75,11 @@ export default {
   width: 241px;
   height: 400px;
   border-radius: 16px;
-  border: 4px solid transparent;
+  border: 2px solid transparent;
   background-blend-mode: multiply;
   overflow: hidden;
   margin-bottom: 23px;
+  transition: .3s all;
 }
 
 .card > div {
@@ -128,6 +129,7 @@ export default {
 
 .course-status,
 .tags-group .tag {
+  display: inline-block;
   padding: 7px 8px;
   margin: 0 10px 5px 0px;
   background: white;

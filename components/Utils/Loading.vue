@@ -32,7 +32,7 @@ export default {
 }
 
 .dark.lds-ring div {
-  border: 2px solid #89238A;
+  border: 5px solid #89238A;
   border-color: #89238A transparent transparent transparent;
 }
 

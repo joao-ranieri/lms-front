@@ -2,7 +2,7 @@
   <div :class="['collect-items', {isOpened}]">
     <div class="selected-items" @click="isOpened = true">
       <span class="item" v-for="(item, index) in collection" :key="index" @click="selectItem(item)">
-        <img v-if="type === 'author'" :src="require('@/assets/img/course-test/img-author.svg')" alt="">{{item.name}}
+        <img v-if="type === 'authors'" :src="require('@/assets/img/course-test/img-author.svg')" alt="">{{item.name}}
       </span>
     </div>
 
@@ -18,7 +18,7 @@
       <div class="list-data">
         <span v-for="(item, index) in filtered" :key="index" @click="selectItem(item)"
               :class="['item-list', {'selected': item.selected}]">
-          <img v-if="type === 'author'" :src="require('@/assets/img/course-test/img-author.svg')">{{item.name}}
+          <img v-if="type === 'authors'" :src="require('@/assets/img/course-test/img-author.svg')">{{item.name}}
         </span>
       </div>
     </div>
@@ -63,7 +63,6 @@ export default {
       else {
         item.selected = true;
         this.collection.push(item);
-        item.selected = true;
       }
 
       this.isOpened = false;
@@ -72,7 +71,7 @@ export default {
     openModal() {
       if(this.type === 'categories') {
         this.$bvModal.show('modal-addCategoria');
-      } else if(this.type === 'author') {
+      } else if(this.type === 'authors') {
         this.$bvModal.show('author');
       }
     }
