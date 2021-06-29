@@ -45,12 +45,12 @@ export default {
       }).then(response => {
         image = response;
       }).finally(()=>{
-        this.$emit('send-image', {prop: 'image', item: image})
+        this.$emit('send-image', {prop: 'coverImage', item: image})
       })
     },
     removeImage(){
       this.imageURL = null;
-      this.$emit('send-image', {prop: 'image', item: null})
+      this.$emit('send-image', {prop: 'coverImage', item: null})
     }
   }
 }

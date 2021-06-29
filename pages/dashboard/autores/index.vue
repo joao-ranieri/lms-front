@@ -3,7 +3,7 @@
     <h3>Autores</h3>
 
     <div class="filter-bar lg">
-      <b-form-input class="w-50" v-model="nameSearch" placeholder="Pesquisar por nome" @keyup="getAuthors"/>
+      <b-form-input class="w-50" v-model="nameSearch" placeholder="Pesquisar por nome" debounce="750" @keyup="getAuthors"/>
 
       <b-button @click="openModalAuthor" class="d-block btn-purple" v-b-tooltip="'Adicionar autor'">
         Cadastrar autor

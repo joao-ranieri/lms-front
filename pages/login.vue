@@ -169,9 +169,7 @@ export default {
             this.$axios.setHeader('Authorization', 'Bearer ' + token);
             this.$auth.ctx.app.$axios.setHeader('Authorization', 'Bearer ' + token);
             this.$auth.redirect('home');
-          })
-            .catch(e => {
-              console.log(e)
+          }).catch(e => {
               if (e.response.data.data.statusCode === 401) {
                 this.notification = e.response.data.data.error[0];
                 this.isLoading = false;
