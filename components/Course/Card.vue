@@ -63,7 +63,7 @@ export default {
       this.isFavorite = !this.isFavorite;
     },
     edit(id){
-
+      $nuxt.$router.push('/dashboard/cursos/editar/'+id)
     }
   }
 }

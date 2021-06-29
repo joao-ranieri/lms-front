@@ -76,11 +76,18 @@ export default {
   router: {
     middleware: ['auth'],
     extendRoutes(routes, resolve) {
-      routes.push({
-        name: 'Login Administrador',
-        path: '/admin/login',
-        component: resolve(__dirname, 'pages/login.vue')
-      })
+      routes.push(
+        {
+          name: 'Login Administrador',
+          path: '/admin/login',
+          component: resolve(__dirname, 'pages/login.vue')
+        },
+        {
+          name: 'Editar Curso',
+          path: '/dashboard/cursos/editar/:id',
+          component: resolve(__dirname, 'pages/dashboard/cursos/adicionar.vue')
+        }
+      )
     }
   },
 

@@ -24,7 +24,7 @@
 
             <div :class="['input-step-group', {'active': position === 3}]" v-if="position <= 3">
               <label class="d-block">Quem criou esse curso?</label>
-              <FormSelectSearch :items="authorList" type="author" @return-selection="setProperty"/>
+              <FormSelectSearch :items="authorList" type="authors" @return-selection="setProperty"/>
             </div>
 
             <div :class="['input-step-group', {'active': position === 4}]" v-if="position <= 4">
@@ -77,15 +77,15 @@
             <div :class="['input-step-group', {'active': position === 3}]" v-if="position <= 3">
               <label class="d-block">Esse curso possui termos e condições?</label>
               <b-form-group class="radio-style">
-                <b-form-radio name="some-radios" value="N" v-model="course.term" @change="validate(course.term)">
+                <b-form-radio name="some-radios" value="N" v-model="term" @change="validate(term)">
                   <strong>Não</strong>, não precisa de Termos e Condições
                 </b-form-radio>
-                <b-form-radio name="some-radios" value="Y" v-model="course.term" @change="validate(course.term)">
+                <b-form-radio name="some-radios" value="Y" v-model="term" @change="validate(term)">
                   <strong>Sim</strong>, precisa de Termos e Condições
                 </b-form-radio>
               </b-form-group>
 
-              <b-form-textarea v-if="course.term === 'Y'" v-model="course.acceptanceText" rows="6"
+              <b-form-textarea v-if="term === 'Y'" v-model="course.acceptanceText" rows="6"
                                @keyup="validate(course.acceptanceText)" placeholder="Insira seus Termos e Condições">
               </b-form-textarea>
 
@@ -113,11 +113,11 @@
           </b-button>
 
           <div>
-            <b-button class="btn-rounded-purple mr-3" v-b-tooltip="'Salvar rascunho'">
+            <b-button class="btn-rounded-purple mr-3" v-b-tooltip="'Salvar rascunho'"  @click="sendForm()">
               Salvar rascunho
             </b-button>
 
-            <b-button class="btn-purple" v-b-tooltip="'Publicar curso'" @click="sendForm"
+            <b-button class="btn-purple" v-b-tooltip="'Publicar curso'" @click="sendForm(true)"
                       :disabled="(step === 1 && position < 5) || (step === 2 && position < 3) || isDisabled">
               Publicar curso
             </b-button>
@@ -145,10 +145,6 @@ export default {
       title: "Adicionar Curso - Masters",
     }
   },
-  mounted() {
-    this.getCategoriesList();
-    this.getAuthorList();
-  },
   data(){
     return {
       position: 1,
@@ -165,11 +161,13 @@ export default {
         { text: 'Emitir certificado automaticamente', value: 'issueCertificate' }
       ],
       permissions: [],
-      course:{
+      term: null,
+      course: {
         title: null,
         categories: [],
         authors: [],
         accessType: null,
+        description: null,
         coverImage: null,
         supportPage: null,
         manualCheck: false,
@@ -177,7 +175,6 @@ export default {
         canDisplayProgress: false,
         issueCertificate: false,
         certificateIssuePercentage: null,
-        term: null,
         acceptanceText: null,
         publishCourse: false
       },
@@ -255,8 +252,7 @@ export default {
         this.isDisabled = true;
       }
     },
-    sendForm(){
-
+    sendForm(publish){
       let authors = [];
       this.course.authors.forEach(author => {
         authors.push(author.id);
@@ -273,27 +269,26 @@ export default {
         this.course[option] = true;
       })
 
-      console.log(this.course)
+      this.course.certificateIssuePercentage = parseFloat(this.course.certificateIssuePercentage);
 
-      return false;
-      if (this.author.id) {
+      this.course.publishCourse = publish;
+
+      if (this.course.id) {
         this.$axios.$put('/course/'+this.course.id, this.course).then(response => {
           this.isSuccess = true;
         }).catch(e => {
           console.log(e)
         }).finally(() => {
-          this.resetData();
           this.isLoading = false;
         })
       }
       else {
         this.$axios.$post('/course', this.course).then(response => {
-          this.isSuccess = true;
+          $nuxt.$router.push('/dashboard/cursos');
         }).catch(e => {
           console.log(e)
         }).finally(() => {
-          this.resetData();
-          this.isLoading = false;
+          // this.isLoading = false;
         })
       }
     },
@@ -314,6 +309,16 @@ export default {
     getAuthorList() {
       this.$axios.$get(`/author/all?page=${1}&size=${1000}&orderBy=${'name'}&direction=${'ASC'}`).then(response => {
         this.authorList = [...response.data];
+      });
+    }
+  },
+  mounted() {
+    this.getCategoriesList();
+    this.getAuthorList();
+
+    if($nuxt.$route.params.id) {
+      this.$axios.$get('/course', {params: {id: $nuxt.$route.params.id}}).then(response => {
+        this.course = {...response.data.data};
       });
     }
   }
