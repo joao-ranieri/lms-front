@@ -19,12 +19,12 @@
 
             <div :class="['input-step-group', {'active': position === 2}]" v-if="position <= 2">
               <label class="d-block">Em qual categoria ele se encaixa?</label>
-              <FormSelectSearch v-if="categoriesList" :items="categoriesList" type="categories" @return-selection="setProperty"/>
+              <FormSelectSearch :items="categoriesList" type="categories" @return-selection="setProperty"/>
             </div>
 
             <div :class="['input-step-group', {'active': position === 3}]" v-if="position <= 3">
               <label class="d-block">Quem criou esse curso?</label>
-              <FormSelectSearch v-if="authorList" :items="authorList" type="authors" @return-selection="setProperty"/>
+              <FormSelectSearch :items="authorList" type="author" @return-selection="setProperty"/>
             </div>
 
             <div :class="['input-step-group', {'active': position === 4}]" v-if="position <= 4">
@@ -100,8 +100,8 @@
         </div>
       </div>
 
-      <ModalAddCategory />
-      <ModalAuthor />
+      <ModalAddCategory @refresh-categories="getCategoriesList"/>
+      <ModalAuthor @refresh-authors="getAuthorList"/>
 
       <footer>
         <div class="progress-cadastro">
@@ -145,6 +145,10 @@ export default {
       title: "Adicionar Curso - Masters",
     }
   },
+  mounted() {
+    this.getCategoriesList();
+    this.getAuthorList();
+  },
   data(){
     return {
       position: 1,
@@ -152,32 +156,8 @@ export default {
       title: 'Vamos cadastrar seu novo curso!',
       subtitle: 'Primeiro precisamos de alguns dados básicos',
       isDisabled: true,
-      categoriesList: [
-        {name: 'Item 1', selected: false},
-        {name: 'Item 2', selected: false},
-        {name: 'Item 3', selected: false},
-        {name: 'Item 4', selected: false},
-        {name: 'Item 5', selected: false},
-        {name: 'Item 6', selected: false},
-        {name: 'Item 7', selected: false},
-        {name: 'Item 8', selected: false},
-        {name: 'Item 9', selected: false},
-        {name: 'Item 10', selected: false},
-        {name: 'Item 11', selected: false},
-      ],
-      authorList: [
-        {name: 'Item 1', selected: false},
-        {name: 'Item 2', selected: false},
-        {name: 'Item 3', selected: false},
-        {name: 'Item 4', selected: false},
-        {name: 'Item 5', selected: false},
-        {name: 'Item 6', selected: false},
-        {name: 'Item 7', selected: false},
-        {name: 'Item 8', selected: false},
-        {name: 'Item 9', selected: false},
-        {name: 'Item 10', selected: false},
-        {name: 'Item 11', selected: false},
-      ],
+      categoriesList: [],
+      authorList: [],
       permissionOptions: [
         { text: 'Marcar aula como assistida', value: 'manualCheck' },
         { text: 'Acessar simultâneamente por mais de um dispositivo', value: 'hasSimultaneousAccess' },
@@ -325,6 +305,16 @@ export default {
       if(e.indexItem + 1 !== this.step) { this.changeStep(e.indexItem) }
       this.position = e.indexSub + 1;
 
+    },
+    getCategoriesList() {
+      this.$axios.$get(`/category/all?page=${1}&size=${1000}&orderBy=${'name'}&direction=${'ASC'}`).then(response => {
+        this.categoriesList = [...response.data];
+      });
+    },
+    getAuthorList() {
+      this.$axios.$get(`/author/all?page=${1}&size=${1000}&orderBy=${'name'}&direction=${'ASC'}`).then(response => {
+        this.authorList = [...response.data];
+      });
     }
   }
 }

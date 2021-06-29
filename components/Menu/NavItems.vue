@@ -22,7 +22,7 @@
         :class="[(activeItem === item.id && expanded) && 'dropdownItem', 'submenu']">
         <div v-for="subMenuItem in item.submenu" :key="subMenuItem.id"
           :class="activeSubItem === subMenuItem.id && 'subActive'"
-          @click="activeSubItem !== subMenuItem.id && activeSubMenuRoute(item, subMenuItem)">
+          @click="activeSubMenuRoute(item, subMenuItem)">
           {{subMenuItem.text}}
         </div>
       </div>

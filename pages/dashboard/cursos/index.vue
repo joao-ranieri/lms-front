@@ -1,6 +1,6 @@
 <template>
   <div class="content">
-    <!-- <h5>Boas vindas, {{user.name.split(' ')[0]}}!</h5> -->
+    <h5>Boas vindas, {{user.name.split(' ')[0]}}!</h5>
     <h2> Veja seus cursos</h2>
 
     <div class="filter-bar">

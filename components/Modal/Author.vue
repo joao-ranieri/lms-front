@@ -142,7 +142,7 @@ export default {
         description: '',
         image: '../../assets/img/utils/photo-drop.svg'
       }
-      this.$root.$emit('refresh-authors');
+      this.$emit('refresh-authors');
     }
   },
   mounted() {

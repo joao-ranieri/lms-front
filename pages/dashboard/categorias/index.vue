@@ -92,7 +92,7 @@ export default {
   },
 
   methods: {
-    getAllCategory() {
+    async getAllCategory() {
       this.$axios.$get(`/category/all?page=${this.currentPage}&size=${this.itemsPerPage}&orderBy=${this.orderBy}&direction=${this.direction}`).then(response => {
         this.allCategory = response.data;
         this.total = response.total;

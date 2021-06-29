@@ -9,14 +9,14 @@
     <div class="search-items" v-if="isOpened">
       <div class="d-flex align-items-center">
         <b-form-group class="position-relative d-inline-block w-100 mb-0 search-input">
-          <b-form-input v-model="search" class="input-border search-input w-100" type="text" @keyup="filter(search)"
+          <b-form-input v-model="search" class="input-border search-input w-100" type="text" @keyup="filter"
                         placeholder="Pesquisar"/>
         </b-form-group>
         <button @click="openModal" class="btn btn-search ml-2">+</button>
       </div>
 
       <div class="list-data">
-        <span v-for="(item, index) in filtered" :key="index" @click="selectItem(item)"
+        <span v-for="(item, index) in items" :key="index" @click="selectItem(item)"
               :class="['item-list', {'selected': item.selected}]">
           <img v-if="type === 'authors'" :src="require('@/assets/img/course-test/img-author.svg')">{{item.name}}
         </span>
@@ -28,7 +28,7 @@
 <script>
 export default {
   props:{
-    type: {type: String, required:true},
+    type: {type: String, required: true},
     items: {type: Array, default:[]}
   },
   data(){
@@ -39,14 +39,19 @@ export default {
       filtered: [],
     }
   },
+  watch: {
+    items() {
+      this.filtered = [...this.items];
+    }
+  },
   methods: {
-    filter(text){
+    filter(){
       if(this.search){
         this.filtered = this.items.filter(item =>{
-          if(item.name.includes(text)){
+          if(item.name.includes(this.search)){
 
           }
-          return item.name.includes(text);
+          return item.name.includes(this.search);
         });
       }
       else {
