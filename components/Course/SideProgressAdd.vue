@@ -8,7 +8,7 @@
       </div>
       <ul v-for="(subItem, indexSub) in item.subItems" :key="indexSub">
         <li @click="$emit('change-position', {indexItem: index, indexSub: indexSub})"
-          :class="[{'checked': currentStep === index+1 && currentPosition > indexSub+1},
+          :class="[{'checked': (currentStep === index+1 && currentPosition > indexSub+1) || currentStep > index+1},
             {'active': currentStep === index+1 && currentPosition === indexSub+1}]">
           {{subItem.title}}
         </li>

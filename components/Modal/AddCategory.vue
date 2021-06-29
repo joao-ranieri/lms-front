@@ -38,14 +38,12 @@ export default {
       }
 
       await this.$axios.$post(`/category`, data).then(response => {
-        this.currentPage = 1;
-        this.getAllCategory();
-        console.log('Adicionado');
+        // console.log(response);
       }).catch( err => {
         console.log(err);
       }).finally(() => {
         this.isLoading = false;
-        this.$root.$emit('refresh-categories');
+        this.$emit('refresh-categories');
         this.$bvModal.hide('modal-addCategoria');
       });
     }
