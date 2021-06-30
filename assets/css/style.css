@@ -90,7 +90,8 @@ h6 {
 
 /* Button settings*/
 .btn, .btn:hover, .btn:active {
-  font: 14px "Inter Bold";
+  font: 14px "Inter Regular";
+  font-weight: 600;
   padding: 12px 12px;
   border-radius: 8px;
   box-shadow: none !important;
@@ -98,14 +99,14 @@ h6 {
 
 .btn-purple,
 .btn.btn-purple:active {
-  border: 2px solid transparent;
+  border: 1px solid transparent;
   background-color: #89238A;
   color: white;
 
 }
 
 .btn-purple:hover {
-  border: 2px solid transparent;
+  border: 1px solid transparent;
   background-color: #A75BAA;
   color: #fff;
 }
@@ -120,7 +121,7 @@ h6 {
 .btn-rounded-purple,
 .btn-rounded-purple:focus,
 .btn-rounded-purple:active {
-  border: 2px solid #89238A;
+  border: 1px solid #89238A;
   background-color: transparent;
   color: #89238A;
   outline: none;
@@ -128,7 +129,7 @@ h6 {
 }
 
 .btn-rounded-purple:hover {
-  border: 2px solid #A75BAA;
+  border: 1px solid #A75BAA;
   background-color: transparent;
   color: #A75BAA;
 }
@@ -136,6 +137,22 @@ h6 {
 .btn-rounded-purple:disabled {
   pointer-events: none;
   opacity: 0.3;
+}
+
+.btn-rounded-grey,
+.btn-rounded-grey:focus,
+.btn-rounded-grey:active {
+  border:  1px solid #F2F2F2;
+  background-color: #FBFBFB;
+  color: #828287;
+  outline: none;
+  box-shadow: none;
+}
+
+.btn-rounded-grey:hover {
+  border: 1px solid #828287;
+  background-color: #828287;
+  color: #F2F2F2;
 }
 
 .btn-grey,
@@ -161,7 +178,7 @@ h6 {
 }
 
 .small-button {
-  border: 2px solid #A75BAA;
+  border: 1px solid #A75BAA;
   color: #A75BAA;
   height: 31px;
   padding: 0px;
@@ -398,6 +415,11 @@ select.select-arrow {
   content: url("../../assets/img/utils/ico-pencil.svg");
 }
 
+.arrow-back-ico {
+  content: url("../../assets/img/utils/ico-arrow-dropdown-grey.svg");
+  transform: rotateX(90deg);
+}
+
 .loading-content {
   width: 100%;
   display: block;
@@ -522,4 +544,12 @@ textarea.form-control {
   border-color: #89238A;
   outline: 0;
   box-shadow: unset;
+}
+
+.green-text {
+  display: block;
+  font-family: "Poppins Regular";
+  font-size: 18px;
+  line-height: 24px;
+  color: #7FBA7A;
 }

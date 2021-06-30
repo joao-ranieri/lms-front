@@ -87,8 +87,9 @@ export default {
       this.author[v.model] = v.value;
     },
     async setImage(e) {
-      this.imageURL = window.URL.createObjectURL(e.dataTransfer.files[0]);
-      await this.toBase64(e.dataTransfer.files[0]);
+      let img = e.dataTransfer ? e.dataTransfer.files[0] : e.target.files[0];
+      this.imageURL = window.URL.createObjectURL(img);
+      await this.toBase64(img);
     },
     executeForm() {
       if (this.isSuccess) {
@@ -181,13 +182,5 @@ export default {
   font: 13px "Inter Regular";
   color: #A7A7AB;
   ine-height: 18px;
-}
-
-.green-text {
-  display: block;
-  font-family: "Poppins Regular";
-  font-size: 18px;
-  line-height: 24px;
-  color: #7FBA7A;
 }
 </style>

@@ -41,6 +41,13 @@ export default {
   },
   watch: {
     items() {
+      if(this.collection.length === 0){
+        this.items.forEach(item => {
+          if(item.selected) {
+            this.collection.push(item);
+          }
+        })
+      }
       this.filtered = [...this.items];
     }
   },

@@ -23,9 +23,12 @@
 
 <script>
 export default {
-  data(){
-    return {
-      imageURL: null
+  props:{
+    image: {type: String, default: null}
+  },
+  computed:{
+    imageURL(){
+      return this.image;
     }
   },
   methods:{

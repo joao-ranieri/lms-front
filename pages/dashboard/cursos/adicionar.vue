@@ -33,14 +33,14 @@
                 <b-form-radio name="some-radios" value="PAGO" v-model="course.accessType" @change="validate(course.accessType)"><strong>Pago -</strong> é necessário o pagamento para liberar
                   acesso
                 </b-form-radio>
-                <b-form-radio name="some-radios" value="GRATUITO" v-model="course.accessType" @change="validate(course.accessType)"><strong>Gratuito -</strong> é necessário apenas o cadastro para
+                <b-form-radio name="some-radios" value="GRATIS" v-model="course.accessType" @change="validate(course.accessType)"><strong>Gratuito -</strong> é necessário apenas o cadastro para
                   liberar acesso
                 </b-form-radio>
               </b-form-group>
             </div>
 
             <div style="width: 572px" :class="['input-step-group', 'd-flex', {'active': position === 5}]" v-if="position <= 5">
-              <UtilsDropImage @send-image="setProperty"/>
+              <UtilsDropImage @send-image="setProperty" :image="course.coverImage"/>
               <div class="box-info-image ml-3">
                 <h6 class="grey-neutral-6">Escolha a imagem de capa do seu curso</h6>
                 <span class="d-block grey-neutral">
@@ -102,23 +102,24 @@
 
       <ModalAddCategory @refresh-categories="getCategoriesList"/>
       <ModalAuthor @refresh-authors="getAuthorList"/>
+      <ModalConfirmation :msg="msgConfimation" :onlyConfirmation="true" :redirect="routeRedirect"/>
 
       <footer>
         <div class="progress-cadastro">
           <div class="state-progress" :style="{width: '30%'}"/>
         </div>
         <div class="content-footer">
-          <b-button class="d-block" @click="$nuxt.$router.push('/dashboard/cursos')" v-b-tooltip="'Voltar'">
-            Voltar
-          </b-button>
+          <button class="d-block btn btn-rounded-grey" @click="$nuxt.$router.push('/dashboard/cursos')">
+            <span class="d-inline-block arrow-back-ico"></span>Voltar para Cursos
+          </button>
 
           <div>
-            <b-button class="btn-rounded-purple mr-3" v-b-tooltip="'Salvar rascunho'"  @click="sendForm()">
+            <b-button class="btn-rounded-purple mr-3 pl-4 pr-4" v-b-tooltip="'Salvar rascunho'"  @click="sendForm()">
               Salvar rascunho
             </b-button>
 
-            <b-button class="btn-purple" v-b-tooltip="'Publicar curso'" @click="sendForm(true)"
-                      :disabled="(step === 1 && position < 5) || (step === 2 && position < 3) || isDisabled">
+            <b-button class="btn-purple pl-4 pr-4" v-b-tooltip="'Publicar curso'" @click="sendForm(true)"
+                      :disabled="((step === 1 && position < 5) || (step === 2 && position < 3) || isDisabled) && !(!isDisabled && id)">
               Publicar curso
             </b-button>
           </div>
@@ -148,7 +149,10 @@ export default {
   data(){
     return {
       position: 1,
+      msgConfimation: null,
+      routeRedirect: null,
       step: 1,
+      id: null,
       title: 'Vamos cadastrar seu novo curso!',
       subtitle: 'Primeiro precisamos de alguns dados básicos',
       isDisabled: true,
@@ -174,7 +178,7 @@ export default {
         hasSimultaneousAccess: false,
         canDisplayProgress: false,
         issueCertificate: false,
-        certificateIssuePercentage: null,
+        certificateIssuePercentage: 0,
         acceptanceText: null,
         publishCourse: false
       },
@@ -204,14 +208,22 @@ export default {
             {title: 'Adicionar aulas'},
           ],
         },
-
       ],
     }
   },
   methods:{
     nextPosition(){
+      if(this.position === 3 && this.step=== 2) {
+        this.isDisabled = false;
+        return false;
+      }
+
       this.position += 1;
-      this.isDisabled = true;
+      this.isDisabled = !this.id;
+
+      if(this.position === 2 && this.step=== 2) {
+        this.isDisabled= false;
+      }
 
       if(this.position === 6) {
         this.title = 'Legal! Agora algumas configurações avançadas';
@@ -254,16 +266,17 @@ export default {
     },
     sendForm(publish){
       let authors = [];
-      this.course.authors.forEach(author => {
-        authors.push(author.id);
-      });
-      this.course.authors = authors;
 
-      let categories = [];
-      this.course.categories.forEach(category => {
-        categories.push(category.id);
-      })
-      this.course.categories = categories;
+      // this.course.authors.forEach(author => {
+      //   authors.push(author.id);
+      // });
+      // this.course.authors = authors;
+      //
+      // let categories = [];
+      // this.course.categories.forEach(category => {
+      //   categories.push(category.id);
+      // })
+      // this.course.categories = categories;
 
       this.permissions.forEach(option => {
         this.course[option] = true;
@@ -273,9 +286,12 @@ export default {
 
       this.course.publishCourse = publish;
 
+      this.msgConfimation = publish ? 'Curso publicado com sucesso!' : 'O seu rascunho está salvo!';
+      this.routeRedirect = publish ? '/dashboard/cursos' : null;
+
       if (this.course.id) {
         this.$axios.$put('/course/'+this.course.id, this.course).then(response => {
-          this.isSuccess = true;
+          this.$bvModal.show('confirmation');
         }).catch(e => {
           console.log(e)
         }).finally(() => {
@@ -284,7 +300,8 @@ export default {
       }
       else {
         this.$axios.$post('/course', this.course).then(response => {
-          $nuxt.$router.push('/dashboard/cursos');
+          this.routeRedirect = '/dashboard/cursos';
+          this.$bvModal.show('confirmation');
         }).catch(e => {
           console.log(e)
         }).finally(() => {
@@ -317,8 +334,33 @@ export default {
     this.getAuthorList();
 
     if($nuxt.$route.params.id) {
-      this.$axios.$get('/course', {params: {id: $nuxt.$route.params.id}}).then(response => {
-        this.course = {...response.data.data};
+      this.id = $nuxt.$route.params.id;
+      this.$axios.$get('/course', {params: {id: this.id}}).then(response => {
+        this.course = {...response.data};
+
+        this.categoriesList.forEach(category => {
+          this.course.categories.forEach(c => {
+            if(c.id === category.id) {
+              category.selected = true;
+            }
+          })
+        })
+
+        this.authorList.forEach(author => {
+          this.course.authors.forEach(a => {
+            if(a.id === author.id) {
+              author.selected = true;
+            }
+          })
+        });
+
+        this.permissionOptions.forEach( ({ value }) => {
+          if(this.course[value]){
+            this.permissions.push(value);
+          }
+        })
+
+        this.isDisabled = false;
       });
     }
   }
