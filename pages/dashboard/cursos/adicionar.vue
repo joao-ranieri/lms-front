@@ -10,11 +10,11 @@
         <div class="h-100 position-relative">
           <div class="group-inputs-carousel" v-if="step === 1">
             <div :class="['input-step-group', {'active': position === 1}]" v-if="position <= 1">
-                <label class="d-block">Como seu curso será chamado?</label>
-                <b-form-group>
-                  <b-form-input v-model="course.title" class="input-border" type="text" @keyup="validate(course.title)"
-                                placeholder="Tran Mau Tri Tam"/>
-                </b-form-group>
+              <label class="d-block">Como seu curso será chamado?</label>
+              <b-form-group>
+                <b-form-input v-model="course.title" class="input-border" type="text" @keyup="validate(course.title)"
+                              placeholder="Tran Mau Tri Tam"/>
+              </b-form-group>
             </div>
 
             <div :class="['input-step-group', {'active': position === 2}]" v-if="position <= 2">
@@ -30,16 +30,21 @@
             <div :class="['input-step-group', {'active': position === 4}]" v-if="position <= 4">
               <label class="d-block">Qual o tipo de acesso desse curso?</label>
               <b-form-group class="radio-style">
-                <b-form-radio name="some-radios" value="PAGO" v-model="course.accessType" @change="validate(course.accessType)"><strong>Pago -</strong> é necessário o pagamento para liberar
+                <b-form-radio name="some-radios" value="PAGO" v-model="course.accessType"
+                              @change="validate(course.accessType)"><strong>Pago -</strong> é necessário o pagamento
+                  para liberar
                   acesso
                 </b-form-radio>
-                <b-form-radio name="some-radios" value="GRATIS" v-model="course.accessType" @change="validate(course.accessType)"><strong>Gratuito -</strong> é necessário apenas o cadastro para
+                <b-form-radio name="some-radios" value="GRATIS" v-model="course.accessType"
+                              @change="validate(course.accessType)"><strong>Gratuito -</strong> é necessário apenas o
+                  cadastro para
                   liberar acesso
                 </b-form-radio>
               </b-form-group>
             </div>
 
-            <div style="width: 572px" :class="['input-step-group', 'd-flex', {'active': position === 5}]" v-if="position <= 5">
+            <div style="width: 572px" :class="['input-step-group', 'd-flex', {'active': position === 5}]"
+                 v-if="position <= 5">
               <UtilsDropImage @send-image="setProperty" :image="course.coverImage"/>
               <div class="box-info-image ml-3">
                 <h6 class="grey-neutral-6">Escolha a imagem de capa do seu curso</h6>
@@ -66,9 +71,11 @@
               <b-form-group class="checkbox-style">
                 <b-form-checkbox-group v-model="permissions" :options="permissionOptions"></b-form-checkbox-group>
 
-                <label class="d-block" v-if="course.issueCertificate">Quanto precisa ser concluído para emissão do certificado?</label>
+                <label class="d-block" v-if="course.issueCertificate">Quanto precisa ser concluído para emissão do
+                  certificado?</label>
                 <b-form-group v-if="permissions.includes('issueCertificate')">
-                  <b-form-input v-model="course.certificateIssuePercentage" class="input-border" type="text" @keyup="validate(course.certificateIssuePercentage)"
+                  <b-form-input v-model="course.certificateIssuePercentage" class="input-border" type="text"
+                                @keyup="validate(course.certificateIssuePercentage)"
                                 placeholder="Insira uma porcentagem"/>
                 </b-form-group>
               </b-form-group>
@@ -92,10 +99,157 @@
             </div>
           </div>
 
+          <div class="group-inputs-carousel" v-if="step === 3">
+            <div :class="['input-step-group', {'active': position === 1}]" v-if="position <= 1">
+              <button class="btn btn btn-block btn-rounded-purple" @click="nextPosition">+ Criar módulo</button>
+
+              <CourseModule/>
+            </div>
+
+            <div :class="['input-step-group', {'active': position === 2}]" v-if="position <= 2">
+              <label class="d-block">Título do módulo</label>
+              <b-form-group>
+                <b-form-input v-model="module.title" class="input-border" type="text"
+                              placeholder="Insira o título do seu módulo"/>
+              </b-form-group>
+
+              <label class="d-block mt-4">Quando será disponibilizado?</label>
+              <b-form-group class="radio-style">
+                <b-form-radio name="some-radios" value="immediate" v-model="module.availability"
+                              @change="validate(module.availability)">
+                  Imediatamente, assim que o curso for publicado.
+                </b-form-radio>
+                <b-form-radio name="some-radios" value="registration" v-model="module.availability"
+                              @change="validate(module.availability)">
+                  De acordo com a matrícula do aluno.
+                </b-form-radio>
+                <span v-if="module.availability === 'registration'">
+                  <label class="d-block">Quantos dias após a matrícula?</label>
+                <b-form-group>
+                  <b-form-input v-model="module.title" class="input-border" type="text"
+                                placeholder="Insira a quantidade de dias"/>
+                </b-form-group>
+                </span>
+                <b-form-radio name="some-radios" value="specificDate" v-model="module.availability"
+                              @change="validate(module.availability)">
+                  Em uma data específica.
+                </b-form-radio>
+                <span v-if="module.availability === 'specificDate'">
+                  <label class="d-block">Selecione a data de lançamento</label>
+                <b-form-group>
+                  <b-form-input v-model="module.title" class="input-border" type="text"
+                                placeholder="Digite ou selecione a data"/>
+                </b-form-group>
+                </span>
+              </b-form-group>
+
+              <label class="d-block mt-4">O método possui período de validade?</label>
+              <b-form-group class="radio-style">
+                <b-form-radio name="some-radios" value="N" v-model="module.hasExpiration"
+                              @change="validate(module.hasExpiration)">
+                  <strong>Não</strong>, o acesso é por tempo indeterminado.
+                </b-form-radio>
+                <b-form-radio name="some-radios" value="Y" v-model="module.hasExpiration"
+                              @change="validate(module.hasExpiration)">
+                  <strong>Sim</strong>, os alunos só acessam por um período específico.
+                </b-form-radio>
+
+                <span v-if="module.hasExpiration === 'Y'">
+                  <label class="d-block">Qual o prazo de validade desse módulo?</label>
+                  <b-form-group>
+                    <b-form-input v-model="module.title" class="input-border" type="text"
+                                  placeholder="Insira a quantidade de dias"/>
+                  </b-form-group>
+                </span>
+              </b-form-group>
+
+              <label class="d-block mt-4">Outras opções</label>
+              <b-form-group class="checkbox-style">
+                <b-form-checkbox-group v-model="permissions" :options="otherOptionsModule"></b-form-checkbox-group>
+              </b-form-group>
+            </div>
+
+            <div :class="['input-step-group', {'active': position === 3}]" v-if="position <= 3">
+              <label class="d-block">Título do aula</label>
+              <b-form-group>
+                <b-form-input v-model="lesson.title" class="input-border" type="text"
+                              placeholder="Insira o título da sua aula"/>
+              </b-form-group>
+
+              <label class="d-block mt-4">Deseja exibir quem são autores?</label>
+              <b-form-group class="radio-style">
+                <b-form-radio name="some-radios" :value="false" v-model="lesson.showAuthors"
+                              @change="validate(lesson.showAuthors)">
+                  <strong>Não</strong>, ocultar autores.
+                </b-form-radio>
+                <b-form-radio name="some-radios" :value="true" v-model="lesson.showAuthors"
+                              @change="validate(lesson.showAuthors)">
+                  <strong>Sim</strong>, exibir autores.
+                </b-form-radio>
+              </b-form-group>
+
+              <label class="d-block mt-4">Quando será disponibilizada?</label>
+              <b-form-group class="radio-style">
+                <b-form-radio name="some-radios" value="immediate" v-model="lesson.availability"
+                              @change="validate(lesson.availability)">
+                  Imediatamente, assim que o curso for publicado.
+                </b-form-radio>
+                <b-form-radio name="some-radios" value="registration" v-model="lesson.availability"
+                              @change="validate(lesson.availability)">
+                  De acordo com a matrícula do aluno.
+                </b-form-radio>
+                <span v-if="lesson.availability === 'registration'">
+                  <label class="d-block">Quantos dias após a matrícula?</label>
+                <b-form-group>
+                  <b-form-input v-model="lesson.title" class="input-border" type="text"
+                                placeholder="Insira a quantidade de dias"/>
+                </b-form-group>
+                </span>
+                <b-form-radio name="some-radios" value="specificDate" v-model="module.availability"
+                              @change="validate(module.availability)">
+                  Em uma data específica.
+                </b-form-radio>
+                <span v-if="lesson.availability === 'specificDate'">
+                  <label class="d-block">Selecione a data de lançamento</label>
+                <b-form-group>
+                  <b-form-input v-model="module.title" class="input-border" type="text"
+                                placeholder="Digite ou selecione a data"/>
+                </b-form-group>
+                </span>
+              </b-form-group>
+
+              <label class="d-block mt-4">A aula possui período de validade?</label>
+              <b-form-group class="radio-style">
+                <b-form-radio name="some-radios" value="N" v-model="module.hasExpiration"
+                              @change="validate(module.hasExpiration)">
+                  <strong>Não</strong>, o acesso é por tempo indeterminado.
+                </b-form-radio>
+                <b-form-radio name="some-radios" value="Y" v-model="module.hasExpiration"
+                              @change="validate(module.hasExpiration)">
+                  <strong>Sim</strong>, os alunos só acessam por um período específico.
+                </b-form-radio>
+
+                <span v-if="module.hasExpiration === 'Y'">
+                  <label class="d-block">Qual o prazo de validade desse módulo?</label>
+                  <b-form-group>
+                    <b-form-input v-model="module.title" class="input-border" type="text"
+                                  placeholder="Insira a quantidade de dias"/>
+                  </b-form-group>
+                </span>
+              </b-form-group>
+
+              <label class="d-block mt-4">Outras opções</label>
+              <b-form-group class="checkbox-style">
+                <b-form-checkbox-group v-model="permissions" :options="lessonsOptionsModule"></b-form-checkbox-group>
+              </b-form-group>
+            </div>
+          </div>
+
           <div style="position: relative; right: -588px; top: 26px">
-            <button class="btn d-block btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok</button>
-<!--            <button v-if="(step === 1 && position > 1) || step === 2" @click="returnPosition"-->
-<!--                    class="btn d-block btn-rounded-purple small-button pl-4 pr-4 mt-2">Anterior</button>-->
+            <button class="btn d-block btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok
+            </button>
+            <!--            <button v-if="(step === 1 && position > 1) || step === 2" @click="returnPosition"-->
+            <!--                    class="btn d-block btn-rounded-purple small-button pl-4 pr-4 mt-2">Anterior</button>-->
           </div>
         </div>
       </div>
@@ -114,7 +268,7 @@
           </button>
 
           <div>
-            <b-button class="btn-rounded-purple mr-3 pl-4 pr-4" v-b-tooltip="'Salvar rascunho'"  @click="sendForm()">
+            <b-button class="btn-rounded-purple mr-3 pl-4 pr-4" v-b-tooltip="'Salvar rascunho'" @click="sendForm()">
               Salvar rascunho
             </b-button>
 
@@ -132,7 +286,7 @@
       @change-step="changeStep"
       :currentStep="step"
       :currentPosition="position"
-      :itensProgress="itensProgress" />
+      :itensProgress="itensProgress"/>
   </div>
 </template>
 
@@ -146,7 +300,7 @@ export default {
       title: "Adicionar Curso - Masters",
     }
   },
-  data(){
+  data() {
     return {
       position: 1,
       msgConfimation: null,
@@ -159,10 +313,20 @@ export default {
       categoriesList: [],
       authorList: [],
       permissionOptions: [
-        { text: 'Marcar aula como assistida', value: 'manualCheck' },
-        { text: 'Acessar simultâneamente por mais de um dispositivo', value: 'hasSimultaneousAccess' },
-        { text: 'Ver o progresso do curso em porcentagem e quantidade de aulas concluídas', value: 'canDisplayProgress' },
-        { text: 'Emitir certificado automaticamente', value: 'issueCertificate' }
+        {text: 'Marcar aula como assistida', value: 'manualCheck'},
+        {text: 'Acessar simultâneamente por mais de um dispositivo', value: 'hasSimultaneousAccess'},
+        {text: 'Ver o progresso do curso em porcentagem e quantidade de aulas concluídas', value: 'canDisplayProgress'},
+        {text: 'Emitir certificado automaticamente', value: 'issueCertificate'}
+      ],
+      otherOptionsModule: [
+        {text: 'Esse módulo é gratuito', value: 'freeModule'},
+        {text: 'Esse módulo ficará oculto', value: 'isHidden'},
+        {text: 'Notificar os alunos sobre a alteração desse módulo', value: 'alertStudent'}
+      ],
+      lessonsOptionsModule: [
+        {text: 'Esse aula é gratuita', value: 'freeLesson'},
+        {text: 'Esse aula ficará oculta', value: 'isHidden'},
+        {text: 'Os alunos podem fazer comentários nessa aula', value: 'canComment'}
       ],
       permissions: [],
       term: null,
@@ -182,6 +346,19 @@ export default {
         acceptanceText: null,
         publishCourse: false
       },
+      module: {
+        title: null,
+        availability: null,
+        hasExpiration: null,
+        lessons: []
+      },
+      lesson: {
+        title: null,
+        showAuthors: false,
+        availability: null,
+        hasExpiration: null,
+      },
+      moduleLis: [],
       itensProgress: [
         {
           title: "Sobre o curso",
@@ -211,60 +388,61 @@ export default {
       ],
     }
   },
-  methods:{
-    nextPosition(){
-      if(this.position === 3 && this.step=== 2) {
-        this.isDisabled = false;
-        return false;
-      }
-
+  methods: {
+    nextPosition() {
       this.position += 1;
       this.isDisabled = !this.id;
 
-      if(this.position === 2 && this.step=== 2) {
-        this.isDisabled= false;
+      if (this.position === 2 && this.step === 2) {
+        this.isDisabled = false;
       }
 
-      if(this.position === 6) {
+      if (this.step === 1 && this.position === 6) {
         this.title = 'Legal! Agora algumas configurações avançadas';
         this.subtitle = 'Vamos configurar algumas opções para os seus alunos';
         this.step = 2;
         this.position = 1;
         this.isDisabled = false;
       }
-    },
-    returnPosition(){
-      if(this.step === 1 && this.position > 1){
-        this.position -= 1;
+
+      if (this.step === 2 && this.position === 4) {
+        this.title = 'Hora do conteúdo!';
+        this.subtitle = 'Agora você já pode adicionar módulos e aulas ao seu curso!\nQue tal começar com um módulo introdutório?';
+        this.step = 3;
+        this.position = 1;
+        this.isDisabled = true;
       }
-      else if (this.step === 2 && this.position === 1){
+
+      this.isDisabled = false;
+    },
+    returnPosition() {
+      if (this.step === 1 && this.position > 1) {
+        this.position -= 1;
+      } else if (this.step === 2 && this.position === 1) {
         this.step = 1;
         this.position = 5;
       }
 
       this.isDisabled = false;
-
     },
     validate(value) {
       if ((this.course.issueCertificate && !this.course.certificateIssuePercentage) ||
-         (this.course.term && this.course.term === 'Y' && !this.course.acceptanceText) || !value || value.length === 0) {
+        (this.course.term && this.course.term === 'Y' && !this.course.acceptanceText) || !value || value.length === 0) {
         this.isDisabled = true;
-      }
-      else {
+      } else {
         this.isDisabled = false;
       }
     },
     setProperty(value) {
       this.course[value.prop] = value.collection ? value.collection : value.item;
 
-      if(this.course[value.prop] && this.course[value.prop].length > 0){
+      if (this.course[value.prop] && this.course[value.prop].length > 0) {
         this.isDisabled = false;
-      }
-      else {
+      } else {
         this.isDisabled = true;
       }
     },
-    sendForm(publish){
+    sendForm(publish) {
       let authors = [];
 
       // this.course.authors.forEach(author => {
@@ -290,15 +468,14 @@ export default {
       this.routeRedirect = publish ? '/dashboard/cursos' : null;
 
       if (this.course.id) {
-        this.$axios.$put('/course/'+this.course.id, this.course).then(response => {
+        this.$axios.$put('/course/' + this.course.id, this.course).then(response => {
           this.$bvModal.show('confirmation');
         }).catch(e => {
           console.log(e)
         }).finally(() => {
           this.isLoading = false;
         })
-      }
-      else {
+      } else {
         this.$axios.$post('/course', this.course).then(response => {
           this.routeRedirect = '/dashboard/cursos';
           this.$bvModal.show('confirmation');
@@ -314,7 +491,9 @@ export default {
       this.position = 1;
     },
     changeInputProgress(e) {
-      if(e.indexItem + 1 !== this.step) { this.changeStep(e.indexItem) }
+      if (e.indexItem + 1 !== this.step) {
+        this.changeStep(e.indexItem)
+      }
       this.position = e.indexSub + 1;
 
     },
@@ -333,14 +512,14 @@ export default {
     this.getCategoriesList();
     this.getAuthorList();
 
-    if($nuxt.$route.params.id) {
+    if ($nuxt.$route.params.id) {
       this.id = $nuxt.$route.params.id;
       this.$axios.$get('/course', {params: {id: this.id}}).then(response => {
         this.course = {...response.data};
 
         this.categoriesList.forEach(category => {
           this.course.categories.forEach(c => {
-            if(c.id === category.id) {
+            if (c.id === category.id) {
               category.selected = true;
             }
           })
@@ -348,14 +527,14 @@ export default {
 
         this.authorList.forEach(author => {
           this.course.authors.forEach(a => {
-            if(a.id === author.id) {
+            if (a.id === author.id) {
               author.selected = true;
             }
           })
         });
 
-        this.permissionOptions.forEach( ({ value }) => {
-          if(this.course[value]){
+        this.permissionOptions.forEach(({value}) => {
+          if (this.course[value]) {
             this.permissions.push(value);
           }
         })
@@ -409,6 +588,8 @@ export default {
 .group-inputs-carousel .input-step-group.active {
   align-items: center;
   width: 100%;
+  height: calc(100vh - 381px);
+  overflow-y: auto;
   z-index: 1;
   top: calc(-100vh + 483px);
 }

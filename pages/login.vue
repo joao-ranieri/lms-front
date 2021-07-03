@@ -59,7 +59,7 @@
                 Se o link não chegar em até 30 segundos, <a href="#" @click="sendPass">tente reenviar</a>.
               </span>
             </span>
-            <div class="text-center mt-4">
+            <div class="text-center mt-5">
               <small v-if="formSelected === 'login'"><a href="#" @click="formControl('recover')">Esqueci minha senha</a></small>
 
               <b-button type="submit" :disabled="isLoading"

@@ -415,6 +415,14 @@ select.select-arrow {
   content: url("../../assets/img/utils/ico-pencil.svg");
 }
 
+.eye-ico {
+  content: url("../../assets/img/utils/ico-eye.svg");
+}
+
+.three-points {
+  content: url("../../assets/img/utils/three-points-vertical.svg");
+}
+
 .arrow-back-ico {
   content: url("../../assets/img/utils/ico-arrow-dropdown-grey.svg");
   transform: rotateX(90deg);

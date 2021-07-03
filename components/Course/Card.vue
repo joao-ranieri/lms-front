@@ -75,7 +75,7 @@ export default {
   width: 241px;
   height: 400px;
   border-radius: 16px;
-  border: 2px solid transparent;
+  border: 4px solid transparent;
   background-blend-mode: multiply;
   overflow: hidden;
   margin-bottom: 23px;
