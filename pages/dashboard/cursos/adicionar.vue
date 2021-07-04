@@ -1,256 +1,343 @@
 <template>
   <div class="form-addCurso">
-    <div class="main-form">
-      <header style="padding-left: 2px;">
-        <h4 v-text="title"></h4>
-        <span class="sub-text-form" v-text="subtitle"></span>
+    <div :class="['main-form', {'course-module': step === 3 && position > 1}]">
+      <header>
+        <div v-if="!(step === 3 && position > 1)">
+          <h4 v-html="headerText[step - 1].title"></h4>
+          <span class="sub-text-form" v-html="headerText[step - 1].subtitle"></span>
+        </div>
+        <div v-else>
+          <MenuNavigator @change-position="changePositon" :items="itemsNavigator" :current="position" />
+        </div>
       </header>
 
       <div class="content-addCurso-form overflow-hidden">
         <div class="h-100 position-relative">
           <div class="group-inputs-carousel" v-if="step === 1">
             <div :class="['input-step-group', {'active': position === 1}]" v-if="position <= 1">
-              <label class="d-block">Como seu curso será chamado?</label>
-              <b-form-group>
-                <b-form-input v-model="course.title" class="input-border" type="text" @keyup="validate(course.title)"
-                              placeholder="Tran Mau Tri Tam"/>
-              </b-form-group>
+              <div class="item-form">
+                <label class="d-block">Como seu curso será chamado?</label>
+                <b-form-group>
+                  <b-form-input v-model="course.title" class="input-border" type="text" @keyup="validate(course.title)"
+                                placeholder="Tran Mau Tri Tam"/>
+                </b-form-group>
+              </div>
+              <div class="pl-3">
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok
+                </button>
+              </div>
             </div>
 
             <div :class="['input-step-group', {'active': position === 2}]" v-if="position <= 2">
-              <label class="d-block">Em qual categoria ele se encaixa?</label>
-              <FormSelectSearch :items="categoriesList" type="categories" @return-selection="setProperty"/>
+              <div class="item-form">
+                <label class="d-block">Em qual categoria ele se encaixa?</label>
+                <FormSelectSearch :items="categoriesList" type="categories" @return-selection="setProperty"/>
+
+              </div>
+              <div class="pl-3">
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok
+                </button>
+              </div>
             </div>
 
             <div :class="['input-step-group', {'active': position === 3}]" v-if="position <= 3">
-              <label class="d-block">Quem criou esse curso?</label>
-              <FormSelectSearch :items="authorList" type="authors" @return-selection="setProperty"/>
+              <div class="item-form">
+                <label class="d-block">Quem criou esse curso?</label>
+                <FormSelectSearch :items="authorList" type="authors" @return-selection="setProperty"/>
+
+              </div>
+              <div class="pl-3">
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok
+                </button>
+              </div>
             </div>
 
             <div :class="['input-step-group', {'active': position === 4}]" v-if="position <= 4">
-              <label class="d-block">Qual o tipo de acesso desse curso?</label>
-              <b-form-group class="radio-style">
-                <b-form-radio name="some-radios" value="PAGO" v-model="course.accessType"
-                              @change="validate(course.accessType)"><strong>Pago -</strong> é necessário o pagamento
-                  para liberar
-                  acesso
-                </b-form-radio>
-                <b-form-radio name="some-radios" value="GRATIS" v-model="course.accessType"
-                              @change="validate(course.accessType)"><strong>Gratuito -</strong> é necessário apenas o
-                  cadastro para
-                  liberar acesso
-                </b-form-radio>
-              </b-form-group>
+              <div class="item-form">
+                <label class="d-block">Qual o tipo de acesso desse curso?</label>
+                <b-form-group class="radio-style">
+                  <b-form-radio name="some-radios" value="PAGO" v-model="course.accessType"
+                                @change="validate(course.accessType)"><strong>Pago -</strong> é necessário o pagamento
+                    para liberar
+                    acesso
+                  </b-form-radio>
+                  <b-form-radio name="some-radios" value="GRATIS" v-model="course.accessType"
+                                @change="validate(course.accessType)"><strong>Gratuito -</strong> é necessário apenas o
+                    cadastro para
+                    liberar acesso
+                  </b-form-radio>
+                </b-form-group>
+
+              </div>
+              <div class="pl-3">
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok
+                </button>
+              </div>
             </div>
 
-            <div style="width: 572px" :class="['input-step-group', 'd-flex', {'active': position === 5}]"
+            <div :class="['input-step-group', {'active': position === 5}]"
                  v-if="position <= 5">
-              <UtilsDropImage @send-image="setProperty" :image="course.coverImage"/>
-              <div class="box-info-image ml-3">
-                <h6 class="grey-neutral-6">Escolha a imagem de capa do seu curso</h6>
-                <span class="d-block grey-neutral">
-                Essa será imagem aparecerá como capa no catálogo de cursos. <br><br><br>
-                Use uma imagem de alta qualidade, em formato vertical e com <strong>dimensão mínima de 300x400 pixels</strong> para garantir uma boa visualização.
-              </span>
+              <div class="item-form d-inline-flex" style="gap: 16px">
+                <UtilsDropImage @send-image="setProperty" :image="course.coverImage"/>
+                <div class="box-info-image">
+                  <h6 class="grey-neutral-6">Escolha a imagem de capa do seu curso</h6>
+                  <span class="d-block grey-neutral">
+                    Essa será imagem aparecerá como capa no catálogo de cursos. <br><br><br>
+                    Use uma imagem de alta qualidade, em formato vertical e com <strong>dimensão mínima de 300x400 pixels</strong> para garantir uma boa visualização.
+                  </span>
+                </div>
+
+              </div>
+              <div class="pl-3">
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok
+                </button>
               </div>
             </div>
           </div>
 
           <div class="group-inputs-carousel" v-if="step === 2">
             <div :class="['input-step-group', {'active': position === 1}]" v-if="position <= 1">
-              <label class="d-block">O curso possui alguma Central de Ajuda ou página de Suporte?</label>
-              <b-form-group>
-                <b-form-input v-model="course.supportPage" class="input-border" type="text"
-                              placeholder="Insira o link da página de ajuda"/>
-              </b-form-group>
-              <label class="d-block mt-2">Se não houver, você pode pular essa etapa.</label>
+              <div class="item-form">
+                <label class="d-block">O curso possui alguma Central de Ajuda ou página de Suporte?</label>
+                <b-form-group>
+                  <b-form-input v-model="course.supportPage" class="input-border" type="text"
+                                placeholder="Insira o link da página de ajuda"/>
+                </b-form-group>
+                <label class="d-block mt-2">Se não houver, você pode pular essa etapa.</label>
+              </div>
+              <div class="pl-3">
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok
+                </button>
+              </div>
             </div>
 
             <div :class="['input-step-group', {'active': position === 2}]" v-if="position <= 2">
-              <label class="d-block">No seu curso, os alunos podem:</label>
-              <b-form-group class="checkbox-style">
-                <b-form-checkbox-group v-model="permissions" :options="permissionOptions"></b-form-checkbox-group>
+              <div class="item-form">
+                <label class="d-block">No seu curso, os alunos podem:</label>
+                <b-form-group class="checkbox-style">
+                  <b-form-checkbox-group v-model="permissions" :options="permissionOptions"></b-form-checkbox-group>
 
-                <label class="d-block" v-if="course.issueCertificate">Quanto precisa ser concluído para emissão do
-                  certificado?</label>
-                <b-form-group v-if="permissions.includes('issueCertificate')">
-                  <b-form-input v-model="course.certificateIssuePercentage" class="input-border" type="text"
-                                @keyup="validate(course.certificateIssuePercentage)"
-                                placeholder="Insira uma porcentagem"/>
+                  <label class="d-block" v-if="course.issueCertificate">Quanto precisa ser concluído para emissão do
+                    certificado?</label>
+                  <b-form-group v-if="permissions.includes('issueCertificate')">
+                    <b-form-input v-model="course.certificateIssuePercentage" class="input-border" type="text"
+                                  @keyup="validate(course.certificateIssuePercentage)"
+                                  placeholder="Insira uma porcentagem"/>
+                  </b-form-group>
                 </b-form-group>
-              </b-form-group>
+              </div>
+              <div class="pl-3">
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok
+                </button>
+              </div>
             </div>
 
             <div :class="['input-step-group', {'active': position === 3}]" v-if="position <= 3">
-              <label class="d-block">Esse curso possui termos e condições?</label>
-              <b-form-group class="radio-style">
-                <b-form-radio name="some-radios" value="N" v-model="term" @change="validate(term)">
-                  <strong>Não</strong>, não precisa de Termos e Condições
-                </b-form-radio>
-                <b-form-radio name="some-radios" value="Y" v-model="term" @change="validate(term)">
-                  <strong>Sim</strong>, precisa de Termos e Condições
-                </b-form-radio>
-              </b-form-group>
+              <div class="item-form">
+                <label class="d-block">Esse curso possui termos e condições?</label>
+                <b-form-group class="radio-style">
+                  <b-form-radio name="some-radios" value="N" v-model="term" @change="validate(term)">
+                    <strong>Não</strong>, não precisa de Termos e Condições
+                  </b-form-radio>
+                  <b-form-radio name="some-radios" value="Y" v-model="term" @change="validate(term)">
+                    <strong>Sim</strong>, precisa de Termos e Condições
+                  </b-form-radio>
+                </b-form-group>
 
-              <b-form-textarea v-if="term === 'Y'" v-model="course.acceptanceText" rows="6"
-                               @keyup="validate(course.acceptanceText)" placeholder="Insira seus Termos e Condições">
-              </b-form-textarea>
-
+                <b-form-textarea v-if="term === 'Y'" v-model="course.acceptanceText" rows="6"
+                                 @keyup="validate(course.acceptanceText)" placeholder="Insira seus Termos e Condições">
+                </b-form-textarea>
+              </div>
+              <div class="pl-3">
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok
+                </button>
+              </div>
             </div>
           </div>
 
-          <div class="group-inputs-carousel" v-if="step === 3">
+          <div class="group-inputs-carousel group-module" v-if="step === 3">
             <div :class="['input-step-group', {'active': position === 1}]" v-if="position <= 1">
-              <button class="btn btn btn-block btn-rounded-purple" @click="nextPosition">+ Criar módulo</button>
+              <div class="item-form">
+                <button class="btn btn btn-block btn-rounded-purple" @click="nextPosition">+ Criar módulo</button>
 
-              <CourseModule/>
+                <CourseModule/>
+                <CourseModule/>
+                <CourseModule/>
+                <CourseModule/>
+              </div>
             </div>
 
             <div :class="['input-step-group', {'active': position === 2}]" v-if="position <= 2">
-              <label class="d-block">Título do módulo</label>
-              <b-form-group>
-                <b-form-input v-model="module.title" class="input-border" type="text"
-                              placeholder="Insira o título do seu módulo"/>
-              </b-form-group>
+              <div class="item-form">
 
-              <label class="d-block mt-4">Quando será disponibilizado?</label>
-              <b-form-group class="radio-style">
-                <b-form-radio name="some-radios" value="immediate" v-model="module.availability"
-                              @change="validate(module.availability)">
-                  Imediatamente, assim que o curso for publicado.
-                </b-form-radio>
-                <b-form-radio name="some-radios" value="registration" v-model="module.availability"
-                              @change="validate(module.availability)">
-                  De acordo com a matrícula do aluno.
-                </b-form-radio>
-                <span v-if="module.availability === 'registration'">
+                <label class="d-block">Título do módulo</label>
+                <b-form-group>
+                  <b-form-input v-model="module.title" class="input-border" type="text"
+                                placeholder="Insira o título do seu módulo"/>
+                </b-form-group>
+
+                <label class="d-block mt-4">Quando será disponibilizado?</label>
+                <b-form-group class="radio-style">
+                  <b-form-radio name="some-radios" value="immediate" v-model="module.availability"
+                                @change="validate(module.availability)">
+                    Imediatamente, assim que o curso for publicado.
+                  </b-form-radio>
+                  <b-form-radio name="some-radios" value="registration" v-model="module.availability"
+                                @change="validate(module.availability)">
+                    De acordo com a matrícula do aluno.
+                  </b-form-radio>
+                  <span v-if="module.availability === 'registration'">
                   <label class="d-block">Quantos dias após a matrícula?</label>
                 <b-form-group>
                   <b-form-input v-model="module.title" class="input-border" type="text"
                                 placeholder="Insira a quantidade de dias"/>
                 </b-form-group>
                 </span>
-                <b-form-radio name="some-radios" value="specificDate" v-model="module.availability"
-                              @change="validate(module.availability)">
-                  Em uma data específica.
-                </b-form-radio>
-                <span v-if="module.availability === 'specificDate'">
+                  <b-form-radio name="some-radios" value="specificDate" v-model="module.availability"
+                                @change="validate(module.availability)">
+                    Em uma data específica.
+                  </b-form-radio>
+                  <span v-if="module.availability === 'specificDate'">
                   <label class="d-block">Selecione a data de lançamento</label>
                 <b-form-group>
                   <b-form-input v-model="module.title" class="input-border" type="text"
                                 placeholder="Digite ou selecione a data"/>
                 </b-form-group>
                 </span>
-              </b-form-group>
+                </b-form-group>
 
-              <label class="d-block mt-4">O método possui período de validade?</label>
-              <b-form-group class="radio-style">
-                <b-form-radio name="some-radios" value="N" v-model="module.hasExpiration"
-                              @change="validate(module.hasExpiration)">
-                  <strong>Não</strong>, o acesso é por tempo indeterminado.
-                </b-form-radio>
-                <b-form-radio name="some-radios" value="Y" v-model="module.hasExpiration"
-                              @change="validate(module.hasExpiration)">
-                  <strong>Sim</strong>, os alunos só acessam por um período específico.
-                </b-form-radio>
+                <label class="d-block mt-4">O método possui período de validade?</label>
+                <b-form-group class="radio-style">
+                  <b-form-radio name="some-radios" value="N" v-model="module.hasExpiration"
+                                @change="validate(module.hasExpiration)">
+                    <strong>Não</strong>, o acesso é por tempo indeterminado.
+                  </b-form-radio>
+                  <b-form-radio name="some-radios" value="Y" v-model="module.hasExpiration"
+                                @change="validate(module.hasExpiration)">
+                    <strong>Sim</strong>, os alunos só acessam por um período específico.
+                  </b-form-radio>
 
-                <span v-if="module.hasExpiration === 'Y'">
+                  <span v-if="module.hasExpiration === 'Y'">
                   <label class="d-block">Qual o prazo de validade desse módulo?</label>
                   <b-form-group>
                     <b-form-input v-model="module.title" class="input-border" type="text"
                                   placeholder="Insira a quantidade de dias"/>
                   </b-form-group>
                 </span>
-              </b-form-group>
+                </b-form-group>
 
-              <label class="d-block mt-4">Outras opções</label>
-              <b-form-group class="checkbox-style">
-                <b-form-checkbox-group v-model="permissions" :options="otherOptionsModule"></b-form-checkbox-group>
-              </b-form-group>
+                <label class="d-block mt-4">Outras opções</label>
+                <b-form-group class="checkbox-style">
+                  <b-form-checkbox-group v-model="permissions" :options="otherOptionsModule"></b-form-checkbox-group>
+                </b-form-group>
+              </div>
+              <div class="pl-3">
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok
+                </button>
+              </div>
             </div>
 
             <div :class="['input-step-group', {'active': position === 3}]" v-if="position <= 3">
-              <label class="d-block">Título do aula</label>
-              <b-form-group>
-                <b-form-input v-model="lesson.title" class="input-border" type="text"
-                              placeholder="Insira o título da sua aula"/>
-              </b-form-group>
+              <div class="item-form">
+                <label class="d-block">Título do aula</label>
+                <b-form-group>
+                  <b-form-input v-model="lesson.title" class="input-border" type="text"
+                                placeholder="Insira o título da sua aula"/>
+                </b-form-group>
 
-              <label class="d-block mt-4">Deseja exibir quem são autores?</label>
-              <b-form-group class="radio-style">
-                <b-form-radio name="some-radios" :value="false" v-model="lesson.showAuthors"
-                              @change="validate(lesson.showAuthors)">
-                  <strong>Não</strong>, ocultar autores.
-                </b-form-radio>
-                <b-form-radio name="some-radios" :value="true" v-model="lesson.showAuthors"
-                              @change="validate(lesson.showAuthors)">
-                  <strong>Sim</strong>, exibir autores.
-                </b-form-radio>
-              </b-form-group>
+                <label class="d-block mt-4">Deseja exibir quem são autores?</label>
+                <b-form-group class="radio-style">
+                  <b-form-radio name="some-radios" :value="false" v-model="lesson.showAuthors"
+                                @change="validate(lesson.showAuthors)">
+                    <strong>Não</strong>, ocultar autores.
+                  </b-form-radio>
+                  <b-form-radio name="some-radios" :value="true" v-model="lesson.showAuthors"
+                                @change="validate(lesson.showAuthors)">
+                    <strong>Sim</strong>, exibir autores.
+                  </b-form-radio>
+                </b-form-group>
 
-              <label class="d-block mt-4">Quando será disponibilizada?</label>
-              <b-form-group class="radio-style">
-                <b-form-radio name="some-radios" value="immediate" v-model="lesson.availability"
-                              @change="validate(lesson.availability)">
-                  Imediatamente, assim que o curso for publicado.
-                </b-form-radio>
-                <b-form-radio name="some-radios" value="registration" v-model="lesson.availability"
-                              @change="validate(lesson.availability)">
-                  De acordo com a matrícula do aluno.
-                </b-form-radio>
-                <span v-if="lesson.availability === 'registration'">
+                <label class="d-block mt-4">Quando será disponibilizada?</label>
+                <b-form-group class="radio-style">
+                  <b-form-radio name="some-radios" value="immediate" v-model="lesson.availability"
+                                @change="validate(lesson.availability)">
+                    Imediatamente, assim que o curso for publicado.
+                  </b-form-radio>
+                  <b-form-radio name="some-radios" value="registration" v-model="lesson.availability"
+                                @change="validate(lesson.availability)">
+                    De acordo com a matrícula do aluno.
+                  </b-form-radio>
+                  <span v-if="lesson.availability === 'registration'">
                   <label class="d-block">Quantos dias após a matrícula?</label>
                 <b-form-group>
                   <b-form-input v-model="lesson.title" class="input-border" type="text"
                                 placeholder="Insira a quantidade de dias"/>
                 </b-form-group>
                 </span>
-                <b-form-radio name="some-radios" value="specificDate" v-model="module.availability"
-                              @change="validate(module.availability)">
-                  Em uma data específica.
-                </b-form-radio>
-                <span v-if="lesson.availability === 'specificDate'">
+                  <b-form-radio name="some-radios" value="specificDate" v-model="module.availability"
+                                @change="validate(module.availability)">
+                    Em uma data específica.
+                  </b-form-radio>
+                  <span v-if="lesson.availability === 'specificDate'">
                   <label class="d-block">Selecione a data de lançamento</label>
                 <b-form-group>
                   <b-form-input v-model="module.title" class="input-border" type="text"
                                 placeholder="Digite ou selecione a data"/>
                 </b-form-group>
                 </span>
-              </b-form-group>
+                </b-form-group>
 
-              <label class="d-block mt-4">A aula possui período de validade?</label>
-              <b-form-group class="radio-style">
-                <b-form-radio name="some-radios" value="N" v-model="module.hasExpiration"
-                              @change="validate(module.hasExpiration)">
-                  <strong>Não</strong>, o acesso é por tempo indeterminado.
-                </b-form-radio>
-                <b-form-radio name="some-radios" value="Y" v-model="module.hasExpiration"
-                              @change="validate(module.hasExpiration)">
-                  <strong>Sim</strong>, os alunos só acessam por um período específico.
-                </b-form-radio>
+                <label class="d-block mt-4">A aula possui período de validade?</label>
+                <b-form-group class="radio-style">
+                  <b-form-radio name="some-radios" value="N" v-model="module.hasExpiration"
+                                @change="validate(module.hasExpiration)">
+                    <strong>Não</strong>, o acesso é por tempo indeterminado.
+                  </b-form-radio>
+                  <b-form-radio name="some-radios" value="Y" v-model="module.hasExpiration"
+                                @change="validate(module.hasExpiration)">
+                    <strong>Sim</strong>, os alunos só acessam por um período específico.
+                  </b-form-radio>
 
-                <span v-if="module.hasExpiration === 'Y'">
+                  <span v-if="module.hasExpiration === 'Y'">
                   <label class="d-block">Qual o prazo de validade desse módulo?</label>
                   <b-form-group>
                     <b-form-input v-model="module.title" class="input-border" type="text"
                                   placeholder="Insira a quantidade de dias"/>
                   </b-form-group>
                 </span>
-              </b-form-group>
+                </b-form-group>
 
-              <label class="d-block mt-4">Outras opções</label>
-              <b-form-group class="checkbox-style">
-                <b-form-checkbox-group v-model="permissions" :options="lessonsOptionsModule"></b-form-checkbox-group>
-              </b-form-group>
+                <label class="d-block mt-4">Outras opções</label>
+                <b-form-group class="checkbox-style">
+                  <b-form-checkbox-group v-model="permissions" :options="lessonsOptionsModule"></b-form-checkbox-group>
+                </b-form-group>
+
+                <label class="d-block mt-4">Selecione qual conteúdo deseja adicionar</label>
+                <div class="d-flex justify-content-between">
+                  <FormMultimedia type="text"/>
+                  <FormMultimedia type="video"/>
+                  <FormMultimedia type="file"/>
+                  <FormMultimedia type="audio"/>
+                  <FormMultimedia type="incorporate"/>
+                  <FormMultimedia type="task"/>
+                </div>
+
+
+
+              </div>
+            </div>
+            <div class="pl-3">
+              <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok
+              </button>
             </div>
           </div>
 
-          <div style="position: relative; right: -588px; top: 26px">
-            <button class="btn d-block btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok
-            </button>
-            <!--            <button v-if="(step === 1 && position > 1) || step === 2" @click="returnPosition"-->
-            <!--                    class="btn d-block btn-rounded-purple small-button pl-4 pr-4 mt-2">Anterior</button>-->
-          </div>
+          <!--          <div style="position: relative; right: -588px; top: 26px">-->
+          <!--            <button class="btn d-block btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok-->
+          <!--            </button>-->
+          <!--            &lt;!&ndash;            <button v-if="(step === 1 && position > 1) || step === 2" @click="returnPosition"&ndash;&gt;-->
+          <!--            &lt;!&ndash;                    class="btn d-block btn-rounded-purple small-button pl-4 pr-4 mt-2">Anterior</button>&ndash;&gt;-->
+          <!--          </div>-->
         </div>
       </div>
 
@@ -264,7 +351,7 @@
         </div>
         <div class="content-footer">
           <button class="d-block btn btn-rounded-grey" @click="$nuxt.$router.push('/dashboard/cursos')">
-            <span class="d-inline-block arrow-back-ico"></span>Voltar para Cursos
+            <span class="d-inline-block arrow-back-ico mr-2"></span>{{ this.step === 3 && position > 1 ? "Voltar para Módulos" : "Voltar para Cursos"}}
           </button>
 
           <div>
@@ -307,7 +394,16 @@ export default {
       routeRedirect: null,
       step: 1,
       id: null,
-      title: 'Vamos cadastrar seu novo curso!',
+      headerText: [
+        {title: 'Vamos cadastrar seu novo curso!', subtitle: 'Primeiro precisamos de alguns dados básicos'},
+        {
+          title: 'Legal! Agora algumas configurações avançadas',
+          subtitle: 'Vamos configurar algumas opções para os seus alunos'
+        },
+        {
+          title: 'Hora do conteúdo!',
+          subtitle: 'Agora você já pode adicionar módulos e aulas ao seu curso!<br>Que tal começar com um módulo introdutório?'
+        }],
       subtitle: 'Primeiro precisamos de alguns dados básicos',
       isDisabled: true,
       categoriesList: [],
@@ -350,15 +446,20 @@ export default {
         title: null,
         availability: null,
         hasExpiration: null,
-        lessons: []
+        lessons: [],
       },
       lesson: {
         title: null,
         showAuthors: false,
         availability: null,
         hasExpiration: null,
+        audios:[],
+        videos:[],
+        texts:[],
+        html:[],
+        tasks:[]
       },
-      moduleLis: [],
+      moduleList: [],
       itensProgress: [
         {
           title: "Sobre o curso",
@@ -380,15 +481,32 @@ export default {
         },
         {
           title: "Módulos e aulas",
-          subItems: [
-            {title: 'Adicionar módulos'},
-            {title: 'Adicionar aulas'},
-          ],
+          subItems: [],
         },
       ],
+      itemsNavigator: [
+        { position: 1, title: null},
+        { position: 2, title: "Criar módulo" },
+        { position: 3, title: "Criar aula" }
+      ]
+    }
+  },
+  watch: {
+    'course.title': function(newValue){
+      if(newValue){
+        this.itemsNavigator[0].title = newValue;
+      }
     }
   },
   methods: {
+    back(){
+      if(this.step === 3 && position > 1){
+        this.position = 1;
+      }
+      else{
+        $nuxt.$router.push('/dashboard/cursos')
+      }
+    },
     nextPosition() {
       this.position += 1;
       this.isDisabled = !this.id;
@@ -398,16 +516,12 @@ export default {
       }
 
       if (this.step === 1 && this.position === 6) {
-        this.title = 'Legal! Agora algumas configurações avançadas';
-        this.subtitle = 'Vamos configurar algumas opções para os seus alunos';
         this.step = 2;
         this.position = 1;
         this.isDisabled = false;
       }
 
       if (this.step === 2 && this.position === 4) {
-        this.title = 'Hora do conteúdo!';
-        this.subtitle = 'Agora você já pode adicionar módulos e aulas ao seu curso!\nQue tal começar com um módulo introdutório?';
         this.step = 3;
         this.position = 1;
         this.isDisabled = true;
@@ -490,6 +604,9 @@ export default {
       this.step = step + 1;
       this.position = 1;
     },
+    changePositon(pos) {
+      this.position = pos;
+    },
     changeInputProgress(e) {
       if (e.indexItem + 1 !== this.step) {
         this.changeStep(e.indexItem)
@@ -564,37 +681,70 @@ export default {
   overflow: hidden;
 }
 
+.form-addCurso .main-form.course-module {
+  padding: 27px 0 40px 66px;
+}
+
 .content-addCurso-form {
   display: block;
   padding-top: 30px;
   height: calc(100% - 121px);
 }
 
+.course-module .content-addCurso-form {
+  padding-top: 24px;
+}
+
 .group-inputs-carousel {
-  position: absolute;
-  bottom: 54px;
+  position: relative;
+  display: inline-block;
+  bottom: -16px;
   height: 100px;
-  max-width: 572px;
   width: 100%;
+}
+.group-inputs-carousel.group-module {
+  bottom: -50px;
 }
 
 .group-inputs-carousel .input-step-group {
   position: relative;
+  display: grid;
+  grid-template-columns: 572px auto;
   transition: .3s all;
   padding-left: 2px;
   z-index: -1;
 }
 
+.group-inputs-carousel .input-step-group .item-form {
+  padding: 0 2px;
+  display: inline-block;
+  max-width: 572px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.course-module .group-inputs-carousel .input-step-group {
+  grid-template-columns: 671px auto;
+}
+
+.course-module .group-inputs-carousel .input-step-group .item-form {
+  max-width: 671px;
+}
+
 .group-inputs-carousel .input-step-group.active {
-  align-items: center;
   width: 100%;
   height: calc(100vh - 381px);
-  overflow-y: auto;
   z-index: 1;
-  top: calc(-100vh + 483px);
+  background-color: #fff;
+  top: -16px;
+}
+
+.group-inputs-carousel.group-module .input-step-group.active {
+  top: -50px;
 }
 
 .group-inputs-carousel .box-info-image {
+  height: max-content;
   width: 405px;
   background: #FBFBFB;
   border: 1px solid #F2F2F2;

@@ -60,7 +60,10 @@ export default {
         endpoints: {
           login: { url: 'auth/adm', method: 'post'},
           user: false,
-        }
+        },
+        token: {
+          maxAge: 60 * 60 * 24,
+        },
       },
       student: {
         _scheme: 'local',
@@ -68,7 +71,10 @@ export default {
           login: { url: 'auth/student', method: 'post'},
           user: false,
           logout: '/login'
-        }
+        },
+        token: {
+          maxAge: 60 * 60 * 24,
+        },
       },
     },
   },

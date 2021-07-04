@@ -424,8 +424,61 @@ select.select-arrow {
 }
 
 .arrow-back-ico {
-  content: url("../../assets/img/utils/ico-arrow-dropdown-grey.svg");
-  transform: rotateX(90deg);
+  content: url("../../assets/img/utils/ico-back-dropdown-grey.svg");
+}
+
+.fonts-ico {
+  content: url("../../assets/img/utils/ico-font.svg");
+}
+
+.fonts-purple-ico,
+div:hover > .fonts-ico {
+  content: url("../../assets/img/utils/ico-font-purple.svg");
+}
+
+.video-ico {
+  content: url("../../assets/img/utils/ico-video.svg");
+}
+
+.video-purple-ico,
+div:hover > .video-ico {
+  content: url("../../assets/img/utils/ico-video-purple.svg");
+}
+
+.file-ico {
+  content: url("../../assets/img/utils/ico-file.svg");
+}
+
+.file-purple-ico,
+div:hover > .file-ico {
+  content: url("../../assets/img/utils/ico-file-purple.svg");
+}
+
+.mic-ico {
+  content: url("../../assets/img/utils/ico-mic.svg");
+}
+
+.mic-purple-ico,
+div:hover > .mic-ico {
+  content: url("../../assets/img/utils/ico-mic-purple.svg");
+}
+
+.incorporate-ico {
+  content: url("../../assets/img/utils/ico-incorporate.svg");
+}
+
+.incorporate-purple-ico,
+div:hover > .incorporate-ico {
+  content: url("../../assets/img/utils/ico-incorporate-purple.svg");
+}
+
+.task-ico {
+  content: url("../../assets/img/utils/ico-task.svg");
+}
+
+.task-purple-ico,
+div:hover > .task-ico {
+  content: url("../../assets/img/utils/ico-task-purple.svg");
 }
 
 .loading-content {
@@ -524,9 +577,9 @@ select.select-arrow {
   color: #89238A;;
 }
 
-.checkbox-style .custom-control-input:checked ~ .checkbox-style .custom-control ,
-.radio-style .custom-control-input:checked ~ .radio-style .custom-control{
-  background: #F9F5FA;
+.checkbox-style .custom-control-input:checked + .checkbox-style .custom-control,
+.radio-style .custom-control-input:checked + .radio-style .custom-control  {
+  background-color: #F9F5FA;
 }
 
 .checkbox-style .custom-control-input:checked ~ .custom-control-label::before {
