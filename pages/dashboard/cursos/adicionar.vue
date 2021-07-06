@@ -373,6 +373,7 @@
       @change-step="changeStep"
       :currentStep="step"
       :currentPosition="position"
+      :itemsNavigator="itemsNavigator[position-1]"
       :itensProgress="itensProgress"/>
   </div>
 </template>
@@ -486,8 +487,24 @@ export default {
       ],
       itemsNavigator: [
         { position: 1, title: null},
-        { position: 2, title: "Criar módulo" },
-        { position: 3, title: "Criar aula" }
+        { position: 2, title: "Criar módulo", icon: "folder",
+        steps: [
+          {stepsTitle: "Título"},
+          {stepsTitle: "Disponibilidade"},
+          {stepsTitle: "Validade"},
+          {stepsTitle: "Outras Opções"},
+          ]
+        },
+        { position: 3, title: "Criar aula", icon: "folder",
+        steps: [
+          {stepsTitle: "Título"},
+          {stepsTitle: "Autoria"},
+          {stepsTitle: "Disponibilidade"},
+          {stepsTitle: "Validade"},
+          {stepsTitle: "Outras Opções"},
+          {stepsTitle: "Conteúdo"},
+          ]
+        }
       ]
     }
   },
@@ -670,24 +687,28 @@ export default {
   grid-template-columns: 1fr auto;
 }
 
+header {
+  padding-left: 66px;
+}
+
 .sub-text-form {
   font: 14px "Inter Regular";
   color: #828287;
 }
 
 .form-addCurso .main-form {
-  padding: 40px 0 40px 66px;
+  padding: 40px 0 40px 0;
   max-height: 100%;
   overflow: hidden;
 }
 
 .form-addCurso .main-form.course-module {
-  padding: 27px 0 40px 66px;
+  padding: 27px 0 40px 0;
 }
 
 .content-addCurso-form {
   display: block;
-  padding-top: 30px;
+  padding: 30px 0 0 66px;
   height: calc(100% - 121px);
 }
 

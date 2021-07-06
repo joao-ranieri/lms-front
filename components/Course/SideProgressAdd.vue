@@ -1,18 +1,35 @@
 <template>
-  <div class="side-progress">
-    <div v-for="(item, index) in itensProgress" :key="index">
-      <div @click="$emit('change-step', index)"
-        :class="['title-item', {'active': currentStep === index+1}]">
-        <span>{{index + 1}}</span>
-        <span>{{ item.title }}</span>
+  <div class="side-progress" :class="{'side-center': currentPosition > 1}">
+    <div v-if="currentPosition === 1">
+      <div v-for="(item, index) in itensProgress" :key="index">
+        <div @click="$emit('change-step', index)"
+          :class="['title-item', {'active': currentStep === index+1}]">
+          <span>{{index + 1}}</span>
+          <span>{{ item.title }}</span>
+        </div>
+        <ul v-for="(subItem, indexSub) in item.subItems" :key="indexSub">
+          <li @click="$emit('change-position', {indexItem: index, indexSub: indexSub})"
+            :class="[{'checked': (currentStep === index+1 && currentPosition > indexSub+1) || currentStep > index+1},
+              {'active': currentStep === index+1 && currentPosition === indexSub+1}]">
+            {{subItem.title}}
+          </li>
+        </ul>
       </div>
-      <ul v-for="(subItem, indexSub) in item.subItems" :key="indexSub">
-        <li @click="$emit('change-position', {indexItem: index, indexSub: indexSub})"
-          :class="[{'checked': (currentStep === index+1 && currentPosition > indexSub+1) || currentStep > index+1},
-            {'active': currentStep === index+1 && currentPosition === indexSub+1}]">
-          {{subItem.title}}
-        </li>
-      </ul>
+    </div>
+
+    <div class="card-side" v-if="currentPosition > 1">
+      <div class="title-card">
+        <img :src="require('../../assets/img/dashbord/'+itemsNavigator.icon+'-purple.svg')" />
+        <span>{{itemsNavigator.title}}</span>
+      </div>
+      <div class="content-card">
+        <ul v-for="(item, index) in itemsNavigator.steps" :key="index">
+          <li @click="itemsNavigatorSelected = index"
+            :class="[{'checked': itemsNavigatorSelected > index}, {'active': itemsNavigatorSelected === index}]">
+            {{item.stepsTitle}}
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
@@ -22,8 +39,14 @@ export default {
   props: {
     itensProgress: {type: Array},
     currentStep: {type: Number},
+    itemsNavigator: {type: Object},
     currentPosition: {type: Number},
   },
+  data() {
+    return {
+      itemsNavigatorSelected: 0,
+    }
+  }
 }
 </script>
 
@@ -33,6 +56,13 @@ export default {
   padding: 24px;
   overflow-y: scroll;
   background: #FBFBFB;
+}
+
+.side-progress.side-center {
+  width: 354px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .side-progress .title-item {
@@ -96,6 +126,36 @@ export default {
   box-sizing: border-box;
   border-radius: 50%;
   margin-right: 16px;
+}
+
+/* card */
+.side-progress .card-side {
+  width: 100%;
+  min-height: 256px;
+  background: #FFFFFF;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 24px;
+  font-style: normal;
+  font-weight: bolder;
+  font-size: 14px;
+  line-height: 20px;
+  color: #89238A;
+}
+
+.side-progress .card-side .title-card {
+  display: flex;
+  align-items: center;
+  font-style: normal;
+  margin-bottom: 10px;
+}
+
+.side-progress .card-side .title-card span {
+  padding-left: 12px;
+}
+
+.side-progress .card-side li{
+  padding: 0 10px;
 }
 
 /* active */
