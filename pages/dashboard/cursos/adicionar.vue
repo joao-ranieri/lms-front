@@ -23,7 +23,7 @@
                 </b-form-group>
               </div>
               <div class="pl-3">
-                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="!course.title">Ok
                 </button>
               </div>
             </div>
@@ -35,7 +35,7 @@
 
               </div>
               <div class="pl-3">
-                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="course.categories.length === 0">Ok
                 </button>
               </div>
             </div>
@@ -47,7 +47,7 @@
 
               </div>
               <div class="pl-3">
-                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="course.authors.length === 0">Ok
                 </button>
               </div>
             </div>
@@ -70,7 +70,7 @@
 
               </div>
               <div class="pl-3">
-                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="!course.accessType">Ok
                 </button>
               </div>
             </div>
@@ -89,7 +89,7 @@
 
               </div>
               <div class="pl-3">
-                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="!course.coverImage">Ok
                 </button>
               </div>
             </div>
@@ -106,7 +106,7 @@
                 <label class="d-block mt-2">Se não houver, você pode pular essa etapa.</label>
               </div>
               <div class="pl-3">
-                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition">Ok
                 </button>
               </div>
             </div>
@@ -127,7 +127,7 @@
                 </b-form-group>
               </div>
               <div class="pl-3">
-                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="permissions.length === 0">Ok
                 </button>
               </div>
             </div>
@@ -149,7 +149,7 @@
                 </b-form-textarea>
               </div>
               <div class="pl-3">
-                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="!term || (term === 'Y' && !course.acceptanceText)">Ok
                 </button>
               </div>
             </div>

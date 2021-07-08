@@ -1,6 +1,6 @@
 <template>
-  <div class="side-progress" :class="{'side-center': currentPosition > 1}">
-    <div v-if="currentPosition === 1">
+  <div class="side-progress" :class="{'side-center': currentStep > 2 && currentPosition > 1}">
+    <div v-if="currentStep <= 2 || (currentStep === 3 && currentPosition === 1)">
       <div v-for="(item, index) in itensProgress" :key="index">
         <div @click="$emit('change-step', index)"
           :class="['title-item', {'active': currentStep === index+1}]">
@@ -17,9 +17,9 @@
       </div>
     </div>
 
-    <div class="card-side" v-if="currentPosition > 1">
+    <div class="card-side" v-if="currentStep > 2 && currentPosition > 1">
       <div class="title-card">
-        <img :src="require('../../assets/img/dashbord/'+itemsNavigator.icon+'-purple.svg')" />
+        <img v-if="itemsNavigator.icon" :src="require('../../assets/img/dashbord/'+itemsNavigator.icon+'-purple.svg')" />
         <span>{{itemsNavigator.title}}</span>
       </div>
       <div class="content-card">
