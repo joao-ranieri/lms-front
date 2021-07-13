@@ -419,6 +419,14 @@ select.select-arrow {
   content: url("../../assets/img/utils/ico-eye.svg");
 }
 
+.help-circle-ico {
+  content: url("../../assets/img/utils/ico-help-circle.svg");
+}
+
+.black-eye-ico {
+  content: url("../../assets/img/utils/ico-black-eye.svg");
+}
+
 .three-points {
   content: url("../../assets/img/utils/three-points-vertical.svg");
 }
@@ -613,4 +621,16 @@ textarea.form-control {
   font-size: 18px;
   line-height: 24px;
   color: #7FBA7A;
+}
+
+.sort-ghost {
+  opacity: 0.3;
+  transition: all 0.7s ease-out;
+}
+
+/* Audio */
+audio::-webkit-media-controls-play-button,
+audio::-webkit-media-controls-panel {
+  border: 1px solid #F2F2F2;
+  background-color: transparent;
 }
