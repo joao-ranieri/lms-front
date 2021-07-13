@@ -159,10 +159,6 @@
             <div :class="['input-step-group', {'active': position === 1}]" v-if="position <= 1">
               <div class="item-form">
                 <button class="btn btn btn-block btn-rounded-purple" @click="nextPosition">+ Criar módulo</button>
-
-                <CourseModule/>
-                <CourseModule/>
-                <CourseModule/>
                 <CourseModule/>
               </div>
             </div>
@@ -347,7 +343,7 @@
 
       <footer>
         <div class="progress-cadastro">
-          <div class="state-progress" :style="{width: '30%'}"/>
+          <div class="state-progress" :style="{width: barPercent+'%'}"/>
         </div>
         <div class="content-footer">
           <button class="d-block btn btn-rounded-grey" @click="$nuxt.$router.push('/dashboard/cursos')">
@@ -355,13 +351,17 @@
           </button>
 
           <div>
-            <b-button class="btn-rounded-purple mr-3 pl-4 pr-4" v-b-tooltip="'Salvar rascunho'" @click="sendForm()">
+            <b-button v-if="step <= 2 || (step === 3 && position === 1)" class="btn-rounded-purple mr-3 pl-4 pr-4" v-b-tooltip="'Salvar rascunho'" @click="sendForm()">
               Salvar rascunho
             </b-button>
 
-            <b-button class="btn-purple pl-4 pr-4" v-b-tooltip="'Publicar curso'" @click="sendForm(true)"
-                      :disabled="((step === 1 && position < 5) || (step === 2 && position < 3) || isDisabled) && !(!isDisabled && id)">
+            <b-button v-if="step <= 2 || (step === 3 && position === 1)" class="btn-purple pl-4 pr-4" v-b-tooltip="'Publicar curso'" @click="sendForm(true)"
+                :disabled="((step === 1 && position < 5) || (step === 2 && position < 3) || isDisabled) && !(!isDisabled && id)">
               Publicar curso
+            </b-button>
+
+            <b-button v-if="step === 3 && position === 2" class="btn-purple pl-4 pr-4" v-b-tooltip="'Adicioanr módulo'">
+              Adicioanr módulo
             </b-button>
           </div>
 
@@ -640,6 +640,17 @@ export default {
       this.$axios.$get(`/author/all?page=${1}&size=${1000}&orderBy=${'name'}&direction=${'ASC'}`).then(response => {
         this.authorList = [...response.data];
       });
+    },
+  },
+  computed: {
+    barPercent() {
+      if(this.step === 1) {
+        return ((100/12)*(this.position))
+      } else if(this.step === 2) {
+        return ((100/12)*(this.position + 5))
+      } else if(this.step === 3) {
+        return ((100/12)*(this.position + 8))
+      }
     }
   },
   mounted() {
