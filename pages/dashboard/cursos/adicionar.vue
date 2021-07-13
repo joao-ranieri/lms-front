@@ -23,7 +23,7 @@
                 </b-form-group>
               </div>
               <div class="pl-3">
-                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="!course.title">Ok
                 </button>
               </div>
             </div>
@@ -35,7 +35,7 @@
 
               </div>
               <div class="pl-3">
-                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="course.categories.length === 0">Ok
                 </button>
               </div>
             </div>
@@ -47,7 +47,7 @@
 
               </div>
               <div class="pl-3">
-                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="course.authors.length === 0">Ok
                 </button>
               </div>
             </div>
@@ -70,7 +70,7 @@
 
               </div>
               <div class="pl-3">
-                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="!course.accessType">Ok
                 </button>
               </div>
             </div>
@@ -89,7 +89,7 @@
 
               </div>
               <div class="pl-3">
-                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="!course.coverImage">Ok
                 </button>
               </div>
             </div>
@@ -106,7 +106,7 @@
                 <label class="d-block mt-2">Se não houver, você pode pular essa etapa.</label>
               </div>
               <div class="pl-3">
-                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition">Ok
                 </button>
               </div>
             </div>
@@ -127,7 +127,7 @@
                 </b-form-group>
               </div>
               <div class="pl-3">
-                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="permissions.length === 0">Ok
                 </button>
               </div>
             </div>
@@ -149,7 +149,7 @@
                 </b-form-textarea>
               </div>
               <div class="pl-3">
-                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="!term || (term === 'Y' && !course.acceptanceText)">Ok
                 </button>
               </div>
             </div>
@@ -354,6 +354,7 @@
       @change-step="changeStep"
       :currentStep="step"
       :currentPosition="position"
+      :itemsNavigator="itemsNavigator[position-1]"
       :itensProgress="itensProgress"/>
   </div>
 </template>
@@ -462,9 +463,25 @@ export default {
         },
       ],
       itemsNavigator: [
-        {position: 1, title: null},
-        {position: 2, title: "Criar módulo"},
-        {position: 3, title: "Criar aula"}
+        { position: 1, title: null},
+        { position: 2, title: "Criar módulo", icon: "folder",
+        steps: [
+          {stepsTitle: "Título"},
+          {stepsTitle: "Disponibilidade"},
+          {stepsTitle: "Validade"},
+          {stepsTitle: "Outras Opções"},
+          ]
+        },
+        { position: 3, title: "Criar aula", icon: "folder",
+        steps: [
+          {stepsTitle: "Título"},
+          {stepsTitle: "Autoria"},
+          {stepsTitle: "Disponibilidade"},
+          {stepsTitle: "Validade"},
+          {stepsTitle: "Outras Opções"},
+          {stepsTitle: "Conteúdo"},
+          ]
+        }
       ]
     }
   },
@@ -479,7 +496,8 @@ export default {
     back() {
       if (this.step === 3 && position > 1) {
         this.position = 1;
-      } else {
+      }
+      else {
         $nuxt.$router.push('/dashboard/cursos')
       }
     },
@@ -601,7 +619,7 @@ export default {
       });
     },
     setClassComposition(params) {
-      this.lesson.composition = params.collection
+      this.lesson.composition = params.collection;
     }
   },
   mounted() {
@@ -649,24 +667,28 @@ export default {
   grid-template-columns: 1fr auto;
 }
 
+header {
+  padding-left: 66px;
+}
+
 .sub-text-form {
   font: 14px "Inter Regular";
   color: #828287;
 }
 
 .form-addCurso .main-form {
-  padding: 40px 0 40px 66px;
+  padding: 40px 0 40px 0;
   max-height: 100%;
   overflow: hidden;
 }
 
 .form-addCurso .main-form.course-module {
-  padding: 27px 0 40px 66px;
+  padding: 27px 0 40px 0;
 }
 
 .content-addCurso-form {
   display: block;
-  padding-top: 30px;
+  padding: 30px 0 0 66px;
   height: calc(100% - 121px);
 }
 

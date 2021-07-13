@@ -2,11 +2,11 @@
   <div>
     <b-form-group :label="labelText" :label-for="nameInput"
                   :class="[size, {hasError}, {validated}, {'isPass': typeInput === 'password'}]">
-      <b-form-input :name="nameInput" :type="typeInput" :value="value" :required="isRequired"
+      <b-form-input :name="nameInput" :type="type" v-model="inputVal" :required="isRequired"
                     :placeholder="placeholder" @change="validate" :readonly="readOnly" :mask="['###.###.###-##']">
       </b-form-input>
       <span class="ico-input" @click="inputAction" :title="hasError ? 'Limpar campo' : ''">
-        <img src="" alt="ico-input">
+        <img :class="{'eye-off': typeInput === 'password' && type !== 'password'}" src="" alt="ico-input">
       </span>
     </b-form-group>
 
@@ -34,7 +34,14 @@ export default {
     return {
       message: "Sua senha deve ter no mínimo 8 caracteres, composta por letras e números.",
       hasError: false,
-      validated: false
+      validated: false,
+      type: this.typeInput,
+      inputVal: null
+    }
+  },
+  watch: {
+    value(newVal) {
+      this.inputVal = newVal
     }
   },
   methods: {
@@ -107,9 +114,13 @@ export default {
       }
     },
     inputAction() {
-      if (this.hasError) {
+      if(this.nameInput === "password") {
+        this.type = this.type === "password" ? 'text' : 'password';
+      }
+      if (this.nameInput !== "password" && this.hasError) {
         this.hasError = false;
-        this.value = '';
+        this.inputVal = null;
+        this.$emit('value-model', {model: this.nameInput, value: null});
         document.getElementsByName(this.nameInput)[0].focus();
       }
     }
@@ -118,16 +129,17 @@ export default {
 </script>
 
 <style scoped>
-
 .form-group {
   margin-bottom: 0;
 }
 
 .hasError input.form-control {
+  border: 0;
   box-shadow: 0px 0px 0 2px #FF754C;
 }
 
 .validated input.form-control {
+  border: 0;
   box-shadow: 0px 0px 0 2px #7FBA7A;
 }
 
@@ -136,12 +148,13 @@ export default {
 }
 
 .hasError .ico-input,
-.validated .ico-input {
+.validated .ico-input,
+.isPass .ico-input {
   position: absolute;
   display: flex;
   justify-content: center;
   align-items: center;
-  top: 36px;
+  top: 30px;
   right: 18px;
   height: 17px;
 }
@@ -151,12 +164,7 @@ export default {
 }
 
 .lg .ico-input {
-  top: 36px;
-}
-
-.hasError .ico-input img {
-  display: block;
-  content: url("../../assets/img/utils/ico-x.svg");
+  top: 29px;
 }
 
 .validated .ico-input img {
@@ -164,12 +172,22 @@ export default {
   content: url("../../assets/img/utils/check-green.svg");
 }
 
-.validated.isPass .ico-input img {
+.hasError .ico-input img {
+  display: block;
+  content: url("../../assets/img/utils/ico-x.svg");
+}
+
+.isPass .ico-input img {
   display: block;
   content: url("../../assets/img/utils/ico-eye.svg");
 }
 
-.validated.isPass .ico-input, .hasError .ico-input {
+.isPass .ico-input img.eye-off {
+  display: block;
+  content: url("../../assets/img/utils/ico-eye-off.svg");
+}
+
+.isPass .ico-input, .hasError .ico-input {
   cursor: pointer;
 }
 
