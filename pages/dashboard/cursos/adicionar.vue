@@ -7,7 +7,7 @@
           <span class="sub-text-form" v-html="headerText[step - 1].subtitle"></span>
         </div>
         <div v-else>
-          <MenuNavigator @change-position="changePositon" :items="itemsNavigator" :current="position" />
+          <MenuNavigator @change-position="changePositon" :items="itemsNavigator" :current="position"/>
         </div>
       </header>
 
@@ -309,17 +309,7 @@
                 </b-form-group>
 
                 <label class="d-block mt-4">Selecione qual conteúdo deseja adicionar</label>
-                <div class="d-flex justify-content-between">
-                  <FormMultimedia type="text"/>
-                  <FormMultimedia type="video"/>
-                  <FormMultimedia type="file"/>
-                  <FormMultimedia type="audio"/>
-                  <FormMultimedia type="incorporate"/>
-                  <FormMultimedia type="task"/>
-                </div>
-
-
-
+                <FormMultimedia @compose-class="setClassComposition"/>
               </div>
             </div>
             <div class="pl-3">
@@ -327,13 +317,6 @@
               </button>
             </div>
           </div>
-
-          <!--          <div style="position: relative; right: -588px; top: 26px">-->
-          <!--            <button class="btn d-block btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok-->
-          <!--            </button>-->
-          <!--            &lt;!&ndash;            <button v-if="(step === 1 && position > 1) || step === 2" @click="returnPosition"&ndash;&gt;-->
-          <!--            &lt;!&ndash;                    class="btn d-block btn-rounded-purple small-button pl-4 pr-4 mt-2">Anterior</button>&ndash;&gt;-->
-          <!--          </div>-->
         </div>
       </div>
 
@@ -347,7 +330,8 @@
         </div>
         <div class="content-footer">
           <button class="d-block btn btn-rounded-grey" @click="$nuxt.$router.push('/dashboard/cursos')">
-            <span class="d-inline-block arrow-back-ico mr-2"></span>{{ this.step === 3 && position > 1 ? "Voltar para Módulos" : "Voltar para Cursos"}}
+            <span
+              class="d-inline-block arrow-back-ico mr-2"></span>{{ this.step === 3 && position > 1 ? "Voltar para Módulos" : "Voltar para Cursos" }}
           </button>
 
           <div>
@@ -454,11 +438,7 @@ export default {
         showAuthors: false,
         availability: null,
         hasExpiration: null,
-        audios:[],
-        videos:[],
-        texts:[],
-        html:[],
-        tasks:[]
+        composition: []
       },
       moduleList: [],
       itensProgress: [
@@ -509,18 +489,18 @@ export default {
     }
   },
   watch: {
-    'course.title': function(newValue){
-      if(newValue){
+    'course.title': function (newValue) {
+      if (newValue) {
         this.itemsNavigator[0].title = newValue;
       }
     }
   },
   methods: {
-    back(){
-      if(this.step === 3 && position > 1){
+    back() {
+      if (this.step === 3 && position > 1) {
         this.position = 1;
       }
-      else{
+      else {
         $nuxt.$router.push('/dashboard/cursos')
       }
     },
@@ -651,6 +631,9 @@ export default {
       } else if(this.step === 3) {
         return ((100/12)*(this.position + 8))
       }
+    },
+    setClassComposition(params) {
+      this.lesson.composition = params.collection;
     }
   },
   mounted() {
@@ -734,6 +717,7 @@ header {
   height: 100px;
   width: 100%;
 }
+
 .group-inputs-carousel.group-module {
   bottom: -50px;
 }
