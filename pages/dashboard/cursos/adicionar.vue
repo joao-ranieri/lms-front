@@ -159,7 +159,7 @@
             <div :class="['input-step-group', {'active': position === 1}]" v-if="position <= 1">
               <div class="item-form">
                 <button class="btn btn btn-block btn-rounded-purple" @click="nextPosition">+ Criar módulo</button>
-                <CourseModule/>
+                <CourseModule v-for="module in moduleList" :key="module.sequence" :module="module"/>
               </div>
             </div>
 
@@ -174,49 +174,46 @@
 
                 <label class="d-block mt-4">Quando será disponibilizado?</label>
                 <b-form-group class="radio-style">
-                  <b-form-radio name="some-radios" value="immediate" v-model="module.availability"
-                                @change="validate(module.availability)">
+                  <b-form-radio value="immediate" v-model="module.availability">
                     Imediatamente, assim que o curso for publicado.
                   </b-form-radio>
-                  <b-form-radio name="some-radios" value="registration" v-model="module.availability"
-                                @change="validate(module.availability)">
+
+                  <b-form-radio value="registration" v-model="module.availability">
                     De acordo com a matrícula do aluno.
                   </b-form-radio>
                   <span v-if="module.availability === 'registration'">
-                  <label class="d-block">Quantos dias após a matrícula?</label>
-                <b-form-group>
-                  <b-form-input v-model="module.title" class="input-border" type="text"
-                                placeholder="Insira a quantidade de dias"/>
-                </b-form-group>
-                </span>
-                  <b-form-radio name="some-radios" value="specificDate" v-model="module.availability"
-                                @change="validate(module.availability)">
+                    <label class="d-block">Quantos dias após a matrícula?</label>
+                    <b-form-group>
+                      <b-form-input v-model="module.releaseDaysAfterPurchase" class="input-border" type="text"
+                        placeholder="Insira a quantidade de dias"/>
+                    </b-form-group>
+                  </span>
+
+                  <b-form-radio value="specificDate" v-model="module.availability">
                     Em uma data específica.
                   </b-form-radio>
                   <span v-if="module.availability === 'specificDate'">
-                  <label class="d-block">Selecione a data de lançamento</label>
-                <b-form-group>
-                  <b-form-input v-model="module.title" class="input-border" type="text"
-                                placeholder="Digite ou selecione a data"/>
-                </b-form-group>
-                </span>
+                    <label class="d-block">Selecione a data de lançamento</label>
+                    <b-form-group>
+                      <b-form-input v-model="module.releaseDate" class="input-border" type="text"
+                        placeholder="Digite ou selecione a data"/>
+                    </b-form-group>
+                  </span>
                 </b-form-group>
 
                 <label class="d-block mt-4">O método possui período de validade?</label>
                 <b-form-group class="radio-style">
-                  <b-form-radio name="some-radios" value="N" v-model="module.hasExpiration"
-                                @change="validate(module.hasExpiration)">
+                  <b-form-radio value="N" v-model="module.hasExpiration">
                     <strong>Não</strong>, o acesso é por tempo indeterminado.
                   </b-form-radio>
-                  <b-form-radio name="some-radios" value="Y" v-model="module.hasExpiration"
-                                @change="validate(module.hasExpiration)">
+                  <b-form-radio value="Y" v-model="module.hasExpiration">
                     <strong>Sim</strong>, os alunos só acessam por um período específico.
                   </b-form-radio>
 
                   <span v-if="module.hasExpiration === 'Y'">
                   <label class="d-block">Qual o prazo de validade desse módulo?</label>
                   <b-form-group>
-                    <b-form-input v-model="module.title" class="input-border" type="text"
+                    <b-form-input v-model="module.expirationDays" class="input-border" type="text"
                                   placeholder="Insira a quantidade de dias"/>
                   </b-form-group>
                 </span>
@@ -329,7 +326,7 @@
           <div class="state-progress" :style="{width: barPercent+'%'}"/>
         </div>
         <div class="content-footer">
-          <button class="d-block btn btn-rounded-grey" @click="$nuxt.$router.push('/dashboard/cursos')">
+          <button class="d-block btn btn-rounded-grey" @click="backPage">
             <span
               class="d-inline-block arrow-back-ico mr-2"></span>{{ this.step === 3 && position > 1 ? "Voltar para Módulos" : "Voltar para Cursos" }}
           </button>
@@ -344,7 +341,7 @@
               Publicar curso
             </b-button>
 
-            <b-button v-if="step === 3 && position === 2" class="btn-purple pl-4 pr-4" v-b-tooltip="'Adicioanr módulo'">
+            <b-button v-if="step === 3 && position === 2" class="btn-purple pl-4 pr-4" v-b-tooltip="'Adicioanr módulo'" @click="addModule">
               Adicioanr módulo
             </b-button>
           </div>
@@ -400,9 +397,9 @@ export default {
         {text: 'Emitir certificado automaticamente', value: 'issueCertificate'}
       ],
       otherOptionsModule: [
-        {text: 'Esse módulo é gratuito', value: 'freeModule'},
-        {text: 'Esse módulo ficará oculto', value: 'isHidden'},
-        {text: 'Notificar os alunos sobre a alteração desse módulo', value: 'alertStudent'}
+        {text: 'Esse módulo é gratuito', value: 'accessType'},
+        {text: 'Esse módulo ficará oculto', value: 'showModule'},
+        {text: 'Notificar os alunos sobre a alteração desse módulo', value: 'notifyStudents'}
       ],
       lessonsOptionsModule: [
         {text: 'Esse aula é gratuita', value: 'freeLesson'},
@@ -431,7 +428,10 @@ export default {
         title: null,
         availability: null,
         hasExpiration: null,
-        lessons: [],
+
+        releaseDaysAfterPurchase: null,
+        releaseDate: null,
+        expirationDays: null,
       },
       lesson: {
         title: null,
@@ -496,8 +496,8 @@ export default {
     }
   },
   methods: {
-    back() {
-      if (this.step === 3 && position > 1) {
+    backPage() {
+      if (this.step === 3 && this.position > 1) {
         this.position = 1;
       }
       else {
@@ -621,6 +621,35 @@ export default {
         this.authorList = [...response.data];
       });
     },
+    addModule(){
+      const paramsModule = {
+        sequence: this.moduleList.length + 1,
+        title: this.module.title,
+        accessType: this.permissions.includes('accessType') ? 'GRATIS' : 'PAGO ',
+        showModule: this.permissions.includes('showModule'),
+        notifyStudents: this.permissions.includes('notifyStudents'),
+        releaseDaysAfterPurchase: this.module.releaseDaysAfterPurchase,
+        releaseDate: this.module.releaseDate,
+        expirationDays: this.module.expirationDays,
+      };
+
+      this.module.availability !== 'registration' && delete paramsModule.releaseDaysAfterPurchase;
+      this.module.availability !== 'specificDate' && delete paramsModule.releaseDate;
+      this.module.hasExpiration === 'N' && delete paramsModule.expirationDays;
+
+      this.moduleList.push(paramsModule);
+      this.module = {
+        title: null,
+        availability: null,
+        hasExpiration: null,
+        releaseDaysAfterPurchase: null,
+        releaseDate: null,
+        expirationDays: null,
+      }
+      this.permissions = [],
+
+      this.backPage();
+    }
   },
   computed: {
     barPercent() {

@@ -2,7 +2,7 @@
   <div class="module-content mt-24">
     <div class="expand-module w-100">
       <span class="three-points mr-2"></span>
-      <h6 class="d-inline-block mb-0">Boas vindas ao curso</h6>
+      <h6 class="d-inline-block mb-0">{{module.title}}</h6>
       <a class="float-right" href="#" @click="showModule = !showModule"><img src="../../assets/img/utils/ico-arrow-dropdown.svg"></a>
       <span class="pencil-ico float-right mr-4"></span>
     </div>
@@ -25,32 +25,6 @@
           </b-dropdown>
         </div>
 
-        <div class="lesson mt-2">
-          <span class="three-points mr-2"></span>
-          Aula 2 - Como vender suas aulas
-          <b-dropdown class="menu-card float-right" right toggle-class="btn-menu btn-white squad">
-            <template #button-content>
-              <img width="16" :src="require('@/assets/img/utils/three-points.svg')">
-            </template>
-            <b-dropdown-item @click=""><i class=" mr-1"></i>Visualizar aula</b-dropdown-item>
-            <b-dropdown-item @click=""><i class="pencil-ico mr-1"></i>Editar aula</b-dropdown-item>
-            <b-dropdown-item @click=""><i class="trash-ico mr-1"></i>Deletar aula</b-dropdown-item>
-          </b-dropdown>
-        </div>
-
-        <div class="lesson mt-2">
-          <span class="three-points mr-2"></span>
-          Aula 3 - Vendendo pacote de cursos
-          <b-dropdown class="menu-card float-right" right toggle-class="btn-menu btn-white squad">
-            <template #button-content>
-              <img width="16" :src="require('@/assets/img/utils/three-points.svg')">
-            </template>
-            <b-dropdown-item @click=""><i class=" mr-1"></i>Visualizar aula</b-dropdown-item>
-            <b-dropdown-item @click=""><i class="pencil-ico mr-1"></i>Editar aula</b-dropdown-item>
-            <b-dropdown-item @click=""><i class="trash-ico mr-1"></i>Deletar aula</b-dropdown-item>
-          </b-dropdown>
-        </div>
-
       </div>
     </div>
   </div>
@@ -58,11 +32,14 @@
 
 <script>
 export default {
- data(){
-   return {
-     showModule: false
-   }
- }
+  props: {
+    module: {type: Object}
+  },
+  data(){
+    return {
+      showModule: false
+    }
+  }
 }
 </script>
 
