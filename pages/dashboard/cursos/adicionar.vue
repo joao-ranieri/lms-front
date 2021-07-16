@@ -580,7 +580,7 @@ export default {
 
       if (this.course.id) {
         this.$axios.$put('/course/' + this.course.id, this.course).then(response => {
-          this.$bvModal.show('confirmation');
+          this.sendModules(this.course.id);
         }).catch(e => {
           console.log(e)
         }).finally(() => {
@@ -588,14 +588,31 @@ export default {
         })
       } else {
         this.$axios.$post('/course', this.course).then(response => {
-          this.routeRedirect = '/dashboard/cursos';
+          this.sendModules(response.data.id);
           this.$bvModal.show('confirmation');
+          this.routeRedirect = '/dashboard/cursos';
         }).catch(e => {
           console.log(e)
         }).finally(() => {
           // this.isLoading = false;
         })
       }
+    },
+    sendModules(couseId) {
+      this.moduleList.forEach(module => {
+        const ObjModule = {...module};
+        try {
+          if(ObjModule.id){
+            this.$axios.$put(`/module/${ObjModule.id}`, ObjModule);
+          } else {
+            ObjModule.course = couseId;
+            this.$axios.$post('/module', ObjModule);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      })
+
     },
     changeStep(step) {
       this.step = step + 1;
@@ -625,7 +642,7 @@ export default {
       const paramsModule = {
         sequence: this.moduleList.length + 1,
         title: this.module.title,
-        accessType: this.permissions.includes('accessType') ? 'GRATIS' : 'PAGO ',
+        accessType: this.permissions.includes('accessType') ? 'GRATIS' : 'PAGO',
         showModule: this.permissions.includes('showModule'),
         notifyStudents: this.permissions.includes('notifyStudents'),
         releaseDaysAfterPurchase: this.module.releaseDaysAfterPurchase,
