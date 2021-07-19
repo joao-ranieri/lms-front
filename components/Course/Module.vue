@@ -2,9 +2,8 @@
   <div class="module-content mt-24">
     <div class="expand-module w-100">
       <span class="three-points mr-2"></span>
-      <h6 class="d-inline-block mb-0">Boas vindas ao curso</h6>
-      <a class="float-right" href="#" @click="showModule = !showModule"><img
-        src="../../assets/img/utils/ico-arrow-dropdown.svg"></a>
+      <h6 class="d-inline-block mb-0">{{module.title}}</h6>
+      <a class="float-right" href="#" @click="showModule = !showModule"><img src="../../assets/img/utils/ico-arrow-dropdown.svg"></a>
       <span class="pencil-ico float-right mr-4"></span>
     </div>
     <div class="expanded-module" v-show="showModule">
@@ -36,21 +35,16 @@
 import draggable from "vuedraggable";
 
 export default {
+  props: {
+    module: {type: Object}
+  },
   components: {
     draggable,
-  },
-  props: {
-    items: {type: Array}
   },
   data() {
     return {
       lessonList: [],
       showModule: false
-    }
-  },
-  watch:{
-    items(){
-     this.lessonList = this.items;
     }
   },
 }
