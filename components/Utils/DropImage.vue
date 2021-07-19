@@ -24,7 +24,7 @@
 <script>
 export default {
   props:{
-    image: {type: String, default: null}
+    image: {type: String, default: null},
   },
   computed:{
     imageURL(){
@@ -113,6 +113,5 @@ img {
   border-radius: 8px;
   object-fit: cover;
 }
-
 
 </style>

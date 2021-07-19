@@ -32,8 +32,10 @@
       </div>
     </div>
 
-    <div id="content-midias">
-      <FormMidia class="drag-drop" v-for="(item, index) in items" :type="item.type" :key="index" :index="index" @remove-item="removeItem" @update-item="updateElement"/>
+    <div id="content-media">
+      <draggable v-model="items" draggable=".item" @change="printlist">
+        <FormMidia class="drag-drop item" v-for="(item, index) in items" :type="item.type" :key="index" :index="index" @remove-item="removeItem" @update-item="updateElement"/>
+      </draggable>
     </div>
 
   </div>
@@ -41,9 +43,12 @@
 </template>
 
 <script>
-
+import draggable from 'vuedraggable'
 
 export default {
+  components: {
+    draggable,
+  },
   data() {
     return {
       items: []
@@ -60,7 +65,7 @@ export default {
         item = {text: null};
       }
       else if (type === 'file') {
-        item = {name: null, content: null, canDownload: false};
+        item = {name: null, content: null, canDownload: true};
       }
       else if (type === 'audio') {
         item = {content: null, canDownload: false};
@@ -82,22 +87,15 @@ export default {
 
       if(index >= 0) {
         this.items[index] = {...element.item}
-        this.$emit('compose-class', {collection: this.items});
+        this.$emit('add-multimedia', {collection: this.items});
       }
     },
     removeItem(params){
       this.items.splice(params.index, 1);
-      this.$emit('compose-class', {collection: this.items});
+      this.$emit('add-multimedia', {collection: this.items});
     },
-    reorder(oldIndex, newIndex) {
-      console.log(oldIndex)
-      console.log(newIndex)
-      // // move the item in the underlying array
-      // this.list.splice(newIndex, 0, this.list.splice(oldIndex, 1)[0]);
-      // // update order property based on position in array
-      // this.list.forEach(function(item, index){
-      //   item.order = index;
-      // });
+    printlist(){
+      console.log(this.items)
     }
   }
 }

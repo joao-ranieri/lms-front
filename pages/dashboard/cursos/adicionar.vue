@@ -56,12 +56,12 @@
               <div class="item-form">
                 <label class="d-block">Qual o tipo de acesso desse curso?</label>
                 <b-form-group class="radio-style">
-                  <b-form-radio name="some-radios" value="PAGO" v-model="course.accessType"
+                  <b-form-radio  value="PAGO" v-model="course.accessType"
                                 @change="validate(course.accessType)"><strong>Pago -</strong> é necessário o pagamento
                     para liberar
                     acesso
                   </b-form-radio>
-                  <b-form-radio name="some-radios" value="GRATIS" v-model="course.accessType"
+                  <b-form-radio  value="GRATIS" v-model="course.accessType"
                                 @change="validate(course.accessType)"><strong>Gratuito -</strong> é necessário apenas o
                     cadastro para
                     liberar acesso
@@ -136,10 +136,10 @@
               <div class="item-form">
                 <label class="d-block">Esse curso possui termos e condições?</label>
                 <b-form-group class="radio-style">
-                  <b-form-radio name="some-radios" value="N" v-model="term" @change="validate(term)">
+                  <b-form-radio  value="N" v-model="term" @change="validate(term)">
                     <strong>Não</strong>, não precisa de Termos e Condições
                   </b-form-radio>
-                  <b-form-radio name="some-radios" value="Y" v-model="term" @change="validate(term)">
+                  <b-form-radio  value="Y" v-model="term" @change="validate(term)">
                     <strong>Sim</strong>, precisa de Termos e Condições
                   </b-form-radio>
                 </b-form-group>
@@ -159,7 +159,9 @@
             <div :class="['input-step-group', {'active': position === 1}]" v-if="position <= 1">
               <div class="item-form">
                 <button class="btn btn btn-block btn-rounded-purple" @click="nextPosition">+ Criar módulo</button>
-                <CourseModule/>
+                <draggable draggable=".item">
+                  <CourseModule class="item" @add-lesson="openFormLesson" :items="[{title:'Title 1'}, {title:'Title 2'}, {title:'Title 3'}]"/>
+                </draggable>
               </div>
             </div>
 
@@ -174,11 +176,11 @@
 
                 <label class="d-block mt-4">Quando será disponibilizado?</label>
                 <b-form-group class="radio-style">
-                  <b-form-radio name="some-radios" value="immediate" v-model="module.availability"
+                  <b-form-radio  value="immediate" v-model="module.availability"
                                 @change="validate(module.availability)">
                     Imediatamente, assim que o curso for publicado.
                   </b-form-radio>
-                  <b-form-radio name="some-radios" value="registration" v-model="module.availability"
+                  <b-form-radio  value="registration" v-model="module.availability"
                                 @change="validate(module.availability)">
                     De acordo com a matrícula do aluno.
                   </b-form-radio>
@@ -189,7 +191,7 @@
                                 placeholder="Insira a quantidade de dias"/>
                 </b-form-group>
                 </span>
-                  <b-form-radio name="some-radios" value="specificDate" v-model="module.availability"
+                  <b-form-radio  value="specificDate" v-model="module.availability"
                                 @change="validate(module.availability)">
                     Em uma data específica.
                   </b-form-radio>
@@ -204,11 +206,11 @@
 
                 <label class="d-block mt-4">O método possui período de validade?</label>
                 <b-form-group class="radio-style">
-                  <b-form-radio name="some-radios" value="N" v-model="module.hasExpiration"
+                  <b-form-radio  value="N" v-model="module.hasExpiration"
                                 @change="validate(module.hasExpiration)">
                     <strong>Não</strong>, o acesso é por tempo indeterminado.
                   </b-form-radio>
-                  <b-form-radio name="some-radios" value="Y" v-model="module.hasExpiration"
+                  <b-form-radio  value="Y" v-model="module.hasExpiration"
                                 @change="validate(module.hasExpiration)">
                     <strong>Sim</strong>, os alunos só acessam por um período específico.
                   </b-form-radio>
@@ -243,11 +245,11 @@
 
                 <label class="d-block mt-4">Deseja exibir quem são autores?</label>
                 <b-form-group class="radio-style">
-                  <b-form-radio name="some-radios" :value="false" v-model="lesson.showAuthors"
+                  <b-form-radio  :value="false" v-model="lesson.showAuthors"
                                 @change="validate(lesson.showAuthors)">
                     <strong>Não</strong>, ocultar autores.
                   </b-form-radio>
-                  <b-form-radio name="some-radios" :value="true" v-model="lesson.showAuthors"
+                  <b-form-radio  :value="true" v-model="lesson.showAuthors"
                                 @change="validate(lesson.showAuthors)">
                     <strong>Sim</strong>, exibir autores.
                   </b-form-radio>
@@ -255,11 +257,11 @@
 
                 <label class="d-block mt-4">Quando será disponibilizada?</label>
                 <b-form-group class="radio-style">
-                  <b-form-radio name="some-radios" value="immediate" v-model="lesson.availability"
+                  <b-form-radio  value="immediate" v-model="lesson.availability"
                                 @change="validate(lesson.availability)">
                     Imediatamente, assim que o curso for publicado.
                   </b-form-radio>
-                  <b-form-radio name="some-radios" value="registration" v-model="lesson.availability"
+                  <b-form-radio  value="registration" v-model="lesson.availability"
                                 @change="validate(lesson.availability)">
                     De acordo com a matrícula do aluno.
                   </b-form-radio>
@@ -270,7 +272,7 @@
                                 placeholder="Insira a quantidade de dias"/>
                 </b-form-group>
                 </span>
-                  <b-form-radio name="some-radios" value="specificDate" v-model="module.availability"
+                  <b-form-radio  value="specificDate" v-model="module.availability"
                                 @change="validate(module.availability)">
                     Em uma data específica.
                   </b-form-radio>
@@ -285,11 +287,11 @@
 
                 <label class="d-block mt-4">A aula possui período de validade?</label>
                 <b-form-group class="radio-style">
-                  <b-form-radio name="some-radios" value="N" v-model="module.hasExpiration"
+                  <b-form-radio  value="N" v-model="module.hasExpiration"
                                 @change="validate(module.hasExpiration)">
                     <strong>Não</strong>, o acesso é por tempo indeterminado.
                   </b-form-radio>
-                  <b-form-radio name="some-radios" value="Y" v-model="module.hasExpiration"
+                  <b-form-radio  value="Y" v-model="module.hasExpiration"
                                 @change="validate(module.hasExpiration)">
                     <strong>Sim</strong>, os alunos só acessam por um período específico.
                   </b-form-radio>
@@ -309,7 +311,7 @@
                 </b-form-group>
 
                 <label class="d-block mt-4">Selecione qual conteúdo deseja adicionar</label>
-                <FormMultimedia @compose-class="setClassComposition"/>
+                <FormMultimedia @add-multimedia="setClassComposition"/>
               </div>
             </div>
             <div class="pl-3">
@@ -344,9 +346,12 @@
               Publicar curso
             </b-button>
 
-            <b-button v-if="step === 3 && position === 2" class="btn-purple pl-4 pr-4" v-b-tooltip="'Adicioanr módulo'">
-              Adicioanr módulo
+            <b-button v-if="step === 3 && position === 2" class="btn-purple pl-4 pr-4" v-b-tooltip="'Adicionar módulo'">
+              Adicionar módulo
             </b-button>
+
+            <b-button v-if="step === 3 && position === 3" class="btn-purple pl-4 pr-4" @click="addLesson"
+                      v-b-tooltip="'Adicionar aula'">Adicionar módulo</b-button>
           </div>
 
         </div>
@@ -363,10 +368,11 @@
 </template>
 
 <script>
-import Header from '../../../components/Menu/Header.vue'
+import Header from '../../../components/Menu/Header.vue';
+import draggable from "vuedraggable";
 
 export default {
-  components: {Header},
+  components: {Header, draggable},
   head() {
     return {
       title: "Adicionar Curso - Masters",
@@ -621,6 +627,26 @@ export default {
         this.authorList = [...response.data];
       });
     },
+    openFormLesson(){
+      this.step = 3;
+      this.position = 3;
+    },
+    addLesson() {
+      this.lessons.push(this.lesson);
+      this.lesson = {
+        title: null,
+        showAuthors: false,
+        availability: null,
+        hasExpiration: null,
+        composition: []
+      };
+
+      this.step = 3;
+      this.position = 1;
+    },
+    setClassComposition(params) {
+      this.lesson.composition = params.collection;
+    }
   },
   computed: {
     barPercent() {
@@ -631,9 +657,6 @@ export default {
       } else if(this.step === 3) {
         return ((100/12)*(this.position + 8))
       }
-    },
-    setClassComposition(params) {
-      this.lesson.composition = params.collection;
     }
   },
   mounted() {

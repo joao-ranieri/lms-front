@@ -3,66 +3,56 @@
     <div class="expand-module w-100">
       <span class="three-points mr-2"></span>
       <h6 class="d-inline-block mb-0">Boas vindas ao curso</h6>
-      <a class="float-right" href="#" @click="showModule = !showModule"><img src="../../assets/img/utils/ico-arrow-dropdown.svg"></a>
+      <a class="float-right" href="#" @click="showModule = !showModule"><img
+        src="../../assets/img/utils/ico-arrow-dropdown.svg"></a>
       <span class="pencil-ico float-right mr-4"></span>
     </div>
     <div class="expanded-module" v-show="showModule">
       <div style="margin-top: 29px; gap: 16px" class="d-flex justify-content-between">
         <button class="btn btn-block w-100 btn-rounded-grey mr-3">Importar de outro módulo</button>
-        <button class="btn btn-block w-100 btn-rounded-purple mt-0">+ Criar aula</button>
+        <button class="btn btn-block w-100 btn-rounded-purple mt-0" @click="$emit('add-lesson')">+ Criar aula</button>
       </div>
       <div class="lessons mt-24">
-        <div class="lesson mt-2">
-          <span class="three-points mr-2"></span>
-          Aula 1 - Como criar aulas online
-          <b-dropdown class="menu-card float-right" right toggle-class="btn-menu btn-white squad">
-            <template #button-content>
-              <img width="16" :src="require('@/assets/img/utils/three-points.svg')">
-            </template>
-            <b-dropdown-item @click=""><i class=" mr-1"></i>Visualizar aula</b-dropdown-item>
-            <b-dropdown-item @click=""><i class="pencil-ico mr-1"></i>Editar aula</b-dropdown-item>
-            <b-dropdown-item @click=""><i class="trash-ico mr-1"></i>Deletar aula</b-dropdown-item>
-          </b-dropdown>
-        </div>
-
-        <div class="lesson mt-2">
-          <span class="three-points mr-2"></span>
-          Aula 2 - Como vender suas aulas
-          <b-dropdown class="menu-card float-right" right toggle-class="btn-menu btn-white squad">
-            <template #button-content>
-              <img width="16" :src="require('@/assets/img/utils/three-points.svg')">
-            </template>
-            <b-dropdown-item @click=""><i class=" mr-1"></i>Visualizar aula</b-dropdown-item>
-            <b-dropdown-item @click=""><i class="pencil-ico mr-1"></i>Editar aula</b-dropdown-item>
-            <b-dropdown-item @click=""><i class="trash-ico mr-1"></i>Deletar aula</b-dropdown-item>
-          </b-dropdown>
-        </div>
-
-        <div class="lesson mt-2">
-          <span class="three-points mr-2"></span>
-          Aula 3 - Vendendo pacote de cursos
-          <b-dropdown class="menu-card float-right" right toggle-class="btn-menu btn-white squad">
-            <template #button-content>
-              <img width="16" :src="require('@/assets/img/utils/three-points.svg')">
-            </template>
-            <b-dropdown-item @click=""><i class=" mr-1"></i>Visualizar aula</b-dropdown-item>
-            <b-dropdown-item @click=""><i class="pencil-ico mr-1"></i>Editar aula</b-dropdown-item>
-            <b-dropdown-item @click=""><i class="trash-ico mr-1"></i>Deletar aula</b-dropdown-item>
-          </b-dropdown>
-        </div>
-
+        <draggable v-model="lessonList" draggable=".item">
+          <div class="lesson mt-2 item" v-for="lesson in lessonList">
+            <span class="three-points mr-2"></span>
+            {{ lesson.title }}
+            <b-dropdown class="menu-card float-right" right toggle-class="btn-menu btn-white squad">
+              <template #button-content>
+                <img width="16" :src="require('@/assets/img/utils/three-points.svg')">
+              </template>
+              <b-dropdown-item @click=""><i class=" mr-1"></i>Visualizar aula</b-dropdown-item>
+              <b-dropdown-item @click=""><i class="pencil-ico mr-1"></i>Editar aula</b-dropdown-item>
+              <b-dropdown-item @click=""><i class="trash-ico mr-1"></i>Deletar aula</b-dropdown-item>
+            </b-dropdown>
+          </div>
+        </draggable>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import draggable from "vuedraggable";
+
 export default {
- data(){
-   return {
-     showModule: false
-   }
- }
+  components: {
+    draggable,
+  },
+  props: {
+    items: {type: Array}
+  },
+  data() {
+    return {
+      lessonList: [],
+      showModule: false
+    }
+  },
+  watch:{
+    items(){
+     this.lessonList = this.items;
+    }
+  },
 }
 </script>
 

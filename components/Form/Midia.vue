@@ -21,7 +21,8 @@
                            :placeholder='type === "incorporate" ? "<embed type=\"image/jpg\" src=\"pic_trulli.jpg\" width=\"300\" height=\"200\"" : "Insira o texto que fará parte da sua aula"'>
           </b-form-textarea>
 
-          <a href="#" v-if="type === 'incorporate'" class="mt-3 d-block purple-link">Não sabe o que são links incorporados?</a>
+          <a href="https://rockcontent.com/br/blog/embed-code-o-que-e/" target="_blank" v-if="type === 'incorporate'"
+             class="mt-3 d-block purple-link">Não sabe o que são links incorporados?</a>
         </div>
 
         <div class="w-100" v-else-if="type === 'audio' || type === 'file'">
@@ -68,8 +69,11 @@
                           placeholder="www.youtube.com"/>
           </b-form-group>
           <div class="mt-3">
-            <b-form-checkbox class="checkbox-style" v-model="modelObject.hasDRM" :value="true" @change="updateAttr">Incluir DRM nesse vídeo. <i
-              class="help-circle-ico ml-2"></i></b-form-checkbox>
+            <b-form-checkbox class="checkbox-style" v-model="modelObject.hasDRM" :value="true" @change="updateAttr">
+              Incluir DRM nesse vídeo. <i class="help-circle-ico ml-2" v-b-tooltip.hover="{customClass: 'tooltip-box' }" :title="drmMessage" ></i>
+            </b-form-checkbox>
+
+            <b-tooltip target="my-button" custom-class="my-tooltip-class">Tooltip Title</b-tooltip>
           </div>
         </div>
 
@@ -79,8 +83,6 @@
 </template>
 
 <script>
-import Sortable from "sortablejs";
-
 export default {
   props: {
     type: {type: String},
@@ -97,29 +99,13 @@ export default {
         incorporate: {classIco: 'incorporate-purple-ico', label: 'Incorporar'},
         task: {classIco: 'task-purple-ico', label: 'Atividade'}
       },
+      drmMessage: 'O DRM (Gerenciamento dos Direitos Digitais) protege o seu conteúdo ao acrescentar imagens em posições variadas do vídeo, dificultando o plágio.',
       hasDownload: false,
       showModule: false,
       modelObject: {},
       audio: null,
       file: null,
-    }
-  },
-  ready() {
-    setTimeout(function () {
-      Sortable.create(document.getElementById('content-midias'), {
-        draggable: 'content-box',
-        ghostClass: "sort-ghost",
-        animation: 80,
-        onUpdate: function (evt) {
-          console.log('dropped (Sortable)');
-          $nuxt.reorder(evt.oldIndex, evt.newIndex);
-        }
-      })
-    }, 500)
-  },
-  watch: {
-    dataObject(newValue) {
-      this.modelObject = {...newValue}
+      show: false,
     }
   },
   methods: {

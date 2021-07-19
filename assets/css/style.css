@@ -423,6 +423,10 @@ select.select-arrow {
   content: url("../../assets/img/utils/ico-help-circle.svg");
 }
 
+.help-circle-ico:hover {
+  content: url("../../assets/img/utils/ico-purple-help-circle.svg");
+}
+
 .black-eye-ico {
   content: url("../../assets/img/utils/ico-black-eye.svg");
 }
@@ -626,6 +630,11 @@ textarea.form-control {
 .sort-ghost {
   opacity: 0.3;
   transition: all 0.7s ease-out;
+}
+
+.tooltip-box .tooltip-inner {
+  max-width: 313px;
+  font-size: 12px;
 }
 
 /* Audio */
