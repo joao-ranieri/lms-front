@@ -187,7 +187,7 @@
                   <span v-if="module.availability === 'registration'">
                     <label class="d-block">Quantos dias após a matrícula?</label>
                     <b-form-group>
-                      <b-form-input v-model="module.releaseDaysAfterPurchase" class="input-border" type="text"
+                      <b-form-input v-model="module.releaseDaysAfterPurchase" class="input-border" type="number"
                         placeholder="Insira a quantidade de dias"/>
                     </b-form-group>
                   </span>
@@ -216,7 +216,7 @@
                   <span v-if="module.hasExpiration === 'Y'">
                   <label class="d-block">Qual o prazo de validade desse módulo?</label>
                   <b-form-group>
-                    <b-form-input v-model="module.expirationDays" class="input-border" type="text"
+                    <b-form-input v-model="module.expirationDays" class="input-border" type="number"
                                   placeholder="Insira a quantidade de dias"/>
                   </b-form-group>
                 </span>
@@ -243,41 +243,36 @@
 
                 <label class="d-block mt-4">Deseja exibir quem são autores?</label>
                 <b-form-group class="radio-style">
-                  <b-form-radio  :value="false" v-model="lesson.showAuthors"
-                                @change="validate(lesson.showAuthors)">
+                  <b-form-radio  :value="false" v-model="lesson.showAuthors">
                     <strong>Não</strong>, ocultar autores.
                   </b-form-radio>
-                  <b-form-radio  :value="true" v-model="lesson.showAuthors"
-                                @change="validate(lesson.showAuthors)">
+                  <b-form-radio :value="true" v-model="lesson.showAuthors">
                     <strong>Sim</strong>, exibir autores.
                   </b-form-radio>
                 </b-form-group>
 
                 <label class="d-block mt-4">Quando será disponibilizada?</label>
                 <b-form-group class="radio-style">
-                  <b-form-radio  value="immediate" v-model="lesson.availability"
-                                @change="validate(lesson.availability)">
+                  <b-form-radio value="immediate" v-model="classAvailability">
                     Imediatamente, assim que o curso for publicado.
                   </b-form-radio>
-                  <b-form-radio  value="registration" v-model="lesson.availability"
-                                @change="validate(lesson.availability)">
+                  <b-form-radio value="afterRegistration" v-model="classAvailability">
                     De acordo com a matrícula do aluno.
                   </b-form-radio>
-                  <span v-if="lesson.availability === 'registration'">
+                  <span v-if="classAvailability === 'afterRegistration'">
                   <label class="d-block">Quantos dias após a matrícula?</label>
                 <b-form-group>
-                  <b-form-input v-model="lesson.title" class="input-border" type="text"
+                  <b-form-input v-model="lesson.releaseDaysAfterPurchase" class="input-border" type="number"
                                 placeholder="Insira a quantidade de dias"/>
                 </b-form-group>
                 </span>
-                  <b-form-radio  value="specificDate" v-model="module.availability"
-                                @change="validate(module.availability)">
+                  <b-form-radio value="specificDate" v-model="classAvailability">
                     Em uma data específica.
                   </b-form-radio>
-                  <span v-if="lesson.availability === 'specificDate'">
+                  <span v-if="classAvailability === 'specificDate'">
                   <label class="d-block">Selecione a data de lançamento</label>
                 <b-form-group>
-                  <b-form-input v-model="module.title" class="input-border" type="text"
+                  <b-form-input v-model="lesson.releaseDate" class="input-border" type="text"
                                 placeholder="Digite ou selecione a data"/>
                 </b-form-group>
                 </span>
@@ -285,19 +280,18 @@
 
                 <label class="d-block mt-4">A aula possui período de validade?</label>
                 <b-form-group class="radio-style">
-                  <b-form-radio  value="N" v-model="module.hasExpiration"
-                                @change="validate(module.hasExpiration)">
+                  <b-form-radio value="N" v-model="expirationLesson" >
                     <strong>Não</strong>, o acesso é por tempo indeterminado.
                   </b-form-radio>
-                  <b-form-radio  value="Y" v-model="module.hasExpiration"
+                  <b-form-radio  value="Y" v-model="expirationLesson"
                                 @change="validate(module.hasExpiration)">
                     <strong>Sim</strong>, os alunos só acessam por um período específico.
                   </b-form-radio>
 
-                  <span v-if="module.hasExpiration === 'Y'">
+                  <span v-if="expirationLesson === 'Y'">
                   <label class="d-block">Qual o prazo de validade desse módulo?</label>
                   <b-form-group>
-                    <b-form-input v-model="module.title" class="input-border" type="text"
+                    <b-form-input v-model="lesson.expirationDays" class="input-border" type="number"
                                   placeholder="Insira a quantidade de dias"/>
                   </b-form-group>
                 </span>
@@ -305,7 +299,7 @@
 
                 <label class="d-block mt-4">Outras opções</label>
                 <b-form-group class="checkbox-style">
-                  <b-form-checkbox-group v-model="permissions" :options="lessonsOptionsModule"></b-form-checkbox-group>
+                  <b-form-checkbox-group v-model="permissionsLesson" :options="lessonsOptionsModule"></b-form-checkbox-group>
                 </b-form-group>
 
                 <label class="d-block mt-4">Selecione qual conteúdo deseja adicionar</label>
@@ -322,7 +316,7 @@
 
       <ModalAddCategory @refresh-categories="getCategoriesList"/>
       <ModalAuthor @refresh-authors="getAuthorList"/>
-      <ModalConfirmation :msg="msgConfimation" :onlyConfirmation="true" :redirect="routeRedirect"/>
+      <ModalConfirmation :msg="msgConfirmation" :onlyConfirmation="true" :redirect="routeRedirect"/>
 
       <footer>
         <div class="progress-cadastro">
@@ -379,7 +373,7 @@ export default {
   data() {
     return {
       position: 1,
-      msgConfimation: null,
+      msgConfirmation: null,
       routeRedirect: null,
       step: 1,
       id: null,
@@ -414,6 +408,7 @@ export default {
         {text: 'Os alunos podem fazer comentários nessa aula', value: 'canComment'}
       ],
       permissions: [],
+      permissionsLesson: [],
       term: null,
       course: {
         title: null,
@@ -440,12 +435,18 @@ export default {
         releaseDate: null,
         expirationDays: null,
       },
+      expirationLesson: null,
+      classAvailability: null,
       lesson: {
         title: null,
         showAuthors: false,
-        availability: null,
-        hasExpiration: null,
-        composition: []
+        showClass: false,
+        releaseDate: null,
+        releaseDaysAfterPurchase: null,
+        expirationDays: null,
+        allowStudentsComments: false,
+        accessType: null,
+        contents: []
       },
       moduleList: [],
       itensProgress: [
@@ -582,7 +583,7 @@ export default {
 
       this.course.publishCourse = publish;
 
-      this.msgConfimation = publish ? 'Curso publicado com sucesso!' : 'O seu rascunho está salvo!';
+      this.msgConfirmation = publish ? 'Curso publicado com sucesso!' : 'O seu rascunho está salvo!';
       this.routeRedirect = publish ? '/dashboard/cursos' : null;
 
       if (this.course.id) {
@@ -692,7 +693,7 @@ export default {
       this.position = 1;
     },
     setClassComposition(params) {
-      this.lesson.composition = params.collection;
+      this.lesson.contents = params.collection;
     }
   },
   computed: {
