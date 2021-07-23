@@ -198,8 +198,8 @@
                   <span v-if="module.availability === 'specificDate'">
                     <label class="d-block">Selecione a data de lançamento</label>
                     <b-form-group>
-                      <b-form-input v-model="module.releaseDate" class="input-border" type="text"
-                        placeholder="Digite ou selecione a data"/>
+                      <b-form-datepicker v-model="module.releaseDate" hide-header class="input-border" locale="pt-BR"
+                        placeholder="Digite ou selecione a data"></b-form-datepicker>
                     </b-form-group>
                   </span>
                 </b-form-group>
@@ -272,8 +272,8 @@
                   <span v-if="classAvailability === 'specificDate'">
                   <label class="d-block">Selecione a data de lançamento</label>
                 <b-form-group>
-                  <b-form-input v-model="lesson.releaseDate" class="input-border" type="text"
-                                placeholder="Digite ou selecione a data"/>
+                  <b-form-datepicker v-model="lesson.releaseDate" class="input-border" locale="pt-BR"
+                                placeholder="Digite ou selecione a data"></b-form-datepicker>
                 </b-form-group>
                 </span>
                 </b-form-group>

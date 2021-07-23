@@ -655,3 +655,17 @@ input::-webkit-inner-spin-button {
 input[type=number] {
   -moz-appearance: textfield;
 }
+
+.b-form-btn-label-control.form-control.input-border > .form-control {
+  font-size: 14px;
+  padding-top: 10px;
+  padding-left: 12px;
+}
+
+.b-form-btn-label-control.form-control.input-border > .btn {
+  order: 1;
+}
+
+.input-border .b-calendar-grid-help {
+  display: none;
+}
