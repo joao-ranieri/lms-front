@@ -643,3 +643,29 @@ audio::-webkit-media-controls-panel {
   border: 1px solid #F2F2F2;
   background-color: transparent;
 }
+
+/* Input number */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.b-form-btn-label-control.form-control.input-border > .form-control {
+  font-size: 14px;
+  padding-top: 10px;
+  padding-left: 12px;
+}
+
+.b-form-btn-label-control.form-control.input-border > .btn {
+  order: 1;
+}
+
+.input-border .b-calendar-grid-help {
+  display: none;
+}
