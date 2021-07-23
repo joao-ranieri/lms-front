@@ -297,7 +297,7 @@
                   <span v-if="module.hasExpiration === 'Y'">
                   <label class="d-block">Qual o prazo de validade desse módulo?</label>
                   <b-form-group>
-                    <b-form-input v-model="module.title" class="input-border" type="text"
+                    <b-form-input v-model="module.expirationDays" class="input-border" type="text"
                                   placeholder="Insira a quantidade de dias"/>
                   </b-form-group>
                 </span>
@@ -361,6 +361,8 @@
       :currentStep="step"
       :currentPosition="position"
       :itemsNavigator="itemsNavigator[position-1]"
+      :moduleAnswers="module"
+      :lessonAnswers="lesson"
       :itensProgress="itensProgress"/>
   </div>
 </template>
