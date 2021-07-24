@@ -94,6 +94,7 @@ h6 {
   font-weight: 600;
   padding: 12px 12px;
   border-radius: 8px;
+  height: 43px;
   box-shadow: none !important;
 }
 
@@ -668,4 +669,45 @@ input[type=number] {
 
 .input-border .b-calendar-grid-help {
   display: none;
+}
+
+.radio-option-task .custom-control-label {
+  width: 100%;
+}
+
+.radio-option-task .custom-control .custom-control-input,
+.radio-option-task .custom-control .custom-control-label:after,
+.radio-option-task .custom-control .custom-control-label:before {
+  pointer-events: none;
+}
+
+.radio-option-task .custom-control-label {
+  height: 56px;
+}
+
+.radio-option-task .custom-control {
+  padding-right: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-right: 0;
+  background-color: transparent;
+}
+
+.radio-option-task .checkbox-style .custom-control-label::before,
+.radio-option-task .radio-style .custom-control-label::before,
+.radio-option-task .checkbox-style .custom-control-input:checked ~ .custom-control-label::before {
+  top: 15px;
+}
+
+.radio-option-task .custom-radio .custom-control-input:checked ~ .custom-control-label::after {
+  top: 15px;
+}
+
+.radio-option-task .custom-control-input:not(:disabled):active ~ .custom-control-label::before {
+  border: #adb5bd solid 1px;
+  background-color: #fff;
+}
+
+.sortable-ghost {
+  background-color: #eaeaea;
 }
