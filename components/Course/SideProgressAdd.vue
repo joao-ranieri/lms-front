@@ -24,8 +24,32 @@
       </div>
       <div class="content-card">
         <ul v-for="(item, index) in itemsNavigator.steps" :key="index">
-          <li @click="itemsNavigatorSelected = index"
-            :class="[{'checked': itemsNavigatorSelected > index}, {'active': itemsNavigatorSelected === index}]">
+          <!-- itens de modulo -->
+          <li @click="itemsNavigatorSelected = index" v-if="currentPosition === 2"
+            :class="[{'checked': (
+              //condição para o campo titulo
+              (item.stepsTitle === 'Título' && moduleAnswers.title) ||
+              //condição para o campo Disponibilidade
+              (item.stepsTitle === 'Disponibilidade' && (moduleAnswers.availability === 'immediate' ||
+                (moduleAnswers.availability === 'registration' && moduleAnswers.releaseDaysAfterPurchase) ||
+                (moduleAnswers.availability === 'specificDate' && moduleAnswers.releaseDate))) ||
+              //condição para o campo Validade
+              (item.stepsTitle === 'Validade' && (moduleAnswers.hasExpiration === 'N' ||
+                (moduleAnswers.hasExpiration === 'Y' && moduleAnswers.expirationDays))) ||
+              //condição para o campo Outras Opções
+              (item.stepsTitle === 'Outras Opções' && (moduleAnswers.title &&
+                (moduleAnswers.availability === 'immediate' ||
+                (moduleAnswers.availability === 'registration' && moduleAnswers.releaseDaysAfterPurchase) ||
+                (moduleAnswers.availability === 'specificDate' && moduleAnswers.releaseDate)) &&
+                (moduleAnswers.hasExpiration === 'N' ||
+                (moduleAnswers.hasExpiration === 'Y' && moduleAnswers.expirationDays)))))
+              && itemsNavigatorSelected !== index}, {'active': itemsNavigatorSelected === index}]">
+            {{item.stepsTitle}}
+          </li>
+          <!-- itens de aula -->
+          <li @click="itemsNavigatorSelected = index" v-if="currentPosition === 3"
+            :class="[{'checked': (navigatorAnswers[item.answer] && itemsNavigatorSelected !== index)},
+            {'active': itemsNavigatorSelected === index}]">
             {{item.stepsTitle}}
           </li>
         </ul>
@@ -40,6 +64,8 @@ export default {
     itensProgress: {type: Array},
     currentStep: {type: Number},
     itemsNavigator: {type: Object},
+    moduleAnswers: {type: Object},
+    lessonAnswers: {type: Object},
     currentPosition: {type: Number},
   },
   data() {
@@ -178,5 +204,10 @@ export default {
   width: 10px;
   height: 10px;
   border: none;
+}
+
+.side-progress .card-side ul li.checked::before {
+  position: relative;
+  top: -3px;
 }
 </style>
