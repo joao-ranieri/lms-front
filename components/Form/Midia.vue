@@ -57,7 +57,8 @@
           </div>
 
           <div class="mt-3">
-            <b-form-checkbox class="checkbox-style" v-model="modelObject.canDownload" :value="true" @change="updateAttr">Permitir download
+            <b-form-checkbox class="checkbox-style" v-model="modelObject.canDownload" :value="true"
+                             @change="updateAttr">Permitir download
             </b-form-checkbox>
           </div>
         </div>
@@ -70,20 +71,81 @@
           </b-form-group>
           <div class="mt-3">
             <b-form-checkbox class="checkbox-style" v-model="modelObject.hasDRM" :value="true" @change="updateAttr">
-              Incluir DRM nesse vídeo. <i class="help-circle-ico ml-2" v-b-tooltip.hover="{customClass: 'tooltip-box' }" :title="drmMessage" ></i>
+              Incluir DRM nesse vídeo. <i class="help-circle-ico ml-2" v-b-tooltip.hover="{customClass: 'tooltip-box' }"
+                                          :title="drmMessage"></i>
             </b-form-checkbox>
 
             <b-tooltip target="my-button" custom-class="my-tooltip-class">Tooltip Title</b-tooltip>
           </div>
         </div>
 
+        <div class="w-100" v-else-if="type === 'task'">
+          <div class="w-100" v-if="!taskSettings.type">
+            <label class="d-block">Escolha o tipo de atividade que deseja criar:</label>
+            <div class="d-flex justify-content-between w-100 task-types">
+              <span class="t-multiple-choice" @click="taskSettings.type = 'multiple-choice'">Múltiplas opções</span>
+              <span class="t-checkbox" @click="taskSettings.type = 'checkbox'">Caixas de seleção</span>
+              <span class="t-true-false" @click="taskSettings.type = 'true-or-false'">Verdadeiro ou falso</span>
+              <span class="t-short-answer" @click="taskSettings.type = 'short-answer'">Resposta curta</span>
+            </div>
+          </div>
+          <div v-else>
+            <b-form-group class="mb-0 w-100">
+              <b-form-input v-model="taskSettings.title" class="input-border" type="text" @change="updateAttr"
+                            placeholder="Insira o enunciado da sua atividade"/>
+            </b-form-group>
+
+            <div class="options" v-if="taskSettings.type.includes('multiple-choice')">
+              <div class="w-100 mt-3 mb-3 text-right">
+                <a class="d-block purple-link cursor-pointer" @click="addOption('radio')">Criar alternativa</a>
+              </div>
+
+              <draggable v-model="taskSettings.options" draggable=".radio-option-task" @change="reorderValues">
+                <transition-group>
+                  <div class="w-100 mt-2 radio-option-task pl-3" v-for="(option, index) in taskSettings.options" :key="index">
+                    <b-form-group class="checkbox-style" style="width: 500px">
+                      <b-form-radio-group name="options" v-model="taskSettings.rightAnswer">
+                        <b-form-radio :value="index">
+                          <b-form-textarea
+                            v-model="option.text" placeholder="Insira a descrição dessa opção"
+                            rows="2" max-rows="6"></b-form-textarea>
+                        </b-form-radio>
+
+                      </b-form-radio-group>
+                    </b-form-group>
+                    <div class="actions-task">
+                      <button class="btn btn-rounded-purple trash" v-b-tooltip="'Remover'"
+                              @click="actionTask('remove', index)"></button>
+                      <button class="btn btn-rounded-purple ml-3 check" v-b-tooltip="'Escolher como opção correta'"
+                              @click="actionTask('setCorrect', index)"></button>
+                    </div>
+                  </div>
+                </transition-group>
+              </draggable>
+
+              <div class="text-center w-100 pt-4 text-center" v-if="taskSettings.options.length > 0">
+                <button class="btn btn-purple" @click="previewTask">Pre-visualização</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
       </div>
+    </div>
+
+    <div v-if="taskView.type">
+      <ModalPreviewTask :task="taskView"/>
     </div>
   </div>
 </template>
 
 <script>
+import draggable from 'vuedraggable'
 export default {
+  components: {
+    draggable,
+  },
   props: {
     type: {type: String},
     index: {type: Number},
@@ -106,6 +168,14 @@ export default {
       audio: null,
       file: null,
       show: false,
+      selectedTask: null,
+      taskSettings: {
+        type: null,
+        title: null,
+        rightAnswer: null,
+        options: []
+      },
+      taskView: {}
     }
   },
   methods: {
@@ -115,8 +185,7 @@ export default {
 
       if (this.type === 'audio') {
         this.audio = url;
-      }
-      else if (this.type === 'file') {
+      } else if (this.type === 'file') {
         this.file = url;
       }
 
@@ -137,6 +206,41 @@ export default {
         reader.onerror = error => reject(error);
       })
     },
+    addOption() {
+      let option = {
+        text: null,
+        value: this.taskSettings.options.length,
+        isCorrect: false,
+      };
+      this.taskSettings.options.push(option)
+    },
+    actionTask(action, index) {
+      switch (action) {
+        case 'setCorrect':
+          this.taskSettings.options.forEach((option, idx) => {
+            option.isCorrect = index === idx;
+          })
+          this.taskSettings.rightAnswer = index;
+          break;
+        case 'remove':
+          this.taskSettings.options.splice(index, 1)
+          break;
+      }
+    },
+    reorderValues(){
+      this.taskSettings.rightAnswer = this.taskSettings.options.findIndex(option => {
+        return option.isCorrect
+      })
+      console.log(this.taskSettings.rightAnswer)
+    },
+    previewTask(){
+      this.taskView = {};
+      this.taskView = this.taskSettings;
+
+      setTimeout(()=>{
+        this.$bvModal.show('preview-question');
+      }, 250)
+    }
   }
 }
 </script>
@@ -152,7 +256,6 @@ export default {
 .resume-box {
   padding: 20px 21.5px;
 }
-
 
 .drop-area {
   position: relative;
@@ -171,6 +274,109 @@ export default {
 u, .purple-link {
   text-decoration: none;
   color: #89238A;
+}
+
+.task-types > span {
+  position: relative;
+  display: inline-flex;
+  padding: 12px 16px 12px 32px;
+  border: 1px solid #8A8C92;
+  border-radius: 8px;
+  color: #8A8C92;
+  cursor: pointer;
+}
+
+.task-types > span:hover {
+  color: #89238A;
+  border-color: #89238A;
+}
+
+.task-types .t-multiple-choice:before {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  top: calc(50% - 6px);
+  left: 13px;
+  content: '';
+  background-image: url("../../assets/img/utils/ico-verify.svg");
+  background-size: 12px 12px;
+}
+
+.task-types .t-checkbox:before {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  top: calc(50% - 6px);
+  left: 13px;
+  content: '';
+  background-image: url("../../assets/img/utils/ico-check.svg");
+  background-size: 12px 12px;
+}
+
+.task-types .t-true-false:before {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  top: calc(50% - 6px);
+  left: 13px;
+  content: '';
+  background-image: url("../../assets/img/utils/ico-radio-btn.svg");
+  background-size: 12px 12px;
+}
+
+.task-types .t-short-answer:before {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  top: calc(50% - 6px);
+  left: 13px;
+  content: '';
+  background-image: url("../../assets/img/utils/ico-pencil-purple.svg");
+  background-size: 12px 12px;
+}
+
+.radio-option-task {
+  position: relative;
+  height: 56px
+}
+
+.radio-option-task:before {
+  position: absolute;
+  width: 10px;
+  height: 100%;
+  background: url("../../assets/img/utils/three-points-vertical.svg") no-repeat 50%;
+  background-size: 5px;
+  left: 4px;
+  content: '';
+}
+
+.radio-option-task .actions-task {
+  display: none;
+  position: absolute;
+  height: 30px;
+  right: 0px;
+  top: 0px;
+  transition: all .2s;
+}
+
+.radio-option-task:hover .actions-task {
+  display: block;
+}
+
+.radio-option-task:hover .actions-task button.trash {
+  padding: 16px 20px;
+  background: url("../../assets/img/utils/ico-trash-purple.svg") no-repeat 50%;
+  background-size: 20px;
+}
+
+.radio-option-task:hover .actions-task button.check {
+  padding: 16px 20px;
+  background: url("../../assets/img/utils/ico-verify.svg") no-repeat 50%;
+  background-size: 20px;
+}
+
+.radio-option-task:hover .actions-task button:hover {
+  background-color: #fef0ff;
 }
 
 </style>
