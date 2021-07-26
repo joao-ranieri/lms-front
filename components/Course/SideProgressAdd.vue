@@ -49,7 +49,25 @@
           <!-- itens de aula -->
           <li @click="itemsNavigatorSelected = index" v-if="currentPosition === 3"
             :class="[{'checked': (
-              (item.stepsTitle === 'Título' && lessonAnswers.title)
+              //condição para o campo titulo
+              (item.stepsTitle === 'Título' && lessonAnswers.title) ||
+              //condição para o campo Autoria
+              (item.stepsTitle === 'Autoria' && lessonAnswers.showAuthors !== null) ||
+              //condição para o campo Disponibilidade
+              (item.stepsTitle === 'Disponibilidade' && ((lessonAnswers.classAvailability === 'immediate') ||
+                (lessonAnswers.classAvailability === 'afterRegistration' && lessonAnswers.releaseDaysAfterPurchase) ||
+                (lessonAnswers.classAvailability === 'specificDate' && lessonAnswers.releaseDate))) ||
+              //condição para o campo Validade
+              (item.stepsTitle === 'Validade' && ((lessonAnswers.expirationLesson === 'N') ||
+                (lessonAnswers.expirationLesson === 'Y' && lessonAnswers.expirationDays))) ||
+              //condição para o campo Outras Opções
+              (item.stepsTitle === 'Outras Opções' && (lessonAnswers.title &&
+                (lessonAnswers.showAuthors !== null) &&
+                ((lessonAnswers.classAvailability === 'immediate') ||
+                (lessonAnswers.classAvailability === 'afterRegistration' && lessonAnswers.releaseDaysAfterPurchase) ||
+                (lessonAnswers.classAvailability === 'specificDate' && lessonAnswers.releaseDate)) &&
+                ((lessonAnswers.expirationLesson === 'N') || (lessonAnswers.expirationLesson === 'Y' && lessonAnswers.expirationDays)))) ||
+              (item.stepsTitle === 'Conteúdo' && lessonAnswers.contents.length > 0)
             ) && itemsNavigatorSelected !== index}, {'active': itemsNavigatorSelected === index}]">
             {{item.stepsTitle}}
           </li>

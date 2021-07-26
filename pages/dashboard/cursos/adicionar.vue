@@ -253,23 +253,23 @@
 
                 <label class="d-block mt-4">Quando será disponibilizada?</label>
                 <b-form-group class="radio-style">
-                  <b-form-radio value="immediate" v-model="classAvailability">
+                  <b-form-radio value="immediate" v-model="lesson.classAvailability">
                     Imediatamente, assim que o curso for publicado.
                   </b-form-radio>
-                  <b-form-radio value="afterRegistration" v-model="classAvailability">
+                  <b-form-radio value="afterRegistration" v-model="lesson.classAvailability">
                     De acordo com a matrícula do aluno.
                   </b-form-radio>
-                  <span v-if="classAvailability === 'afterRegistration'">
+                  <span v-if="lesson.classAvailability === 'afterRegistration'">
                   <label class="d-block">Quantos dias após a matrícula?</label>
                 <b-form-group>
                   <b-form-input v-model="lesson.releaseDaysAfterPurchase" class="input-border" type="number"
                                 placeholder="Insira a quantidade de dias"/>
                 </b-form-group>
                 </span>
-                  <b-form-radio value="specificDate" v-model="classAvailability">
+                  <b-form-radio value="specificDate" v-model="lesson.classAvailability">
                     Em uma data específica.
                   </b-form-radio>
-                  <span v-if="classAvailability === 'specificDate'">
+                  <span v-if="lesson.classAvailability === 'specificDate'">
                   <label class="d-block">Selecione a data de lançamento</label>
                 <b-form-group>
                   <b-form-datepicker v-model="lesson.releaseDate" class="input-border" locale="pt-BR"
@@ -280,15 +280,15 @@
 
                 <label class="d-block mt-4">A aula possui período de validade?</label>
                 <b-form-group class="radio-style">
-                  <b-form-radio value="N" v-model="expirationLesson" >
+                  <b-form-radio value="N" v-model="lesson.expirationLesson" >
                     <strong>Não</strong>, o acesso é por tempo indeterminado.
                   </b-form-radio>
-                  <b-form-radio  value="Y" v-model="expirationLesson"
+                  <b-form-radio  value="Y" v-model="lesson.expirationLesson"
                                 @change="validate(module.hasExpiration)">
                     <strong>Sim</strong>, os alunos só acessam por um período específico.
                   </b-form-radio>
 
-                  <span v-if="expirationLesson === 'Y'">
+                  <span v-if="lesson.expirationLesson === 'Y'">
                   <label class="d-block">Qual o prazo de validade desse módulo?</label>
                   <b-form-group>
                   <b-form-input v-model="lesson.expirationDays" class="input-border" type="number"
@@ -437,16 +437,16 @@ export default {
         releaseDate: null,
         expirationDays: null,
       },
-      expirationLesson: null,
-      classAvailability: null,
       lesson: {
         title: null,
-        showAuthors: false,
-        showClass: false,
+        showAuthors: null,
+        expirationLesson: null,
+        classAvailability: null,
+        showClass: null,
         releaseDate: null,
         releaseDaysAfterPurchase: null,
         expirationDays: null,
-        allowStudentsComments: false,
+        allowStudentsComments: null,
         accessType: null,
         contents: []
       },
