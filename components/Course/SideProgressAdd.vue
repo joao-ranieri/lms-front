@@ -42,14 +42,15 @@
                 (moduleAnswers.availability === 'registration' && moduleAnswers.releaseDaysAfterPurchase) ||
                 (moduleAnswers.availability === 'specificDate' && moduleAnswers.releaseDate)) &&
                 (moduleAnswers.hasExpiration === 'N' ||
-                (moduleAnswers.hasExpiration === 'Y' && moduleAnswers.expirationDays)))))
-              && itemsNavigatorSelected !== index}, {'active': itemsNavigatorSelected === index}]">
+                (moduleAnswers.hasExpiration === 'Y' && moduleAnswers.expirationDays))))
+              ) && itemsNavigatorSelected !== index}, {'active': itemsNavigatorSelected === index}]">
             {{item.stepsTitle}}
           </li>
           <!-- itens de aula -->
           <li @click="itemsNavigatorSelected = index" v-if="currentPosition === 3"
-            :class="[{'checked': (navigatorAnswers[item.answer] && itemsNavigatorSelected !== index)},
-            {'active': itemsNavigatorSelected === index}]">
+            :class="[{'checked': (
+              (item.stepsTitle === 'Título' && lessonAnswers.title)
+            ) && itemsNavigatorSelected !== index}, {'active': itemsNavigatorSelected === index}]">
             {{item.stepsTitle}}
           </li>
         </ul>
