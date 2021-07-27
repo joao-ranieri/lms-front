@@ -682,7 +682,13 @@ input[type=number] {
 }
 
 .radio-option-task .custom-control-label {
-  height: 56px;
+  height: 45px;
+}
+
+.radio-option-task .label-radio-option {
+  display: flex;
+  align-items: center;
+  height: 45px;
 }
 
 .radio-option-task .custom-control {

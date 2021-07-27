@@ -12,7 +12,7 @@
       </div>
     </div>
     <div class="expanded-box pb-3" v-show="showModule">
-      <div style="margin-top: 28px; gap: 16px" class="d-flex w-100 justify-content-between pl-3 pr-3">
+      <div style="margin-top: 16px; gap: 16px" class="d-flex w-100 justify-content-between pl-3 pr-3">
         <div class="w-100" v-if="type === 'text' || type === 'incorporate'">
           <label class="d-block">
             {{ type === 'incorporate' ? 'Insira o código que deseja incorporar' : 'Texto' }}
@@ -83,14 +83,16 @@
           <div class="w-100" v-if="!taskSettings.type">
             <label class="d-block">Escolha o tipo de atividade que deseja criar:</label>
             <div class="d-flex justify-content-between w-100 task-types">
-              <span class="t-multiple-choice" @click="taskSettings.type = 'multiple-choice'">Múltiplas opções</span>
-              <span class="t-checkbox" @click="taskSettings.type = 'checkbox'">Caixas de seleção</span>
-              <span class="t-true-false" @click="taskSettings.type = 'true-or-false'">Verdadeiro ou falso</span>
-              <span class="t-short-answer" @click="taskSettings.type = 'short-answer'">Resposta curta</span>
+              <span class="t-multiple-choice" @click="selectTypeQuestion('multiple-choice')">Múltiplas opções</span>
+              <span class="t-checkbox" @click="selectTypeQuestion('checkbox')">Caixas de seleção</span>
+              <span class="t-true-false" @click="selectTypeQuestion('true-or-false')">Verdadeiro ou falso</span>
+              <span class="t-short-answer" @click="selectTypeQuestion('short-answer')">Resposta curta</span>
             </div>
           </div>
+
           <div v-else>
-            <b-form-group class="mb-0 w-100">
+            <h6 v-text="taskName[typeQuestion]"></h6>
+            <b-form-group class="mb-0 w-100 mt-3">
               <b-form-input v-model="taskSettings.title" class="input-border" type="text" @change="updateAttr"
                             placeholder="Insira o enunciado da sua atividade"/>
             </b-form-group>
@@ -102,13 +104,13 @@
 
               <draggable v-model="taskSettings.options" draggable=".radio-option-task" @change="reorderValues">
                 <transition-group>
-                  <div class="w-100 mt-2 radio-option-task pl-3" v-for="(option, index) in taskSettings.options" :key="index">
+                  <div class="w-100 mt-2 radio-option-task pl-3" v-for="(option, index) in taskSettings.options"
+                       :key="index">
                     <b-form-group class="checkbox-style" style="width: 500px">
                       <b-form-radio-group name="options" v-model="taskSettings.rightAnswer">
                         <b-form-radio :value="index">
-                          <b-form-textarea
-                            v-model="option.text" placeholder="Insira a descrição dessa opção"
-                            rows="2" max-rows="6"></b-form-textarea>
+                          <b-form-textarea v-model="option.text" placeholder="Insira a descrição dessa opção"
+                                           rows="1" max-rows="6" style="height: 45px"></b-form-textarea>
                         </b-form-radio>
 
                       </b-form-radio-group>
@@ -116,7 +118,7 @@
                     <div class="actions-task">
                       <button class="btn btn-rounded-purple trash" v-b-tooltip="'Remover'"
                               @click="actionTask('remove', index)"></button>
-                      <button class="btn btn-rounded-purple ml-3 check" v-b-tooltip="'Escolher como opção correta'"
+                      <button class="btn btn-rounded-purple ml-3 check" v-b-tooltip="'Marcar como correta'"
                               @click="actionTask('setCorrect', index)"></button>
                     </div>
                   </div>
@@ -128,9 +130,41 @@
               </div>
             </div>
 
+            <div class="options" v-else-if="taskSettings.type.includes('true-or-false')">
+
+              <draggable v-model="taskSettings.options" draggable=".radio-option-task" @change="reorderValues">
+                <transition-group>
+                  <div class="w-100 mt-2 radio-option-task pl-3" v-for="(option, index) in taskSettings.options"
+                       :key="index">
+                    <b-form-group class="checkbox-style" style="width: 500px">
+                      <b-form-radio-group name="questionCheck" v-model="taskSettings.rightAnswer">
+                        <b-form-radio :value="option.value">
+                          <span class="label-radio-option">{{ option.text }}</span>
+                        </b-form-radio>
+                      </b-form-radio-group>
+                    </b-form-group>
+                    <div class="actions-task">
+                      <button class="btn btn-rounded-purple ml-3 check" v-b-tooltip="'Marcar como correta'"
+                              @click="setAnswerTrueFalse(option.value, index)"></button>
+                    </div>
+                  </div>
+                </transition-group>
+              </draggable>
+
+              <div class="text-center w-100 pt-4 text-center" v-if="taskSettings.options.length > 0">
+                <button class="btn btn-purple" @click="previewTask">Pre-visualização</button>
+              </div>
+            </div>
+
+            <div class="options d-flex w-100 align-items-center" v-else-if="taskSettings.type.includes('short-answer')">
+              <span class="d-inline pencil-ico ml-2 mr-3 align-middle"></span>
+              <b-form-group class="mb-0 w-100 mt-3">
+                <b-form-textarea v-model="taskSettings.options[0].value" placeholder="Insira a resposta da questão"
+                                 rows="4" max-rows="6"></b-form-textarea>
+              </b-form-group>
+            </div>
           </div>
         </div>
-
       </div>
     </div>
 
@@ -142,6 +176,7 @@
 
 <script>
 import draggable from 'vuedraggable'
+
 export default {
   components: {
     draggable,
@@ -175,7 +210,14 @@ export default {
         rightAnswer: null,
         options: []
       },
-      taskView: {}
+      typeQuestion: null,
+      taskView: {},
+      taskName: {
+        'multiple-choice': 'Múltipla escolha',
+        'checkbox': 'Seleção Múltipla',
+        'true-or-false': 'Verdadeiro ou falso',
+        'short-answer': 'Resposta curta'
+      }
     }
   },
   methods: {
@@ -212,7 +254,7 @@ export default {
         value: this.taskSettings.options.length,
         isCorrect: false,
       };
-      this.taskSettings.options.push(option)
+      this.taskSettings.options.push(option);
     },
     actionTask(action, index) {
       switch (action) {
@@ -227,19 +269,50 @@ export default {
           break;
       }
     },
-    reorderValues(){
+    setAnswerTrueFalse(answer, index) {
+      this.taskSettings.options.findIndex((option, idx) => {
+        option.isCorrect = idx === index
+      })
+      this.taskSettings.rightAnswer = answer;
+    },
+    reorderValues() {
       this.taskSettings.rightAnswer = this.taskSettings.options.findIndex(option => {
         return option.isCorrect
       })
-      console.log(this.taskSettings.rightAnswer)
     },
-    previewTask(){
+    previewTask() {
       this.taskView = {};
       this.taskView = this.taskSettings;
 
-      setTimeout(()=>{
+      setTimeout(() => {
         this.$bvModal.show('preview-question');
       }, 250)
+    },
+    selectTypeQuestion(type) {
+      this.taskSettings.type = type;
+      this.typeQuestion = type;
+
+      if (type.includes('true-or-false')) {
+        this.taskSettings.options = [
+          {
+            text: 'Verdadeiro',
+            value: 'Verdadeiro',
+            isCorrect: false
+          },
+          {
+            text: 'Falso',
+            value: 'Falso',
+            isCorrect: false
+          }];
+      }
+      else if(type.includes('short-answer')) {
+        this.taskSettings.options = [{
+            text: null,
+            value: null,
+            isCorrect: true
+          }];
+      }
+
     }
   }
 }
@@ -337,7 +410,7 @@ u, .purple-link {
 
 .radio-option-task {
   position: relative;
-  height: 56px
+  height: 45px;
 }
 
 .radio-option-task:before {

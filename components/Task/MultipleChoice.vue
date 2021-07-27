@@ -5,8 +5,8 @@
       <b-form-radio-group v-model="selected" :options="options"></b-form-radio-group>
     </b-form-group>
 
-    <div class="w-100 mt-3" v-if="!isNaN(selected)">
-      {{ `A resposta está ${selected === rightAnswer ? 'certa' : 'incorreta'}!`}}
+    <div class="w-100 mt-3" v-if="selected !== null">
+      {{ `A resposta está ${selected == rightAnswer ? 'certa' : 'incorreta'}!`}}
       <p>{{ selected+ " - " +rightAnswer}}</p>
     </div>
   </div>
@@ -23,6 +23,11 @@ export default {
   data() {
     return {
       selected: null
+    }
+  },
+  watch:{
+    selected(newVal){
+      this.selected = newVal.toString();
     }
   }
 }
