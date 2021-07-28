@@ -160,8 +160,8 @@
               <div class="item-form">
                 <button class="btn btn btn-block btn-rounded-purple" @click="nextPosition">+ Criar módulo</button>
                 <draggable draggable=".item">
-                  <CourseModule v-for="module in moduleList" :key="module.sequence" :module="module" class="item"
-                                @add-lesson="openFormLesson" :items="[{title:'Title 1'}, {title:'Title 2'}, {title:'Title 3'}]"/>
+                  <CourseModule v-for="(module, index) in moduleList" :key="module.sequence" :module="module" class="item"
+                    @add-lesson="openFormLesson(index)"/>
                 </draggable>
               </div>
             </div>
@@ -405,9 +405,9 @@ export default {
         {text: 'Notificar os alunos sobre a alteração desse módulo', value: 'notifyStudents'}
       ],
       lessonsOptionsModule: [
-        {text: 'Esse aula é gratuita', value: 'freeLesson'},
-        {text: 'Esse aula ficará oculta', value: 'isHidden'},
-        {text: 'Os alunos podem fazer comentários nessa aula', value: 'canComment'}
+        {text: 'Esse aula é gratuita', value: 'accessType'},
+        {text: 'Esse aula ficará oculta', value: 'showClass'},
+        {text: 'Os alunos podem fazer comentários nessa aula', value: 'allowStudentsComments'}
       ],
       permissions: [],
       permissionsLesson: [],
@@ -436,8 +436,10 @@ export default {
         releaseDaysAfterPurchase: null,
         releaseDate: null,
         expirationDays: null,
+        classes: []
       },
       lesson: {
+        moduleIndex: null,
         title: null,
         showAuthors: null,
         expirationLesson: null,
@@ -608,21 +610,34 @@ export default {
         })
       }
     },
+    sendLesson(moduleId, classes) {
+      classes.forEach(lesson => {
+        try {
+          if(lesson.id){
+            this.$axios.$put(`/class?id=${lesson.id}`, lesson);
+          } else {
+            this.$axios.$post(`/class?moduleId=${moduleId}`, lesson);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      });
+    },
     sendModules(couseId) {
       this.moduleList.forEach(module => {
-        const ObjModule = {...module};
         try {
-          if(ObjModule.id){
-            this.$axios.$put(`/module/${ObjModule.id}`, ObjModule);
+          if(module.id){
+            const response = this.$axios.$put(`/module/${module.id}`, module);
+            this.sendLesson(response.data.id, module.classes);
           } else {
+            const ObjModule = {...module};
             ObjModule.course = couseId;
             this.$axios.$post('/module', ObjModule);
           }
         } catch (error) {
           console.log(error);
         }
-      })
-
+      });
     },
     changeStep(step) {
       this.step = step + 1;
@@ -658,6 +673,7 @@ export default {
         releaseDaysAfterPurchase: this.module.releaseDaysAfterPurchase,
         releaseDate: this.module.releaseDate,
         expirationDays: this.module.expirationDays,
+        classes: this.module.classes
       };
 
       this.module.availability !== 'registration' && delete paramsModule.releaseDaysAfterPurchase;
@@ -672,24 +688,51 @@ export default {
         releaseDaysAfterPurchase: null,
         releaseDate: null,
         expirationDays: null,
+        classes: []
       }
       this.permissions = [],
 
       this.backPage();
     },
-    openFormLesson(){
+    openFormLesson(moduleIndex){
+      this.lesson.moduleIndex = moduleIndex;
       this.step = 3;
       this.position = 3;
     },
     addLesson() {
-      this.lessons.push(this.lesson);
+      const paramsLesson = {
+        title: this.lesson.title,
+        showAuthors: this.lesson.showAuthors,
+        showClass: !this.permissionsLesson.includes('allowStudentsComments'),
+        releaseDate: this.lesson.releaseDate,
+        releaseDaysAfterPurchase: this.lesson.releaseDaysAfterPurchase,
+        expirationDays: this.lesson.expirationDays,
+        allowStudentsComments: this.permissionsLesson.includes('allowStudentsComments'),
+        accessType: this.permissionsLesson.includes('accessType') ? 'GRATIS' : 'PAGO',
+        authors: [],
+        contents: []
+      }
+
+      this.lesson.classAvailability !== 'registration' && delete paramsLesson.releaseDaysAfterPurchase;
+      this.lesson.classAvailability !== 'specificDate' && delete paramsLesson.releaseDate;
+      this.lesson.expirationLesson === 'N' && delete paramsLesson.expirationDays;
+
+      this.moduleList[this.lesson.moduleIndex].classes.push(paramsLesson);
       this.lesson = {
+        moduleIndex: null,
         title: null,
-        showAuthors: false,
-        availability: null,
-        hasExpiration: null,
-        composition: []
+        showAuthors: null,
+        expirationLesson: null,
+        classAvailability: null,
+        showClass: null,
+        releaseDate: null,
+        releaseDaysAfterPurchase: null,
+        expirationDays: null,
+        allowStudentsComments: null,
+        accessType: null,
+        contents: []
       };
+      this.permissionsLesson = [];
 
       this.step = 3;
       this.position = 1;

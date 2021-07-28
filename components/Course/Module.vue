@@ -13,7 +13,7 @@
       </div>
       <div class="lessons mt-24">
         <draggable v-model="lessonList" draggable=".item">
-          <div class="lesson mt-2 item" v-for="lesson in lessonList">
+          <div class="lesson mt-2 item" v-for="(lesson, index) in module.classes" :key="index">
             <span class="three-points mr-2"></span>
             {{ lesson.title }}
             <b-dropdown class="menu-card float-right" right toggle-class="btn-menu btn-white squad">
@@ -36,14 +36,13 @@ import draggable from "vuedraggable";
 
 export default {
   props: {
-    module: {type: Object}
+    module: {type: Object},
   },
   components: {
     draggable,
   },
   data() {
     return {
-      lessonList: [],
       showModule: false
     }
   },
