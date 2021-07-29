@@ -156,6 +156,36 @@
               </div>
             </div>
 
+            <div class="options" v-else-if="taskSettings.type.includes('checkbox')">
+              <div class="w-100 mt-3 mb-3 text-right">
+                <a class="d-block purple-link cursor-pointer" @click="addOption('checkbox')">Criar alternativa</a>
+              </div>
+
+              <draggable v-model="taskSettings.options" draggable=".radio-option-task" @change="reorderValues">
+                <transition-group>
+                  <div class="w-100 mt-2 radio-option-task pl-3" v-for="(option, index) in taskSettings.options"
+                       :key="index">
+                    <b-form-group class="checkbox-style" style="width: 500px">
+                      <b-form-checkbox :name="'opt_'+nameOpt" :id="'opt_'+nameOpt" v-model="taskSettings.rightAnswer" :key="index" :value="index">
+                        <b-form-textarea v-model="option.text" placeholder="Insira a descrição dessa opção"
+                                         rows="1" max-rows="6" style="height: 45px"></b-form-textarea>
+                      </b-form-checkbox>
+                    </b-form-group>
+                    <div class="actions-task">
+                      <button class="btn btn-rounded-purple trash" v-b-tooltip="'Remover'"
+                              @click="actionTask('remove', index)"></button>
+                      <button class="btn btn-rounded-purple ml-3 check" v-b-tooltip="'Marcar como correta'"
+                              @click="setAnswerCheckbox(option, index)"></button>
+                    </div>
+                  </div>
+                </transition-group>
+              </draggable>
+
+              <div class="text-center w-100 pt-4 text-center" v-if="taskSettings.options.length > 0">
+                <button class="btn btn-purple" @click="previewTask">Pre-visualização</button>
+              </div>
+            </div>
+
             <div class="options d-flex w-100 align-items-center" v-else-if="taskSettings.type.includes('short-answer')">
               <span class="d-inline pencil-ico ml-2 mr-3 align-middle"></span>
               <b-form-group class="mb-0 w-100 mt-3">
@@ -217,7 +247,8 @@ export default {
         'checkbox': 'Seleção Múltipla',
         'true-or-false': 'Verdadeiro ou falso',
         'short-answer': 'Resposta curta'
-      }
+      },
+      nameOpt: new Date().getTime()
     }
   },
   methods: {
@@ -240,6 +271,9 @@ export default {
     updateAttr() {
       this.$emit('update-item', {collection: this.type, item: {...this.modelObject}})
     },
+    updateTask() {
+      this.$emit('update-item', {collection: this.type, item: {...this.taskSettings}})
+    },
     toBase64(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -255,6 +289,7 @@ export default {
         isCorrect: false,
       };
       this.taskSettings.options.push(option);
+      this.updateTask();
     },
     actionTask(action, index) {
       switch (action) {
@@ -268,17 +303,41 @@ export default {
           this.taskSettings.options.splice(index, 1)
           break;
       }
+      this.updateTask();
     },
     setAnswerTrueFalse(answer, index) {
-      this.taskSettings.options.findIndex((option, idx) => {
+      this.taskSettings.options.forEach((option, idx) => {
         option.isCorrect = idx === index
       })
       this.taskSettings.rightAnswer = answer;
+      this.updateTask();
+    },
+    setAnswerCheckbox(option, index){
+      if(this.taskSettings.rightAnswer.includes(index)){
+        this.taskSettings.rightAnswer.splice(this.taskSettings.rightAnswer.indexOf(index), 1);
+        option.isCorrect = false;
+      }
+      else {
+        this.taskSettings.rightAnswer.push(index)
+        option.isCorrect = true;
+      }
+      this.updateTask();
     },
     reorderValues() {
-      this.taskSettings.rightAnswer = this.taskSettings.options.findIndex(option => {
-        return option.isCorrect
-      })
+      if(this.taskSettings.type.includes('checkbox')){
+        this.taskSettings.rightAnswer = [];
+        this.taskSettings.options.forEach((option, index) =>{
+          if(option.isCorrect){
+            this.taskSettings.rightAnswer.push(index);
+          }
+        })
+      }
+      else{
+        this.taskSettings.rightAnswer = this.taskSettings.options.findIndex(option => {
+          return option.isCorrect
+        })
+      }
+      this.updateTask();
     },
     previewTask() {
       this.taskView = {};
@@ -291,6 +350,7 @@ export default {
     selectTypeQuestion(type) {
       this.taskSettings.type = type;
       this.typeQuestion = type;
+      this.taskSettings.id = this.index;
 
       if (type.includes('true-or-false')) {
         this.taskSettings.options = [
@@ -305,6 +365,9 @@ export default {
             isCorrect: false
           }];
       }
+      else if (type.includes('checkbox')) {
+        this.taskSettings.rightAnswer = [];
+      }
       else if(type.includes('short-answer')) {
         this.taskSettings.options = [{
             text: null,
@@ -312,7 +375,7 @@ export default {
             isCorrect: true
           }];
       }
-
+      this.updateTask();
     }
   }
 }

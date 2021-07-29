@@ -709,6 +709,10 @@ input[type=number] {
   top: 15px;
 }
 
+.radio-option-task .checkbox-style .custom-control-label::after {
+  top: 20px;
+}
+
 .radio-option-task .custom-control-input:not(:disabled):active ~ .custom-control-label::before {
   border: #adb5bd solid 1px;
   background-color: #fff;

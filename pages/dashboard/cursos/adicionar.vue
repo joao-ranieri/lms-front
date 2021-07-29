@@ -696,6 +696,7 @@ export default {
     },
     setClassComposition(params) {
       this.lesson.contents = params.collection;
+      console.log(this.lesson.contents)
     }
   },
   computed: {
