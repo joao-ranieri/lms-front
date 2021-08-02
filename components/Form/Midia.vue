@@ -7,7 +7,7 @@
         <h6 class="d-inline-block mb-0 ml-2" v-text="types[type].label"></h6>
       </div>
       <div class="d-flex align-items-center">
-        <span @click="$emit('remove-item', {index: index})" class="cursor-pointer trash-ico mr-4"></span>
+        <span @click="$emit('remove-item', {index: taskObj.id})" class="cursor-pointer trash-ico mr-4"></span>
         <a href="#" @click="showModule = !showModule"><img src="../../assets/img/utils/ico-arrow-dropdown.svg"></a>
       </div>
     </div>
@@ -15,7 +15,7 @@
       <div style="margin-top: 16px; gap: 16px" class="d-flex w-100 justify-content-between pl-3 pr-3">
         <div class="w-100" v-if="type === 'text' || type === 'incorporate'">
           <label class="d-block">
-            {{ type === 'incorporate' ? 'Insira o código que deseja incorporar' : 'Texto' }}
+            {{ item.type === 'incorporate' ? 'Insira o código que deseja incorporar' : 'Texto' }}
           </label>
           <b-form-textarea v-model="modelObject.text" rows="6"
                            :placeholder='type === "incorporate" ? "<embed type=\"image/jpg\" src=\"pic_trulli.jpg\" width=\"300\" height=\"200\"" : "Insira o texto que fará parte da sua aula"'>
@@ -25,7 +25,7 @@
              class="mt-3 d-block purple-link">Não sabe o que são links incorporados?</a>
         </div>
 
-        <div class="w-100" v-else-if="type === 'audio' || type === 'file'">
+        <div class="w-100" v-else-if="['audio', 'file'].includes(type)">
           <div class="file-select">
             <div class="audio-play" v-if="audio">
               <audio controls class="w-100">
@@ -212,9 +212,8 @@ export default {
     draggable,
   },
   props: {
-    type: {type: String},
-    index: {type: Number},
-    dataObject: {type: Object}
+    taskObj: {type: Object},
+    type: {type: String}
   },
   data() {
     return {
@@ -272,6 +271,8 @@ export default {
       this.$emit('update-item', {collection: this.type, item: {...this.modelObject}})
     },
     updateTask() {
+      this.taskSettings.id ||= this.taskObj.id;
+      this.taskSettings.contentType = this.taskObj.contentType;
       this.$emit('update-item', {collection: this.type, item: {...this.taskSettings}})
     },
     toBase64(file) {

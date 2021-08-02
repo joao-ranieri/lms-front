@@ -104,7 +104,7 @@ export default {
     },
   },
   mounted() {
-    // this.getCourses();
+    this.getCourses();
   }
 }
 </script>

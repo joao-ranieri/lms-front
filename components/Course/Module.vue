@@ -37,12 +37,22 @@ import draggable from "vuedraggable";
 export default {
   props: {
     module: {type: Object},
+    classesList: {type: Array},
+  },
+  watch:{
+    classesList: {
+      deep: true,
+      handler: function (){
+        this.lessonList = this.classesList
+      }
+    }
   },
   components: {
     draggable,
   },
   data() {
     return {
+      lessonList: [],
       showModule: false
     }
   },

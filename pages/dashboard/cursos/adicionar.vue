@@ -7,7 +7,7 @@
           <span class="sub-text-form" v-html="headerText[step - 1].subtitle"></span>
         </div>
         <div v-else>
-          <MenuNavigator @change-position="changePositon" :items="itemsNavigator" :current="position"/>
+          <MenuNavigator @change-position="changePosition" :items="itemsNavigator" :current="position"/>
         </div>
       </header>
 
@@ -161,7 +161,7 @@
                 <button class="btn btn btn-block btn-rounded-purple" @click="nextPosition">+ Criar módulo</button>
                 <draggable draggable=".item">
                   <CourseModule v-for="(module, index) in moduleList" :key="module.sequence" :module="module" class="item"
-                    @add-lesson="openFormLesson(index)"/>
+                    @add-lesson="openFormLesson(index)" :classesList="classes[module.id]"/>
                 </draggable>
               </div>
             </div>
@@ -226,10 +226,6 @@
                 <b-form-group class="checkbox-style">
                   <b-form-checkbox-group v-model="permissions" :options="otherOptionsModule"></b-form-checkbox-group>
                 </b-form-group>
-              </div>
-              <div class="pl-3">
-                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="isDisabled">Ok
-                </button>
               </div>
             </div>
 
@@ -343,7 +339,8 @@
             </b-button>
 
             <b-button v-if="step === 3 && position === 3" class="btn-purple pl-4 pr-4" @click="addLesson"
-                      v-b-tooltip="'Adicionar aula'">Adicionar aula</b-button>
+                      v-b-tooltip="'Adicionar aula'" :disabled="lesson.contents.length === 0 || !lesson.title">
+              Adicionar aula</b-button>
           </div>
 
         </div>
@@ -453,6 +450,7 @@ export default {
         contents: []
       },
       moduleList: [],
+      classes: {},
       itensProgress: [
         {
           title: "Sobre o curso",
@@ -568,16 +566,16 @@ export default {
     sendForm(publish) {
       let authors = [];
 
-      // this.course.authors.forEach(author => {
-      //   authors.push(author.id);
-      // });
-      // this.course.authors = authors;
-      //
-      // let categories = [];
-      // this.course.categories.forEach(category => {
-      //   categories.push(category.id);
-      // })
-      // this.course.categories = categories;
+      this.course.authors.forEach(author => {
+        authors.push(author.id);
+      });
+      this.course.authors = authors;
+
+      let categories = [];
+      this.course.categories.forEach(category => {
+        categories.push(category.id);
+      })
+      this.course.categories = categories;
 
       this.permissions.forEach(option => {
         this.course[option] = true;
@@ -643,7 +641,7 @@ export default {
       this.step = step + 1;
       this.position = 1;
     },
-    changePositon(pos) {
+    changePosition(pos) {
       this.position = pos;
     },
     changeInputProgress(e) {
@@ -661,6 +659,20 @@ export default {
     getAuthorList() {
       this.$axios.$get(`/author/all?page=${1}&size=${1000}&orderBy=${'name'}&direction=${'ASC'}`).then(response => {
         this.authorList = [...response.data];
+      });
+    },
+    getModuleList() {
+      this.$axios.$get(`/module/all?id=${this.id}&size=${1000}&page=1`).then(response => {
+        this.moduleList = [...response.data];
+      }).finally(()=>{
+        this.moduleList.forEach(({id}, index)=>{
+          this.getClassList(id, index)
+        })
+      });
+    },
+    getClassList(id, moduleIndex) {
+      this.$axios.$get(`/class/all?moduleId=${id}`).then(response => {
+        this.classes[moduleIndex] = [...response.data];
       });
     },
     addModule(){
@@ -700,6 +712,10 @@ export default {
       this.position = 3;
     },
     addLesson() {
+      this.lesson.contents.forEach(obj => {
+        delete obj.id;
+      })
+
       const paramsLesson = {
         title: this.lesson.title,
         showAuthors: this.lesson.showAuthors,
@@ -710,7 +726,7 @@ export default {
         allowStudentsComments: this.permissionsLesson.includes('allowStudentsComments'),
         accessType: this.permissionsLesson.includes('accessType') ? 'GRATIS' : 'PAGO',
         authors: [],
-        contents: []
+        contents: JSON.stringify(this.lesson.contents)
       }
 
       this.lesson.classAvailability !== 'registration' && delete paramsLesson.releaseDaysAfterPurchase;
@@ -739,7 +755,6 @@ export default {
     },
     setClassComposition(params) {
       this.lesson.contents = params.collection;
-      console.log(this.lesson.contents)
     }
   },
   computed: {
@@ -785,6 +800,8 @@ export default {
         })
 
         this.isDisabled = false;
+      }).finally(()=>{
+        this.getModuleList();
       });
     }
   }

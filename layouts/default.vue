@@ -12,6 +12,7 @@
 
 <script>
 export default {
+  name: 'defaultLayout',
   computed: {
     expanded() {
       return this.$store.state.expanded;

@@ -34,7 +34,7 @@
 
     <div id="content-media" v-if="items.length > 0">
       <draggable v-model="items" draggable=".item" @change="printlist">
-        <FormMidia class="drag-drop item" v-for="(item, index) in items" :type="item.type" :key="index" :index="item.id" @remove-item="removeItem" @update-item="updateElement"/>
+        <FormMidia class="drag-drop item" v-for="(item, idx) in items" :type="item.contentType" :taskObj="item" :key="idx" @remove-item="removeItem" @update-item="updateElement"/>
       </draggable>
     </div>
 
@@ -75,7 +75,7 @@ export default {
       }
 
       item.id = new Date().getTime();
-      item.type = type;
+      item.contentType = type;
 
       this.items.push(item);
     },
@@ -86,13 +86,15 @@ export default {
 
       if(index >= 0) {
         this.items[index] = {...element.item}
-        console.log("entrou")
-        this.$emit('add-multimedia', {collection: this.items});
       }
-      console.log(this.items)
+      this.$emit('add-multimedia', {collection: this.items});
     },
     removeItem(params){
-      this.items.splice(params.index, 1);
+      let idx = this.items.findIndex((i, index) => {
+        return i.id == params.index
+      })
+
+      this.items.splice(idx, 1);
 
       this.$emit('add-multimedia', {collection: this.items});
     },
