@@ -49,9 +49,17 @@ export default {
   components: {
     draggable,
   },
+  props:{
+    multimediaList: {type: Array}
+  },
   data() {
     return {
       items: []
+    }
+  },
+  watch: {
+    multimediaList(){
+      this.items = this.items;
     }
   },
   methods: {

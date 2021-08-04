@@ -7,7 +7,7 @@
         <h6 class="d-inline-block mb-0 ml-2" v-text="types[type].label"></h6>
       </div>
       <div class="d-flex align-items-center">
-        <span @click="$emit('remove-item', {index: taskObj.id})" class="cursor-pointer trash-ico mr-4"></span>
+        <span @click="$emit('remove-item', {index: taskSettings.id})" class="cursor-pointer trash-ico mr-4"></span>
         <a href="#" @click="showModule = !showModule"><img src="../../assets/img/utils/ico-arrow-dropdown.svg"></a>
       </div>
     </div>
@@ -15,7 +15,7 @@
       <div style="margin-top: 16px; gap: 16px" class="d-flex w-100 justify-content-between pl-3 pr-3">
         <div class="w-100" v-if="type === 'text' || type === 'incorporate'">
           <label class="d-block">
-            {{ item.type === 'incorporate' ? 'Insira o código que deseja incorporar' : 'Texto' }}
+            {{ taskObj.contentType === 'incorporate' ? 'Insira o código que deseja incorporar' : 'Texto' }}
           </label>
           <b-form-textarea v-model="modelObject.text" rows="6"
                            :placeholder='type === "incorporate" ? "<embed type=\"image/jpg\" src=\"pic_trulli.jpg\" width=\"300\" height=\"200\"" : "Insira o texto que fará parte da sua aula"'>
@@ -249,6 +249,15 @@ export default {
       },
       nameOpt: new Date().getTime()
     }
+  },
+  watch: {
+    taskObj: {
+      deep:true,
+      handler: function(){
+        this.taskSettings = {...this.taskObj}
+      }
+    }
+
   },
   methods: {
     loadFile(e) {

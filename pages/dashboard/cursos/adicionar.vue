@@ -144,12 +144,12 @@
                   </b-form-radio>
                 </b-form-group>
 
-                <b-form-textarea v-if="term === 'Y'" v-model="course.acceptanceText" rows="6"
-                                 @keyup="validate(course.acceptanceText)" placeholder="Insira seus Termos e Condições">
+                <b-form-textarea v-if="term === 'Y'" v-model="course.termsAndConditions" rows="6"
+                                 @keyup="validate(course.termsAndConditions)" placeholder="Insira seus Termos e Condições">
                 </b-form-textarea>
               </div>
               <div class="pl-3">
-                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="!term || (term === 'Y' && !course.acceptanceText)">Ok
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="!term || (term === 'Y' && !course.termsAndConditions)">Ok
                 </button>
               </div>
             </div>
@@ -160,8 +160,9 @@
               <div class="item-form">
                 <button class="btn btn btn-block btn-rounded-purple" @click="nextPosition">+ Criar módulo</button>
                 <draggable draggable=".item">
-                  <CourseModule v-for="(module, index) in moduleList" :key="module.sequence" :module="module" class="item"
-                    @add-lesson="openFormLesson(index)" :classesList="classes[module.id]"/>
+                  <CourseModule v-for="(module, idx) in moduleList" :key="module.sequence" :module="module" class="item"
+                    @add-lesson="openFormLesson(idx)" :classesList="classes[module.id]" :moduleIndex="idx"
+                                @open-class="getClass" @remove-class="removeClass" @edit-module="editModule"/>
                 </draggable>
               </div>
             </div>
@@ -299,7 +300,7 @@
                 </b-form-group>
 
                 <label class="d-block mt-4">Selecione qual conteúdo deseja adicionar</label>
-                <FormMultimedia @add-multimedia="setClassComposition"/>
+                <FormMultimedia :multimediaList="lesson.contents" @add-multimedia="setClassComposition"/>
               </div>
             </div>
             <div class="pl-3">
@@ -422,7 +423,7 @@ export default {
         canDisplayProgress: false,
         issueCertificate: false,
         certificateIssuePercentage: 0,
-        acceptanceText: null,
+        termsAndConditions: null,
         publishCourse: false
       },
       module: {
@@ -610,6 +611,10 @@ export default {
     },
     sendLesson(moduleId, classes) {
       classes.forEach(lesson => {
+        this.course.authors.forEach(author => {
+          lesson.authors.push(author.id);
+        });
+
         try {
           if(lesson.id){
             this.$axios.$put(`/class?id=${lesson.id}`, lesson);
@@ -625,12 +630,15 @@ export default {
       this.moduleList.forEach(module => {
         try {
           if(module.id){
-            const response = this.$axios.$put(`/module/${module.id}`, module);
-            this.sendLesson(response.data.id, module.classes);
+            this.$axios.$put(`/module/${module.id}`, module).then(resp => {
+              this.sendLesson(resp.data.id, module.classes);
+            });
           } else {
             const ObjModule = {...module};
             ObjModule.course = couseId;
-            this.$axios.$post('/module', ObjModule);
+            this.$axios.$post('/module', ObjModule).then(resp => {
+              this.sendLesson(resp.data.id, module.classes);
+            });
           }
         } catch (error) {
           console.log(error);
@@ -662,21 +670,60 @@ export default {
       });
     },
     getModuleList() {
-      this.$axios.$get(`/module/all?id=${this.id}&size=${1000}&page=1`).then(response => {
+      this.$axios.$get(`/module/all?courseId=${this.id}&size=${1000}&page=1`).then(response => {
         this.moduleList = [...response.data];
-      }).finally(()=>{
-        this.moduleList.forEach(({id}, index)=>{
-          this.getClassList(id, index)
+        this.moduleList.forEach((module, index) => {
+          this.classes[index] = module.classes;
         })
+      })
+    },
+    getClass({classID, moduleIndex}) {
+      this.$axios.$get(`/class?id=${classID}`).then(response => {
+        this.lesson = {...response.data};
+        this.lesson.moduleIndex = moduleIndex;
+        if(!this.lesson.releaseDaysAfterPurchase && !this.lesson.releaseDate){
+          this.lesson.classAvailability = 'immediate'
+        }
+        else {
+          this.lesson.classAvailability = this.lesson.releaseDate ? 'specificDate' : 'afterRegistration';
+        }
+
+        this.lesson.expirationLesson = this.expirationDays ? 'Y' : 'N';
+
+        if(this.lesson.accessType.includes('accessType')){
+          this.permissionsLesson.push('accessType')
+        }
+
+        if(this.lesson.showClass){
+          this.permissionsLesson.push('showClass')
+        }
+
+        if(this.lesson.contents.length > 0) {
+          console.log(this.lesson.contents)
+        }
+
+        this.step = 3;
+        this.position = 3;
       });
     },
-    getClassList(id, moduleIndex) {
-      this.$axios.$get(`/class/all?moduleId=${id}`).then(response => {
-        this.classes[moduleIndex] = [...response.data];
-      });
+    removeClass(id){
+      this.$axios.$delete(`/class/${id}`).then(response => {
+        this.getModuleList();
+      })
     },
     addModule(){
-      const paramsModule = {
+      let moduleID = null;
+      if(this.module.id) {
+        const idx = this.moduleList.findIndex(module => {
+          return module.id === this.module.id
+        })
+
+        if(idx >= 0 ){
+          moduleID = this.moduleList[idx].id
+        }
+      }
+
+      let paramsModule = {
         sequence: this.moduleList.length + 1,
         title: this.module.title,
         accessType: this.permissions.includes('accessType') ? 'GRATIS' : 'PAGO',
@@ -684,9 +731,14 @@ export default {
         notifyStudents: this.permissions.includes('notifyStudents'),
         releaseDaysAfterPurchase: this.module.releaseDaysAfterPurchase,
         releaseDate: this.module.releaseDate,
-        expirationDays: this.module.expirationDays,
+        expirationDays: this.module.expirationDays ? this.module.expirationDays.toString() : null,
         classes: this.module.classes
       };
+
+      if(moduleID){
+        paramsModule.id = moduleID;
+        console.log("Entrou aqui")
+      }
 
       this.module.availability !== 'registration' && delete paramsModule.releaseDaysAfterPurchase;
       this.module.availability !== 'specificDate' && delete paramsModule.releaseDate;
@@ -755,6 +807,33 @@ export default {
     },
     setClassComposition(params) {
       this.lesson.contents = params.collection;
+    },
+    editModule(index){
+      this.module = this.moduleList[index];
+      this.step = 3;
+      this.position = 2;
+
+      if(!this.module.releaseDaysAfterPurchase && !this.module.releaseDate){
+        this.module.availability = 'immediate'
+      }
+      else {
+        this.module.availability = this.module.releaseDate ? 'specificDate' : 'afterRegistration';
+      }
+
+      this.module.hasExpiration = this.module.expirationDays ? 'Y' : 'N';
+
+      if(this.module.accessType.includes('accessType')){
+        this.permissions.push('accessType')
+      }
+
+      if(this.module.notifyStudents){
+        this.permissions.push('notifyStudents')
+      }
+
+      if(this.module.showModule){
+        this.permissions.push('showModule')
+      }
+
     }
   },
   computed: {
@@ -776,6 +855,8 @@ export default {
       this.id = $nuxt.$route.params.id;
       this.$axios.$get('/course', {params: {id: this.id}}).then(response => {
         this.course = {...response.data};
+
+        this.term = this.course.termsAndConditions ? 'Y' : 'N'
 
         this.categoriesList.forEach(category => {
           this.course.categories.forEach(c => {

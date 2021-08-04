@@ -4,7 +4,7 @@
       <span class="three-points mr-2"></span>
       <h6 class="d-inline-block mb-0">{{module.title}}</h6>
       <a class="float-right" href="#" @click="showModule = !showModule"><img src="../../assets/img/utils/ico-arrow-dropdown.svg"></a>
-      <span class="pencil-ico float-right mr-4"></span>
+      <span @click="$emit('edit-module', moduleIndex)" class="cursor-pointer pencil-ico float-right mr-4"></span>
     </div>
     <div class="expanded-module" v-show="showModule">
       <div style="margin-top: 29px; gap: 16px" class="d-flex justify-content-between">
@@ -12,7 +12,7 @@
         <button class="btn btn-block w-100 btn-rounded-purple mt-0" @click="$emit('add-lesson')">+ Criar aula</button>
       </div>
       <div class="lessons mt-24">
-        <draggable v-model="lessonList" draggable=".item">
+        <draggable v-model="module.classes" draggable=".item">
           <div class="lesson mt-2 item" v-for="(lesson, index) in module.classes" :key="index">
             <span class="three-points mr-2"></span>
             {{ lesson.title }}
@@ -20,9 +20,9 @@
               <template #button-content>
                 <img width="16" :src="require('@/assets/img/utils/three-points.svg')">
               </template>
-              <b-dropdown-item @click=""><i class=" mr-1"></i>Visualizar aula</b-dropdown-item>
-              <b-dropdown-item @click=""><i class="pencil-ico mr-1"></i>Editar aula</b-dropdown-item>
-              <b-dropdown-item @click=""><i class="trash-ico mr-1"></i>Deletar aula</b-dropdown-item>
+              <b-dropdown-item @click="$emit('open-class', {classID: lesson.id, moduleIndex: moduleIndex})"><i class=" mr-1"></i>Visualizar aula</b-dropdown-item>
+              <b-dropdown-item @click="$emit('add-lesson', {moduleId: module.id, lessonId: lesson.id})"><i class="pencil-ico mr-1"></i>Editar aula</b-dropdown-item>
+              <b-dropdown-item @click="$emit('remove-class', lesson.id)"><i class="trash-ico mr-1"></i>Deletar aula</b-dropdown-item>
             </b-dropdown>
           </div>
         </draggable>
@@ -37,25 +37,21 @@ import draggable from "vuedraggable";
 export default {
   props: {
     module: {type: Object},
-    classesList: {type: Array},
-  },
-  watch:{
-    classesList: {
-      deep: true,
-      handler: function (){
-        this.lessonList = this.classesList
-      }
-    }
+    moduleIndex: {type: Number}
   },
   components: {
     draggable,
   },
   data() {
     return {
-      lessonList: [],
       showModule: false
     }
   },
+  methods: {
+    editLesson(id){
+
+    }
+  }
 }
 </script>
 

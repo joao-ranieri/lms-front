@@ -12,7 +12,7 @@
       <div class="group-btn-action">
         <span class="mr-2 grey-neutral">Ordenar por:</span>
         <div class="d-inline-block font-weight-normal mr-4" style="width: 204px">
-          <b-form-select class="font-weight-bold input-border select-arrow" @change.stop="getCourses" v-model="orderBy"
+          <b-form-select class="font-weight-bold input-border select-arrow" @change="getCourses" v-model="orderBy"
                          :options="ordinations"></b-form-select>
         </div>
 
@@ -33,7 +33,8 @@
       </div>
 
     </div>
-
+    <b-pagination v-if="courses.length > 0" class="paginate-style mt-4" pills align="right" @change="getByPage" v-model="currentPage"
+                  :total-rows="total" :per-page="perPage"/>
   </div>
 </template>
 
@@ -101,6 +102,10 @@ export default {
       }).finally(() => {
 
       })
+    },
+    getByPage(page) {
+      this.currentPage = page;
+      this.getCourses()
     },
   },
   mounted() {

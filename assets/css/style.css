@@ -89,7 +89,7 @@ h6 {
 }
 
 /* Button settings*/
-.btn, .btn:hover, .btn:active {
+.btn:not(.squad), .btn:not(.squad):hover, .btn:not(.squad):active {
   font: 14px "Inter Regular";
   font-weight: 600;
   padding: 12px 12px;
