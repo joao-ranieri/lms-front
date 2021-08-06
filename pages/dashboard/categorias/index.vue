@@ -24,7 +24,10 @@
       </b-collapse>
     </div>
 
-    <div class="mt-2">
+    <div class="loading-content" v-if="loadingContent">
+        <UtilsLoading color="dark" size="large"/>
+    </div>
+    <div class="mt-2" v-else>
       <b-table hover striped class="table-category" head-variant="dark" :items="allCategory" :fields="fields">
         <template #cell(name)="data">
           <div>
@@ -32,7 +35,7 @@
           </div>
         </template>
         <template #cell(delete)="data">
-          <div @click="deleteCategory(data.item.id)">
+          <div @click="openDelete(data.item)">
             <span>Delete</span>
           </div>
         </template>
@@ -51,6 +54,10 @@
     </div>
 
     <ModalAddCategory />
+    <ModalConfirmation
+      title="Exclusão de categoria"
+      :msg="'Deseja remover a categoria '+ categoryDelete.name+'?'"
+      @confirmed="confirmed" />
 
   </div>
 </template>
@@ -65,6 +72,7 @@ export default {
 
   data() {
     return {
+      loadingContent: true,
       fields: [
         {key: 'name', label: 'Nome'},
         {key: 'delete', label: 'Apagar'}
@@ -83,7 +91,8 @@ export default {
           { value: 'ASC', text: 'Crescente' },
           { value: 'DESC', text: 'Decrescente ' },
         ],
-      }
+      },
+      categoryDelete: {name: ''}
     }
   },
 
@@ -92,10 +101,16 @@ export default {
   },
 
   methods: {
-    async getAllCategory() {
-      this.$axios.$get(`/category/all?page=${this.currentPage}&size=${this.itemsPerPage}&orderBy=${this.orderBy}&direction=${this.direction}`).then(response => {
+    getAllCategory() {
+      this.loadingContent = true;
+      this.$axios.$get(`/category/all?page=${this.currentPage}&size=${this.itemsPerPage}&orderBy=${this.orderBy}&direction=${this.direction}`)
+      .then(response => {
         this.allCategory = response.data;
         this.total = response.total;
+      }).catch((error) => {
+        console.log(error);
+      }).finally(() => {
+        this.loadingContent = false;
       });
     },
     categoryDetails(id) {
@@ -124,8 +139,8 @@ export default {
         this.page = 1;
       });
     },
-    async deleteCategory(id) {
-      await this.$axios.$delete(`/category/${id}`)
+    deleteCategory() {
+      this.$axios.$delete(`/category/${this.categoryDelete.id}`)
       .then(response => {
         this.getAllCategory();
         this.userEdit.addCategoryName = '';
@@ -133,6 +148,13 @@ export default {
       }).catch( err => {
         console.log(err);
       })
+    },
+    openDelete(category) {
+      this.categoryDelete = category;
+      this.$bvModal.show('confirmation');
+    },
+    confirmed() {
+      this.deleteCategory();
     }
   }
 }
