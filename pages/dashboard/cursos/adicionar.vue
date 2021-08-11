@@ -207,10 +207,10 @@
 
                 <label class="d-block mt-4">O método possui período de validade?</label>
                 <b-form-group class="radio-style">
-                  <b-form-radio value="N" v-model="module.hasExpiration">
+                  <b-form-radio value="N" name="expiration" v-model="module.hasExpiration">
                     <strong>Não</strong>, o acesso é por tempo indeterminado.
                   </b-form-radio>
-                  <b-form-radio value="Y" v-model="module.hasExpiration">
+                  <b-form-radio value="Y" name="expiration" v-model="module.hasExpiration">
                     <strong>Sim</strong>, os alunos só acessam por um período específico.
                   </b-form-radio>
 
@@ -713,8 +713,10 @@ export default {
     },
     addModule(){
       let moduleID = null;
+      let idx = null;
+
       if(this.module.id) {
-        const idx = this.moduleList.findIndex(module => {
+        idx = this.moduleList.findIndex(module => {
           return module.id === this.module.id
         })
 
@@ -735,16 +737,22 @@ export default {
         classes: this.module.classes
       };
 
-      if(moduleID){
-        paramsModule.id = moduleID;
-        console.log("Entrou aqui")
-      }
-
       this.module.availability !== 'registration' && delete paramsModule.releaseDaysAfterPurchase;
       this.module.availability !== 'specificDate' && delete paramsModule.releaseDate;
       this.module.hasExpiration === 'N' && delete paramsModule.expirationDays;
 
-      this.moduleList.push(paramsModule);
+      if(moduleID){
+        paramsModule.id = moduleID;
+        this.moduleList[idx] = paramsModule;
+        this.$axios.$put(`/module/${moduleID}`, paramsModule).then(resp => {
+          console.log(resp)
+          console.log("Deu certo")
+        });
+      }
+      else {
+        this.moduleList.push(paramsModule);
+      }
+
       this.module = {
         title: null,
         availability: null,
@@ -754,7 +762,7 @@ export default {
         expirationDays: null,
         classes: []
       }
-      this.permissions = [],
+      this.permissions = [];
 
       this.backPage();
     },
@@ -809,7 +817,7 @@ export default {
       this.lesson.contents = params.collection;
     },
     editModule(index){
-      this.module = this.moduleList[index];
+      this.module = {...this.moduleList[index]};
       this.step = 3;
       this.position = 2;
 
@@ -833,6 +841,7 @@ export default {
       if(this.module.showModule){
         this.permissions.push('showModule')
       }
+      console.log(this.module)
 
     }
   },

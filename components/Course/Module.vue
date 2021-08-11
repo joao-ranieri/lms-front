@@ -20,8 +20,8 @@
               <template #button-content>
                 <img width="16" :src="require('@/assets/img/utils/three-points.svg')">
               </template>
-              <b-dropdown-item @click="$emit('open-class', {classID: lesson.id, moduleIndex: moduleIndex})"><i class=" mr-1"></i>Visualizar aula</b-dropdown-item>
-              <b-dropdown-item @click="$emit('add-lesson', {moduleId: module.id, lessonId: lesson.id})"><i class="pencil-ico mr-1"></i>Editar aula</b-dropdown-item>
+              <b-dropdown-item @click=""><i class=" mr-1"></i>Visualizar aula</b-dropdown-item>
+              <b-dropdown-item @click="$emit('open-class', {classID: lesson.id, moduleIndex: moduleIndex})"><i class="pencil-ico mr-1"></i>Editar aula</b-dropdown-item>
               <b-dropdown-item @click="$emit('remove-class', lesson.id)"><i class="trash-ico mr-1"></i>Deletar aula</b-dropdown-item>
             </b-dropdown>
           </div>
