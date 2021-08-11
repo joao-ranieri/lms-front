@@ -15,14 +15,17 @@
         <UtilsLoading color="dark" size="large"/>
       </div>
       <div v-else class="d-flex flex-wrap pt-5" style="gap: 40px;">
-        <AuthorCard v-for="(author, index) in authors" :key="index" :name="author.name" :resume="author.description"
-                    :image="author.image" :idAuthor="author.id" @open-modal="openModalAuthor"/>
+        <AuthorCard v-for="(author, index) in authors" :key="index" :author="author" @open-modal="openModalAuthor" @open-delete="openDelete(author)"/>
       </div>
     </div>
     <b-pagination v-if="authors.length > 0" class="paginate-style mt-4" pills align="right" @change="getByPage" v-model="currentPage"
                   :total-rows="total" :per-page="perPage"/>
 
     <ModalAuthor/>
+    <ModalConfirmation
+      title="Exclusão de autor"
+      :msg="'Deseja remover o autor '+ authorDelete.name+'?'"
+      @confirmed="confirmed" />
   </div>
 </template>
 
@@ -41,6 +44,7 @@ export default {
         description: '',
         image: ''
       },
+      authorDelete: {name: ''},
       nameSearch: null,
       authors: [],
       currentPage: 1,
@@ -84,6 +88,20 @@ export default {
     getByPage(page) {
       this.currentPage = page;
     },
+    deleteAuthor() {
+      this.$axios.$delete('author/'+this.authorDelete.id).then(response => {
+        this.getAuthors();
+      }).catch((e)=>{
+        console.log(e)
+      })
+    },
+    openDelete(author) {
+      this.authorDelete = author;
+      this.$bvModal.show('confirmation');
+    },
+    confirmed() {
+      this.deleteAuthor();
+    }
   },
   mounted() {
     this.getAuthors();

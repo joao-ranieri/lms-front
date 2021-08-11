@@ -31,8 +31,6 @@
 <script>
 export default {
   props: {
-    idAuthor: {type: String, default: null},
-    route: {type: String},
     title: {type: String},
     msg: {type: String},
     onlyConfirmation: {type: Boolean, default: false},
@@ -52,18 +50,10 @@ export default {
   },
   methods: {
     execute(){
-      this.$axios.$delete(this.route+this.idAuthor).then(response => {
-        this.$root.$emit('refresh-authors');
-        this.$bvModal.hide('confirmation')
-      }).catch((e)=>{
-        console.log(e)
-      })
+      this.$emit('confirmed');
+      this.$bvModal.hide('confirmation');
     },
     close(){
-      if(this.url){
-        console.log(this.url)
-        $nuxt.$router.push(this.url);
-      }
       this.$bvModal.hide('confirmation');
     }
   }

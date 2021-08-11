@@ -32,8 +32,6 @@
       </div>
 
     </b-card-body>
-
-
   </b-card>
 </template>
 
@@ -41,11 +39,8 @@
 export default {
   props: {
     course: {type: Object},
-    idCourse: {type: String},
-    courseTitle: {type: String},
     tags: {type: Array},
     isPublished: {type: Boolean},
-    authors: {type: Array}
   },
   data(){
     return {
@@ -57,10 +52,14 @@ export default {
 
     },
     remove(){
-
+      this.$emit('open-delete', this.course)
     },
     favorite(){
-      this.isFavorite = !this.isFavorite;
+      this.$axios.$put(`course/${this.course.id}/${this.isFavorite ? 'remove-favorite' : 'add-favorite'}`).then(response => {
+        this.isFavorite = !this.isFavorite;
+      }).catch((e)=>{
+        console.log(e)
+      })
     },
     edit(id){
       $nuxt.$router.push('/dashboard/cursos/editar/'+id)

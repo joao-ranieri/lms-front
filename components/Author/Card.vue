@@ -9,31 +9,21 @@
         <b-dropdown-item @click="remove"><i class="trash-ico mr-1"></i>Remover</b-dropdown-item>
       </b-dropdown>
       <div class="author-image">
-        <img class="mr-auto ml-auto" :src="image" alt="author">
+        <img class="mr-auto ml-auto" :src="author.image" alt="author">
       </div>
 
       <div class="author-info">
-        <h6 class="pt-3 pb-3 text-center" v-text="name"></h6>
-        <span class="resume mb-3" v-text="resume"></span>
+        <h6 class="pt-3 pb-3 text-center" v-text="author.name"></h6>
+        <span class="resume mb-3" v-text="author.description"></span>
       </div>
     </div>
-    <ModalConfirmation :idAuthor="idAuthor" route="/author/" title="Exclusão de autor" :msg="'Deseja remover o autor '+ name+'?'" />
   </b-card>
 </template>
 
 <script>
 export default {
   props: {
-    idAuthor:{type: String, default: null},
-    name: {type: String},
-    resume: {type: String},
-    image: {type: String}
-  },
-  data(){
-    return {
-      author: {
-      }
-    }
+    author:{type: Object, default: null},
   },
   watch: {
     imageURL(val){
@@ -42,10 +32,10 @@ export default {
   },
   methods:{
     edit() {
-      this.$emit('open-modal', this.idAuthor)
+      this.$emit('open-modal', this.author.id)
     },
     remove(){
-      this.$bvModal.show('confirmation');
+      this.$emit('open-delete', this.author)
     }
   }
 }

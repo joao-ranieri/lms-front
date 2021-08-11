@@ -28,13 +28,19 @@
           <UtilsLoading color="dark" size="large"/>
         </div>
         <div v-else class="d-flex flex-wrap pt-5" style="gap: 40px;">
-          <CourseCard v-for="(course, index) in courses" :key="index" :course="course"/>
+          <CourseCard v-for="(course, index) in courses" :key="index" :course="course"
+          @open-delete="openDelete(course)"/>
         </div>
       </div>
 
     </div>
     <b-pagination v-if="courses.length > 0" class="paginate-style mt-4" pills align="right" @change="getByPage" v-model="currentPage"
-                  :total-rows="total" :per-page="perPage"/>
+      :total-rows="total" :per-page="perPage"/>
+
+    <ModalConfirmation
+      title="Exclusão de curso"
+      :msg="'Deseja remover o curso '+ courseDelete.title+'?'"
+      @confirmed="confirmed" />
   </div>
 </template>
 
@@ -72,7 +78,8 @@ export default {
       total: 0,
       perPage: 10,
       orderBy: "createdAt",
-      search: null
+      search: null,
+      courseDelete: {title: ''}
     }
   },
   watch: {
@@ -107,6 +114,20 @@ export default {
       this.currentPage = page;
       this.getCourses()
     },
+    deleteCourse() {
+      this.$axios.$delete('course/'+this.courseDelete.id).then(response => {
+        this.getCourses();
+      }).catch((e)=>{
+        console.log(e)
+      })
+    },
+    openDelete(course) {
+      this.courseDelete = course;
+      this.$bvModal.show('confirmation');
+    },
+    confirmed() {
+      this.deleteCourse();
+    }
   },
   mounted() {
     this.getCourses();
