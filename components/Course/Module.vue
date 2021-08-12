@@ -9,7 +9,7 @@
     <div class="expanded-module" v-show="showModule">
       <div style="margin-top: 29px; gap: 16px" class="d-flex justify-content-between">
         <button class="btn btn-block w-100 btn-rounded-grey mr-3">Importar de outro módulo</button>
-        <button class="btn btn-block w-100 btn-rounded-purple mt-0" @click="$emit('add-lesson')">+ Criar aula</button>
+        <button class="btn btn-block w-100 btn-rounded-purple mt-0" @click="$emit('add-lesson', module.id)">+ Criar aula</button>
       </div>
       <div class="lessons mt-24">
         <draggable v-model="module.classes" draggable=".item">

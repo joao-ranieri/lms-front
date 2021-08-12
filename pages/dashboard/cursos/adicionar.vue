@@ -619,7 +619,22 @@ export default {
           if(lesson.id){
             this.$axios.$put(`/class?id=${lesson.id}`, lesson);
           } else {
-            this.$axios.$post(`/class?moduleId=${moduleId}`, lesson);
+            this.$axios.$post(`/class?moduleId=${moduleId}`, lesson).then(resp =>{
+              this.sendContent(resp.id, classes.content)
+            });
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      });
+    },
+    sendContent(classId, contentList) {
+      contentList.forEach(content => {
+        try {
+          if(content.id){
+            this.$axios.$put(`/content?id=${content.id}`, lesson);
+          } else {
+            this.$axios.$post(`/content?classId=${classId}`, lesson);
           }
         } catch (error) {
           console.log(error);
@@ -726,6 +741,7 @@ export default {
       }
 
       let paramsModule = {
+        id: this.module.id ?? new Date().getTime(),
         sequence: this.moduleList.length + 1,
         title: this.module.title,
         accessType: this.permissions.includes('accessType') ? 'GRATIS' : 'PAGO',
@@ -766,10 +782,20 @@ export default {
 
       this.backPage();
     },
-    openFormLesson(moduleIndex){
-      this.lesson.moduleIndex = moduleIndex;
-      this.step = 3;
-      this.position = 3;
+    openFormLesson(moduleId){
+      const idx = this.moduleList.findIndex(module => {
+        return module.id = moduleId
+      })
+
+      if(idx > -1) {
+        if(!this.moduleList[idx].classes) {
+          this.moduleList[idx].classes = [];
+        }
+
+        this.moduleList[idx].classes =
+        this.step = 3;
+        this.position = 3;
+      }
     },
     addLesson() {
       this.lesson.contents.forEach(obj => {

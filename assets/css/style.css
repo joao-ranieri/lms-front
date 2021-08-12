@@ -702,11 +702,11 @@ input[type=number] {
 .radio-option-task .checkbox-style .custom-control-label::before,
 .radio-option-task .radio-style .custom-control-label::before,
 .radio-option-task .checkbox-style .custom-control-input:checked ~ .custom-control-label::before {
-  top: 15px;
+  top: 8px;
 }
 
 .radio-option-task .custom-radio .custom-control-input:checked ~ .custom-control-label::after {
-  top: 15px;
+  top: 8px;
 }
 
 .radio-option-task .checkbox-style .custom-control-label::after {
