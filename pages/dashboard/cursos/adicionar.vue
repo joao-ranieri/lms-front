@@ -23,7 +23,8 @@
                 </b-form-group>
               </div>
               <div class="pl-3">
-                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="!course.title">Ok
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="!course.title">
+                  Ok
                 </button>
               </div>
             </div>
@@ -35,7 +36,8 @@
 
               </div>
               <div class="pl-3">
-                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="course.categories.length === 0">Ok
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition"
+                        :disabled="course.categories.length === 0">Ok
                 </button>
               </div>
             </div>
@@ -47,7 +49,8 @@
 
               </div>
               <div class="pl-3">
-                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="course.authors.length === 0">Ok
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition"
+                        :disabled="course.authors.length === 0">Ok
                 </button>
               </div>
             </div>
@@ -56,12 +59,12 @@
               <div class="item-form">
                 <label class="d-block">Qual o tipo de acesso desse curso?</label>
                 <b-form-group class="radio-style">
-                  <b-form-radio  value="PAGO" v-model="course.accessType"
+                  <b-form-radio value="PAGO" v-model="course.accessType"
                                 @change="validate(course.accessType)"><strong>Pago -</strong> é necessário o pagamento
                     para liberar
                     acesso
                   </b-form-radio>
-                  <b-form-radio  value="GRATIS" v-model="course.accessType"
+                  <b-form-radio value="GRATIS" v-model="course.accessType"
                                 @change="validate(course.accessType)"><strong>Gratuito -</strong> é necessário apenas o
                     cadastro para
                     liberar acesso
@@ -70,7 +73,8 @@
 
               </div>
               <div class="pl-3">
-                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="!course.accessType">Ok
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition"
+                        :disabled="!course.accessType">Ok
                 </button>
               </div>
             </div>
@@ -89,7 +93,8 @@
 
               </div>
               <div class="pl-3">
-                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="!course.coverImage">Ok
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition"
+                        :disabled="!course.coverImage">Ok
                 </button>
               </div>
             </div>
@@ -127,7 +132,8 @@
                 </b-form-group>
               </div>
               <div class="pl-3">
-                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="permissions.length === 0">Ok
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition"
+                        :disabled="permissions.length === 0">Ok
                 </button>
               </div>
             </div>
@@ -136,20 +142,22 @@
               <div class="item-form">
                 <label class="d-block">Esse curso possui termos e condições?</label>
                 <b-form-group class="radio-style">
-                  <b-form-radio  value="N" v-model="term" @change="validate(term)">
+                  <b-form-radio value="N" v-model="term" @change="validate(term)">
                     <strong>Não</strong>, não precisa de Termos e Condições
                   </b-form-radio>
-                  <b-form-radio  value="Y" v-model="term" @change="validate(term)">
+                  <b-form-radio value="Y" v-model="term" @change="validate(term)">
                     <strong>Sim</strong>, precisa de Termos e Condições
                   </b-form-radio>
                 </b-form-group>
 
                 <b-form-textarea v-if="term === 'Y'" v-model="course.termsAndConditions" rows="6"
-                                 @keyup="validate(course.termsAndConditions)" placeholder="Insira seus Termos e Condições">
+                                 @keyup="validate(course.termsAndConditions)"
+                                 placeholder="Insira seus Termos e Condições">
                 </b-form-textarea>
               </div>
               <div class="pl-3">
-                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition" :disabled="!term || (term === 'Y' && !course.termsAndConditions)">Ok
+                <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition"
+                        :disabled="!term || (term === 'Y' && !course.termsAndConditions)">Ok
                 </button>
               </div>
             </div>
@@ -160,9 +168,9 @@
               <div class="item-form">
                 <button class="btn btn btn-block btn-rounded-purple" @click="nextPosition">+ Criar módulo</button>
                 <draggable draggable=".item">
-                  <CourseModule v-for="(module, idx) in moduleList" :key="module.sequence" :module="module" class="item"
-                    @add-lesson="openFormLesson(idx)" :classesList="classes[module.id]" :moduleIndex="idx"
-                                @open-class="getClass" @remove-class="removeClass" @edit-module="editModule"/>
+                  <CourseModule v-for="(mdl, idx) in moduleList" :moduleData="mdl" class="item" @open-class="getClass"
+                                @add-lesson="openFormLesson" @edit-module="editModule" :key="idx"
+                                @remove-class="removeClass"/>
                 </draggable>
               </div>
             </div>
@@ -189,7 +197,7 @@
                     <label class="d-block">Quantos dias após a matrícula?</label>
                     <b-form-group>
                       <b-form-input v-model="module.releaseDaysAfterPurchase" class="input-border" type="number"
-                        placeholder="Insira a quantidade de dias"/>
+                                    placeholder="Insira a quantidade de dias"/>
                     </b-form-group>
                   </span>
 
@@ -200,7 +208,7 @@
                     <label class="d-block">Selecione a data de lançamento</label>
                     <b-form-group>
                       <b-form-datepicker v-model="module.releaseDate" hide-header class="input-border" locale="pt-BR"
-                        placeholder="Digite ou selecione a data"></b-form-datepicker>
+                                         placeholder="Digite ou selecione a data"></b-form-datepicker>
                     </b-form-group>
                   </span>
                 </b-form-group>
@@ -240,7 +248,7 @@
 
                 <label class="d-block mt-4">Deseja exibir quem são autores?</label>
                 <b-form-group class="radio-style">
-                  <b-form-radio  :value="false" v-model="lesson.showAuthors">
+                  <b-form-radio :value="false" v-model="lesson.showAuthors">
                     <strong>Não</strong>, ocultar autores.
                   </b-form-radio>
                   <b-form-radio :value="true" v-model="lesson.showAuthors">
@@ -270,17 +278,17 @@
                   <label class="d-block">Selecione a data de lançamento</label>
                 <b-form-group>
                   <b-form-datepicker v-model="lesson.releaseDate" class="input-border" locale="pt-BR"
-                                placeholder="Digite ou selecione a data"></b-form-datepicker>
+                                     placeholder="Digite ou selecione a data"></b-form-datepicker>
                 </b-form-group>
                 </span>
                 </b-form-group>
 
                 <label class="d-block mt-4">A aula possui período de validade?</label>
                 <b-form-group class="radio-style">
-                  <b-form-radio value="N" v-model="lesson.expirationLesson" >
+                  <b-form-radio value="N" v-model="lesson.expirationLesson">
                     <strong>Não</strong>, o acesso é por tempo indeterminado.
                   </b-form-radio>
-                  <b-form-radio  value="Y" v-model="lesson.expirationLesson"
+                  <b-form-radio value="Y" v-model="lesson.expirationLesson"
                                 @change="validate(module.hasExpiration)">
                     <strong>Sim</strong>, os alunos só acessam por um período específico.
                   </b-form-radio>
@@ -289,14 +297,15 @@
                   <label class="d-block">Qual o prazo de validade desse módulo?</label>
                   <b-form-group>
                   <b-form-input v-model="lesson.expirationDays" class="input-border" type="number"
-                    placeholder="Insira a quantidade de dias"/>
+                                placeholder="Insira a quantidade de dias"/>
                   </b-form-group>
                 </span>
                 </b-form-group>
 
                 <label class="d-block mt-4">Outras opções</label>
                 <b-form-group class="checkbox-style">
-                  <b-form-checkbox-group v-model="permissionsLesson" :options="lessonsOptionsModule"></b-form-checkbox-group>
+                  <b-form-checkbox-group v-model="permissionsLesson"
+                                         :options="lessonsOptionsModule"></b-form-checkbox-group>
                 </b-form-group>
 
                 <label class="d-block mt-4">Selecione qual conteúdo deseja adicionar</label>
@@ -322,26 +331,32 @@
         <div class="content-footer">
           <button class="d-block btn btn-rounded-grey" @click="backPage">
             <span
-              class="d-inline-block arrow-back-ico mr-2"></span>{{ this.step === 3 && position > 1 ? "Voltar para Módulos" : "Voltar para Cursos" }}
+              class="d-inline-block arrow-back-ico mr-2"></span>{{
+              this.step === 3 && position > 1 ? "Voltar para Módulos" : "Voltar para Cursos"
+            }}
           </button>
 
           <div>
-            <b-button v-if="step <= 2 || (step === 3 && position === 1)" class="btn-rounded-purple mr-3 pl-4 pr-4" v-b-tooltip="'Salvar rascunho'" @click="sendForm()">
+            <b-button v-if="step <= 2 || (step === 3 && position === 1)" class="btn-rounded-purple mr-3 pl-4 pr-4"
+                      v-b-tooltip="'Salvar rascunho'" @click="sendForm()">
               Salvar rascunho
             </b-button>
 
-            <b-button v-if="step <= 2 || (step === 3 && position === 1)" class="btn-purple pl-4 pr-4" v-b-tooltip="'Publicar curso'" @click="sendForm(true)"
-                :disabled="((step === 1 && position < 5) || (step === 2 && position < 3) || isDisabled) && !(!isDisabled && id)">
+            <b-button v-if="step <= 2 || (step === 3 && position === 1)" class="btn-purple pl-4 pr-4"
+                      v-b-tooltip="'Publicar curso'" @click="sendForm(true)"
+                      :disabled="((step === 1 && position < 5) || (step === 2 && position < 3) || isDisabled) && !(!isDisabled && id)">
               Publicar curso
             </b-button>
 
-            <b-button v-if="step === 3 && position === 2" class="btn-purple pl-4 pr-4" v-b-tooltip="'Adicioanr módulo'" @click="addModule">
+            <b-button v-if="step === 3 && position === 2" class="btn-purple pl-4 pr-4" v-b-tooltip="'Adicioanr módulo'"
+                      @click="addModule">
               Adicionar módulo
             </b-button>
 
             <b-button v-if="step === 3 && position === 3" class="btn-purple pl-4 pr-4" @click="addLesson"
                       v-b-tooltip="'Adicionar aula'" :disabled="lesson.contents.length === 0 || !lesson.title">
-              Adicionar aula</b-button>
+              Adicionar aula
+            </b-button>
           </div>
 
         </div>
@@ -450,6 +465,14 @@ export default {
         accessType: null,
         contents: []
       },
+      contentTypes: {
+        'text': "TEXTO",
+        'video': 'VIDEO',
+        'file': 'ARQUIVO',
+        'audio': 'AUDIO',
+        'incorporate': 'EMBEDDED',
+        'task': 'ATIVIDADE'
+      },
       moduleList: [],
       classes: {},
       itensProgress: [
@@ -477,26 +500,29 @@ export default {
         },
       ],
       itemsNavigator: [
-        { position: 1, title: null},
-        { position: 2, title: "Criar módulo", icon: "folder",
-        steps: [
-          {stepsTitle: "Título"},
-          {stepsTitle: "Disponibilidade"},
-          {stepsTitle: "Validade"},
-          {stepsTitle: "Outras Opções"},
+        {position: 1, title: null},
+        {
+          position: 2, title: "Criar módulo", icon: "folder",
+          steps: [
+            {stepsTitle: "Título"},
+            {stepsTitle: "Disponibilidade"},
+            {stepsTitle: "Validade"},
+            {stepsTitle: "Outras Opções"},
           ]
         },
-        { position: 3, title: "Criar aula", icon: "folder",
-        steps: [
-          {stepsTitle: "Título"},
-          {stepsTitle: "Autoria"},
-          {stepsTitle: "Disponibilidade"},
-          {stepsTitle: "Validade"},
-          {stepsTitle: "Outras Opções"},
-          {stepsTitle: "Conteúdo"},
+        {
+          position: 3, title: "Criar aula", icon: "folder",
+          steps: [
+            {stepsTitle: "Título"},
+            {stepsTitle: "Autoria"},
+            {stepsTitle: "Disponibilidade"},
+            {stepsTitle: "Validade"},
+            {stepsTitle: "Outras Opções"},
+            {stepsTitle: "Conteúdo"},
           ]
-        }
-      ]
+        },
+      ],
+      currentModule: null
     }
   },
   watch: {
@@ -510,8 +536,7 @@ export default {
     backPage() {
       if (this.step === 3 && this.position > 1) {
         this.position = 1;
-      }
-      else {
+      } else {
         $nuxt.$router.push('/dashboard/cursos')
       }
     },
@@ -521,28 +546,17 @@ export default {
 
       if (this.position === 2 && this.step === 2) {
         this.isDisabled = false;
-      }
-
-      if (this.step === 1 && this.position === 6) {
+      } else if (this.step === 1 && this.position === 6) {
         this.step = 2;
         this.position = 1;
         this.isDisabled = false;
-      }
-
-      if (this.step === 2 && this.position === 4) {
+      } else if (this.step === 2 && this.position === 4) {
         this.step = 3;
         this.position = 1;
         this.isDisabled = true;
-      }
-
-      this.isDisabled = false;
-    },
-    returnPosition() {
-      if (this.step === 1 && this.position > 1) {
-        this.position -= 1;
-      } else if (this.step === 2 && this.position === 1) {
-        this.step = 1;
-        this.position = 5;
+      } else if (this.step === 3 && this.position === 2) {
+        this.module.id ||= new Date().getTime();
+        console.log(this.module)
       }
 
       this.isDisabled = false;
@@ -565,6 +579,7 @@ export default {
       }
     },
     sendForm(publish) {
+
       let authors = [];
 
       this.course.authors.forEach(author => {
@@ -615,12 +630,15 @@ export default {
           lesson.authors.push(author.id);
         });
 
+        const mediaContent = {...classes.contents};
+        delete classes.contents;
+
         try {
-          if(lesson.id){
+          if (lesson.id) {
             this.$axios.$put(`/class?id=${lesson.id}`, lesson);
           } else {
-            this.$axios.$post(`/class?moduleId=${moduleId}`, lesson).then(resp =>{
-              this.sendContent(resp.id, classes.content)
+            this.$axios.$post(`/class?moduleId=${moduleId}`, lesson).then(resp => {
+              this.sendContent(resp.id, mediaContent)
             });
           }
         } catch (error) {
@@ -629,12 +647,43 @@ export default {
       });
     },
     sendContent(classId, contentList) {
-      contentList.forEach(content => {
+      contentList.forEach((content, index) => {
+        let mediaContent = {};
+        switch (content.type) {
+          case 'task':
+            mediaContent = {
+              contentType: content.contentType,
+              rightAnswer: content.rightAnswer,
+              options: content.options
+            }
+            break;
+          case 'video':
+            mediaContent = {link: content.link}
+            break;
+          case 'file':
+            mediaContent = {name: content.name, content: content.content}
+            break;
+          default:
+            mediaContent = {text: content.text}
+        }
+
+        const formattedContent = {
+          sequence: index,
+          type: this.contentTypes[content.type],
+          includeDRM: content.hasDRM ?? false,
+          enableDownload: content.canDownload ?? false,
+          description: JSON.stringify(mediaContent)
+        }
+
         try {
-          if(content.id){
-            this.$axios.$put(`/content?id=${content.id}`, lesson);
+          if (content.id) {
+            this.$axios.$put(`/content?id=${content.id}`, formattedContent).then(resp => {
+              console.log(resp)
+            });
           } else {
-            this.$axios.$post(`/content?classId=${classId}`, lesson);
+            this.$axios.$post(`/content?classId=${classId}`, formattedContent).then(resp => {
+              console.log(resp)
+            })
           }
         } catch (error) {
           console.log(error);
@@ -643,16 +692,18 @@ export default {
     },
     sendModules(couseId) {
       this.moduleList.forEach(module => {
+        const classes = module.classes;
+        delete module.classes;
         try {
-          if(module.id){
+          if (module.id) {
             this.$axios.$put(`/module/${module.id}`, module).then(resp => {
-              this.sendLesson(resp.data.id, module.classes);
+              this.sendLesson(resp.data.id, classes);
             });
           } else {
             const ObjModule = {...module};
             ObjModule.course = couseId;
             this.$axios.$post('/module', ObjModule).then(resp => {
-              this.sendLesson(resp.data.id, module.classes);
+              this.sendLesson(resp.data.id, classes);
             });
           }
         } catch (error) {
@@ -696,24 +747,23 @@ export default {
       this.$axios.$get(`/class?id=${classID}`).then(response => {
         this.lesson = {...response.data};
         this.lesson.moduleIndex = moduleIndex;
-        if(!this.lesson.releaseDaysAfterPurchase && !this.lesson.releaseDate){
+        if (!this.lesson.releaseDaysAfterPurchase && !this.lesson.releaseDate) {
           this.lesson.classAvailability = 'immediate'
-        }
-        else {
+        } else {
           this.lesson.classAvailability = this.lesson.releaseDate ? 'specificDate' : 'afterRegistration';
         }
 
         this.lesson.expirationLesson = this.expirationDays ? 'Y' : 'N';
 
-        if(this.lesson.accessType.includes('accessType')){
+        if (this.lesson.accessType.includes('accessType')) {
           this.permissionsLesson.push('accessType')
         }
 
-        if(this.lesson.showClass){
+        if (this.lesson.showClass) {
           this.permissionsLesson.push('showClass')
         }
 
-        if(this.lesson.contents.length > 0) {
+        if (this.lesson.contents.length > 0) {
           console.log(this.lesson.contents)
         }
 
@@ -721,27 +771,26 @@ export default {
         this.position = 3;
       });
     },
-    removeClass(id){
+    removeClass(id) {
       this.$axios.$delete(`/class/${id}`).then(response => {
         this.getModuleList();
       })
     },
-    addModule(){
+    addModule() {
       let moduleID = null;
       let idx = null;
 
-      if(this.module.id) {
+      if (this.module.id) {
         idx = this.moduleList.findIndex(module => {
           return module.id === this.module.id
         })
 
-        if(idx >= 0 ){
+        if (idx >= 0) {
           moduleID = this.moduleList[idx].id
         }
       }
 
       let paramsModule = {
-        id: this.module.id ?? new Date().getTime(),
         sequence: this.moduleList.length + 1,
         title: this.module.title,
         accessType: this.permissions.includes('accessType') ? 'GRATIS' : 'PAGO',
@@ -750,52 +799,31 @@ export default {
         releaseDaysAfterPurchase: this.module.releaseDaysAfterPurchase,
         releaseDate: this.module.releaseDate,
         expirationDays: this.module.expirationDays ? this.module.expirationDays.toString() : null,
-        classes: this.module.classes
+        classes: this.module.classes ?? []
       };
 
       this.module.availability !== 'registration' && delete paramsModule.releaseDaysAfterPurchase;
       this.module.availability !== 'specificDate' && delete paramsModule.releaseDate;
       this.module.hasExpiration === 'N' && delete paramsModule.expirationDays;
 
-      if(moduleID){
+      if (moduleID && !isNaN(moduleID)) {
         paramsModule.id = moduleID;
         this.moduleList[idx] = paramsModule;
         this.$axios.$put(`/module/${moduleID}`, paramsModule).then(resp => {
           console.log(resp)
-          console.log("Deu certo")
         });
-      }
-      else {
+      } else {
         this.moduleList.push(paramsModule);
       }
 
-      this.module = {
-        title: null,
-        availability: null,
-        hasExpiration: null,
-        releaseDaysAfterPurchase: null,
-        releaseDate: null,
-        expirationDays: null,
-        classes: []
-      }
+      this.module = {}
       this.permissions = [];
-
       this.backPage();
     },
-    openFormLesson(moduleId){
-      const idx = this.moduleList.findIndex(module => {
-        return module.id = moduleId
-      })
-
-      if(idx > -1) {
-        if(!this.moduleList[idx].classes) {
-          this.moduleList[idx].classes = [];
-        }
-
-        this.moduleList[idx].classes =
-        this.step = 3;
-        this.position = 3;
-      }
+    openFormLesson(moduleId) {
+      this.currentModule = moduleId;
+      this.step = 3;
+      this.position = 3;
     },
     addLesson() {
       this.lesson.contents.forEach(obj => {
@@ -812,59 +840,61 @@ export default {
         allowStudentsComments: this.permissionsLesson.includes('allowStudentsComments'),
         accessType: this.permissionsLesson.includes('accessType') ? 'GRATIS' : 'PAGO',
         authors: [],
-        contents: JSON.stringify(this.lesson.contents)
+        contents: this.lesson.contents
       }
 
       this.lesson.classAvailability !== 'registration' && delete paramsLesson.releaseDaysAfterPurchase;
       this.lesson.classAvailability !== 'specificDate' && delete paramsLesson.releaseDate;
       this.lesson.expirationLesson === 'N' && delete paramsLesson.expirationDays;
 
-      this.moduleList[this.lesson.moduleIndex].classes.push(paramsLesson);
+      const idxModule = this.moduleList.findIndex(mdl => {
+        return mdl.id === this.currentModule
+      })
+
+      this.moduleList[idxModule].classes.push(paramsLesson);
       this.lesson = {
-        moduleIndex: null,
-        title: null,
-        showAuthors: null,
-        expirationLesson: null,
-        classAvailability: null,
-        showClass: null,
-        releaseDate: null,
-        releaseDaysAfterPurchase: null,
-        expirationDays: null,
-        allowStudentsComments: null,
-        accessType: null,
         contents: []
       };
       this.permissionsLesson = [];
 
+      this.currentModule = null;
       this.step = 3;
       this.position = 1;
     },
     setClassComposition(params) {
       this.lesson.contents = params.collection;
     },
-    editModule(index){
-      this.module = {...this.moduleList[index]};
-      this.step = 3;
-      this.position = 2;
+    editModule(moduleId) {
+      const idx = this.moduleList.findIndex(({id}) => {
+        return id === moduleId
+      })
 
-      if(!this.module.releaseDaysAfterPurchase && !this.module.releaseDate){
-        this.module.availability = 'immediate'
+      if(idx >= 0){
+        this.module = {...this.moduleList[idx]};
+        this.step = 3;
+        this.position = 2;
       }
       else {
+        return false
+      }
+
+      if (!this.module.releaseDaysAfterPurchase && !this.module.releaseDate) {
+        this.module.availability = 'immediate'
+      } else {
         this.module.availability = this.module.releaseDate ? 'specificDate' : 'afterRegistration';
       }
 
       this.module.hasExpiration = this.module.expirationDays ? 'Y' : 'N';
 
-      if(this.module.accessType.includes('accessType')){
+      if (this.module.accessType.includes('accessType')) {
         this.permissions.push('accessType')
       }
 
-      if(this.module.notifyStudents){
+      if (this.module.notifyStudents) {
         this.permissions.push('notifyStudents')
       }
 
-      if(this.module.showModule){
+      if (this.module.showModule) {
         this.permissions.push('showModule')
       }
       console.log(this.module)
@@ -873,12 +903,12 @@ export default {
   },
   computed: {
     barPercent() {
-      if(this.step === 1) {
-        return ((100/12)*(this.position))
-      } else if(this.step === 2) {
-        return ((100/12)*(this.position + 5))
-      } else if(this.step === 3) {
-        return ((100/12)*(this.position + 8))
+      if (this.step === 1) {
+        return ((100 / 12) * (this.position))
+      } else if (this.step === 2) {
+        return ((100 / 12) * (this.position + 5))
+      } else if (this.step === 3) {
+        return ((100 / 12) * (this.position + 8))
       }
     }
   },
@@ -916,7 +946,7 @@ export default {
         })
 
         this.isDisabled = false;
-      }).finally(()=>{
+      }).finally(() => {
         this.getModuleList();
       });
     }

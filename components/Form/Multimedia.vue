@@ -34,7 +34,7 @@
 
     <div id="content-media" v-if="items.length > 0">
       <draggable v-model="items" draggable=".item" @change="printlist">
-        <FormMidia class="drag-drop item" v-for="(item, idx) in items" :mediaContent="item" :key="idx" @remove-item="removeItem" @update-item="updateElement"/>
+        <FormMidia class="drag-drop item" v-for="(item, index) in items" :mediaContent="item" :key="index" @remove-item="removeItem" @update-item="updateElement"/>
       </draggable>
     </div>
 
@@ -89,32 +89,28 @@ export default {
       item.type = type;
 
       this.items.push(item);
-      console.log(this.items)
     },
     updateElement(element){
-      let index = this.items.findIndex(({id}) => {
-        return id === element.item.id;
-      });
+      const index = this.searchIndex(element.item.id);
 
       if(index >= 0) {
         this.items[index] = {...element.item}
       }
-      console.log(this.items)
-      // this.$emit('add-multimedia', {collection: this.items});
+      this.$forceUpdate();
+      this.$emit('add-multimedia', {collection: this.items});
     },
     removeItem(id){
-      let index = this.items.findIndex(i => {
-        return i.id === id
-      })
+      const index = this.searchIndex(id);
 
-      console.log(index)
       if(index > -1){
-        console.log(this.items)
         this.items.splice(index, 1);
-        console.log(this.items)
       }
-
-      // this.$emit('add-multimedia', {collection: this.items});
+      this.$emit('add-multimedia', {collection: this.items});
+    },
+    searchIndex(multimediaId){
+      return this.items.findIndex(({id}) => {
+        return id === multimediaId
+      })
     },
     printlist(){
       console.log(this.items)

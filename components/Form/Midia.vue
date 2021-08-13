@@ -102,7 +102,7 @@
 
             <div class="options" v-if="['multiple-choice', 'true-or-false'].includes(model.contentType)">
               <div class="w-100 mt-3 mb-3 text-right" v-if="model.contentType.includes('multiple-choice')">
-                <a class="d-block purple-link cursor-pointer" @click="addOption('radio')">Criar alternativa</a>
+                <a href="#" class="d-block purple-link cursor-pointer" @click="addOption('radio')">Criar alternativa</a>
               </div>
 
               <draggable v-model="model.options" class="mt-3" draggable=".radio-option-task" @change="reorderValues">
@@ -113,7 +113,7 @@
                       <b-form-radio-group name="options" v-model="model.rightAnswer">
                         <b-form-radio :value="index">
                           <b-form-textarea v-model="option.text" placeholder="Insira a descrição dessa opção"
-                                           rows="1" max-rows="6" style="height: 36px"
+                                           rows="1" max-rows="6" style="height: 36px" @change="updateAttr"
                                            :disabled="model.contentType.includes('true-or-false')"></b-form-textarea>
                         </b-form-radio>
 
@@ -169,7 +169,7 @@
               <span class="d-inline pencil-ico ml-2 mr-3 align-middle"></span>
               <b-form-group class="mb-0 w-100 mt-3">
                 <b-form-textarea v-model="model.options[0].value" placeholder="Insira a resposta da questão"
-                                 rows="4" max-rows="6"></b-form-textarea>
+                                 rows="4" max-rows="6" @change="updateAttr"></b-form-textarea>
               </b-form-group>
             </div>
           </div>
@@ -253,11 +253,6 @@ export default {
       this.model.type ||= this.mediaContent.type;
       this.$emit('update-item', {collection: this.type, item: {...this.model}})
     },
-    updateTask() {
-      this.model.id ||= this.mediaContent.id;
-      this.model.contentType = this.mediaContent.contentType;
-      this.$emit('update-item', {collection: this.type, item: {...this.model}})
-    },
     toBase64(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -273,7 +268,7 @@ export default {
         isCorrect: false,
       };
       this.model.options.push(option);
-      this.updateTask();
+      this.updateAttr();
     },
     actionTask(action, index) {
       switch (action) {
@@ -287,14 +282,7 @@ export default {
           this.model.options.splice(index, 1)
           break;
       }
-      this.updateTask();
-    },
-    setAnswerTrueFalse(answer, index) {
-      this.model.options.forEach((option, idx) => {
-        option.isCorrect = idx === index
-      })
-      this.model.rightAnswer = answer;
-      this.updateTask();
+      this.updateAttr();
     },
     setAnswerCheckbox(option, index){
       if(this.model.rightAnswer.includes(index)){
@@ -305,7 +293,7 @@ export default {
         this.model.rightAnswer.push(index)
         option.isCorrect = true;
       }
-      this.updateTask();
+      this.updateAttr();
     },
     reorderValues() {
       if(this.model.contentType.includes('checkbox')){
@@ -321,7 +309,7 @@ export default {
           return option.isCorrect
         })
       }
-      this.updateTask();
+      this.updateAttr();
     },
     previewTask() {
       this.taskView = {};
@@ -349,8 +337,9 @@ export default {
             isCorrect: false
           }];
       }
-      else if (type.includes('checkbox')) {
+      else if (['checkbox', 'multiple-choice'].includes(type)) {
         this.model.rightAnswer = [];
+        this.model.options = [];
       }
       else if(type.includes('short-answer')) {
         this.model.options = [{
@@ -359,7 +348,7 @@ export default {
             isCorrect: true
           }];
       }
-      this.updateTask();
+      this.updateAttr();
     }
   }
 }
