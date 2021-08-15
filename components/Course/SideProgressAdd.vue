@@ -67,7 +67,7 @@
                 (lessonAnswers.classAvailability === 'afterRegistration' && lessonAnswers.releaseDaysAfterPurchase) ||
                 (lessonAnswers.classAvailability === 'specificDate' && lessonAnswers.releaseDate)) &&
                 ((lessonAnswers.expirationLesson === 'N') || (lessonAnswers.expirationLesson === 'Y' && lessonAnswers.expirationDays)))) ||
-              (item.stepsTitle === 'Conteúdo' && lessonAnswers.contents.length > 0)
+              (item.stepsTitle === 'Conteúdo' && classContent.length > 0)
             ) && itemsNavigatorSelected !== index}, {'active': itemsNavigatorSelected === index}]">
             {{item.stepsTitle}}
           </li>
@@ -85,6 +85,7 @@ export default {
     itemsNavigator: {type: Object},
     moduleAnswers: {type: Object},
     lessonAnswers: {type: Object},
+    classContent: {type: Array},
     currentPosition: {type: Number},
   },
   data() {

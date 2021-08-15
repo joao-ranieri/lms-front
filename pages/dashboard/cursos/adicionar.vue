@@ -186,14 +186,14 @@
 
                 <label class="d-block mt-4">Quando será disponibilizado?</label>
                 <b-form-group class="radio-style">
-                  <b-form-radio value="immediate" v-model="module.availability">
+                  <b-form-radio value="immediate" v-model="availabilityModule">
                     Imediatamente, assim que o curso for publicado.
                   </b-form-radio>
 
-                  <b-form-radio value="registration" v-model="module.availability">
+                  <b-form-radio value="registration" v-model="availabilityModule">
                     De acordo com a matrícula do aluno.
                   </b-form-radio>
-                  <span v-if="module.availability === 'registration'">
+                  <span v-if="availabilityModule === 'registration'">
                     <label class="d-block">Quantos dias após a matrícula?</label>
                     <b-form-group>
                       <b-form-input v-model="module.releaseDaysAfterPurchase" class="input-border" type="number"
@@ -201,10 +201,10 @@
                     </b-form-group>
                   </span>
 
-                  <b-form-radio value="specificDate" v-model="module.availability">
+                  <b-form-radio value="specificDate" v-model="availabilityModule">
                     Em uma data específica.
                   </b-form-radio>
-                  <span v-if="module.availability === 'specificDate'">
+                  <span v-if="availabilityModule === 'specificDate'">
                     <label class="d-block">Selecione a data de lançamento</label>
                     <b-form-group>
                       <b-form-datepicker v-model="module.releaseDate" hide-header class="input-border" locale="pt-BR"
@@ -215,14 +215,14 @@
 
                 <label class="d-block mt-4">O método possui período de validade?</label>
                 <b-form-group class="radio-style">
-                  <b-form-radio value="N" name="expiration" v-model="module.hasExpiration">
+                  <b-form-radio value="N" name="expiration" v-model="expirationModule">
                     <strong>Não</strong>, o acesso é por tempo indeterminado.
                   </b-form-radio>
-                  <b-form-radio value="Y" name="expiration" v-model="module.hasExpiration">
+                  <b-form-radio value="Y" name="expiration" v-model="expirationModule">
                     <strong>Sim</strong>, os alunos só acessam por um período específico.
                   </b-form-radio>
 
-                  <span v-if="module.hasExpiration === 'Y'">
+                  <span v-if="expirationModule === 'Y'">
                   <label class="d-block">Qual o prazo de validade desse módulo?</label>
                   <b-form-group>
                     <b-form-input v-model="module.expirationDays" class="input-border" type="number"
@@ -240,7 +240,7 @@
 
             <div :class="['input-step-group', {'active': position === 3}]" v-if="position <= 3">
               <div class="item-form">
-                <label class="d-block">Título do aula</label>
+                <label class="d-block">Título da aula</label>
                 <b-form-group>
                   <b-form-input v-model="lesson.title" class="input-border" type="text"
                                 placeholder="Insira o título da sua aula"/>
@@ -309,7 +309,7 @@
                 </b-form-group>
 
                 <label class="d-block mt-4">Selecione qual conteúdo deseja adicionar</label>
-                <FormMultimedia :multimediaList="lesson.contents" @add-multimedia="setClassComposition"/>
+                <FormMultimedia :multimediaList="classContent" @add-multimedia="setClassComposition"/>
               </div>
             </div>
             <div class="pl-3">
@@ -354,7 +354,7 @@
             </b-button>
 
             <b-button v-if="step === 3 && position === 3" class="btn-purple pl-4 pr-4" @click="addLesson"
-                      v-b-tooltip="'Adicionar aula'" :disabled="lesson.contents.length === 0 || !lesson.title">
+                      v-b-tooltip="'Adicionar aula'" :disabled="classContent.length === 0 || !lesson.title">
               Adicionar aula
             </b-button>
           </div>
@@ -370,6 +370,7 @@
       :itemsNavigator="itemsNavigator[position-1]"
       :moduleAnswers="module"
       :lessonAnswers="lesson"
+      :classContent="classContent"
       :itensProgress="itensProgress"/>
   </div>
 </template>
@@ -451,6 +452,8 @@ export default {
         expirationDays: null,
         classes: []
       },
+      availabilityModule: null,
+      expirationModule: null,
       lesson: {
         moduleIndex: null,
         title: null,
@@ -474,6 +477,7 @@ export default {
         'task': 'ATIVIDADE'
       },
       moduleList: [],
+      classContent:[],
       classes: {},
       itensProgress: [
         {
@@ -555,8 +559,7 @@ export default {
         this.position = 1;
         this.isDisabled = true;
       } else if (this.step === 3 && this.position === 2) {
-        this.module.id ||= new Date().getTime();
-        console.log(this.module)
+        this.module = {};
       }
 
       this.isDisabled = false;
@@ -630,15 +633,15 @@ export default {
           lesson.authors.push(author.id);
         });
 
-        const mediaContent = {...classes.contents};
-        delete classes.contents;
+        const mediaContent = lesson.contents;
+        delete lesson.contents;
 
         try {
           if (lesson.id) {
             this.$axios.$put(`/class?id=${lesson.id}`, lesson);
           } else {
             this.$axios.$post(`/class?moduleId=${moduleId}`, lesson).then(resp => {
-              this.sendContent(resp.id, mediaContent)
+              this.sendContent(resp.data.id, mediaContent)
             });
           }
         } catch (error) {
@@ -694,12 +697,14 @@ export default {
       this.moduleList.forEach(module => {
         const classes = module.classes;
         delete module.classes;
+
         try {
-          if (module.id) {
+          if (isNaN(module.id)) {
             this.$axios.$put(`/module/${module.id}`, module).then(resp => {
               this.sendLesson(resp.data.id, classes);
             });
           } else {
+            delete module.id;
             const ObjModule = {...module};
             ObjModule.course = couseId;
             this.$axios.$post('/module', ObjModule).then(resp => {
@@ -743,33 +748,40 @@ export default {
         })
       })
     },
-    getClass({classID, moduleIndex}) {
-      this.$axios.$get(`/class?id=${classID}`).then(response => {
-        this.lesson = {...response.data};
-        this.lesson.moduleIndex = moduleIndex;
-        if (!this.lesson.releaseDaysAfterPurchase && !this.lesson.releaseDate) {
-          this.lesson.classAvailability = 'immediate'
-        } else {
-          this.lesson.classAvailability = this.lesson.releaseDate ? 'specificDate' : 'afterRegistration';
-        }
+    getClass({lesson, moduleIndex}) {
+      if(lesson.id){
+        this.$axios.$get(`/class?id=${lesson.id}`).then(response => {
+          this.lesson = {...response.data};
+          this.lesson.moduleIndex = moduleIndex;
+          if (!this.lesson.releaseDaysAfterPurchase && !this.lesson.releaseDate) {
+            this.lesson.classAvailability = 'immediate'
+          } else {
+            this.lesson.classAvailability = this.lesson.releaseDate ? 'specificDate' : 'afterRegistration';
+          }
 
-        this.lesson.expirationLesson = this.expirationDays ? 'Y' : 'N';
+          this.lesson.expirationLesson = this.expirationDays ? 'Y' : 'N';
 
-        if (this.lesson.accessType.includes('accessType')) {
-          this.permissionsLesson.push('accessType')
-        }
+          if (this.lesson.accessType.includes('accessType')) {
+            this.permissionsLesson.push('accessType')
+          }
 
-        if (this.lesson.showClass) {
-          this.permissionsLesson.push('showClass')
-        }
+          if (this.lesson.showClass) {
+            this.permissionsLesson.push('showClass')
+          }
 
-        if (this.lesson.contents.length > 0) {
-          console.log(this.lesson.contents)
-        }
+          if (this.lesson.contents.length > 0) {
+            console.log(this.lesson.contents)
+          }
 
-        this.step = 3;
-        this.position = 3;
-      });
+        });
+      }
+      else {
+        this.lesson = lesson;
+        this.classContent = lesson.contents
+        console.log(this.classContent)
+      }
+      this.step = 3;
+      this.position = 3;
     },
     removeClass(id) {
       this.$axios.$delete(`/class/${id}`).then(response => {
@@ -791,32 +803,38 @@ export default {
       }
 
       let paramsModule = {
-        sequence: this.moduleList.length + 1,
+        sequence: this.module.sequence ?? this.moduleList.length + 1,
         title: this.module.title,
         accessType: this.permissions.includes('accessType') ? 'GRATIS' : 'PAGO',
         showModule: this.permissions.includes('showModule'),
         notifyStudents: this.permissions.includes('notifyStudents'),
-        releaseDaysAfterPurchase: this.module.releaseDaysAfterPurchase,
+        releaseDaysAfterPurchase: this.module.releaseDaysAfterPurchase ? Number(this.module.releaseDaysAfterPurchase) : null,
         releaseDate: this.module.releaseDate,
-        expirationDays: this.module.expirationDays ? this.module.expirationDays.toString() : null,
+        expirationDays: this.module.expirationDays ? Number(this.module.expirationDays) : null,
         classes: this.module.classes ?? []
       };
 
-      this.module.availability !== 'registration' && delete paramsModule.releaseDaysAfterPurchase;
-      this.module.availability !== 'specificDate' && delete paramsModule.releaseDate;
-      this.module.hasExpiration === 'N' && delete paramsModule.expirationDays;
+      this.availabilityModule !== 'registration' && delete paramsModule.releaseDaysAfterPurchase;
+      this.availabilityModule !== 'specificDate' && delete paramsModule.releaseDate;
+      this.expirationModule === 'N' && delete paramsModule.expirationDays;
 
-      if (moduleID && !isNaN(moduleID)) {
+      if (moduleID && isNaN(moduleID)) {
         paramsModule.id = moduleID;
         this.moduleList[idx] = paramsModule;
         this.$axios.$put(`/module/${moduleID}`, paramsModule).then(resp => {
           console.log(resp)
         });
-      } else {
+      } else if(!isNaN(idx) && idx === null){
+        paramsModule.id = new Date().getTime();
         this.moduleList.push(paramsModule);
       }
+      else {
+        paramsModule.id = moduleID;
+        this.moduleList[idx] = paramsModule
+      }
 
-      this.module = {}
+      this.module = {};
+      this.availabilityModule = null;
       this.permissions = [];
       this.backPage();
     },
@@ -826,7 +844,7 @@ export default {
       this.position = 3;
     },
     addLesson() {
-      this.lesson.contents.forEach(obj => {
+      this.classContent.forEach(obj => {
         delete obj.id;
       })
 
@@ -835,12 +853,12 @@ export default {
         showAuthors: this.lesson.showAuthors,
         showClass: !this.permissionsLesson.includes('allowStudentsComments'),
         releaseDate: this.lesson.releaseDate,
-        releaseDaysAfterPurchase: this.lesson.releaseDaysAfterPurchase,
+        releaseDaysAfterPurchase: this.lesson.releaseDaysAfterPurchase ? Number(this.lesson.releaseDaysAfterPurchase) : null,
         expirationDays: this.lesson.expirationDays,
         allowStudentsComments: this.permissionsLesson.includes('allowStudentsComments'),
         accessType: this.permissionsLesson.includes('accessType') ? 'GRATIS' : 'PAGO',
         authors: [],
-        contents: this.lesson.contents
+        contents: this.classContent
       }
 
       this.lesson.classAvailability !== 'registration' && delete paramsLesson.releaseDaysAfterPurchase;
@@ -852,17 +870,17 @@ export default {
       })
 
       this.moduleList[idxModule].classes.push(paramsLesson);
-      this.lesson = {
-        contents: []
-      };
+      this.lesson = {};
+      this.classContent = [];
       this.permissionsLesson = [];
+      this.$forceUpdate();
 
       this.currentModule = null;
       this.step = 3;
       this.position = 1;
     },
     setClassComposition(params) {
-      this.lesson.contents = params.collection;
+      this.classContent = params.collection;
     },
     editModule(moduleId) {
       const idx = this.moduleList.findIndex(({id}) => {
@@ -879,14 +897,14 @@ export default {
       }
 
       if (!this.module.releaseDaysAfterPurchase && !this.module.releaseDate) {
-        this.module.availability = 'immediate'
+        this.availabilityModule = 'immediate'
       } else {
-        this.module.availability = this.module.releaseDate ? 'specificDate' : 'afterRegistration';
+        this.availabilityModule = this.module.releaseDate ? 'specificDate' : 'registration';
       }
 
-      this.module.hasExpiration = this.module.expirationDays ? 'Y' : 'N';
+      this.expirationModule = this.module.expirationDays ? 'Y' : 'N';
 
-      if (this.module.accessType.includes('accessType')) {
+      if (this.module.accessType === 'GRATIS') {
         this.permissions.push('accessType')
       }
 
@@ -897,8 +915,6 @@ export default {
       if (this.module.showModule) {
         this.permissions.push('showModule')
       }
-      console.log(this.module)
-
     }
   },
   computed: {

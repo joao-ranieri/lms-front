@@ -52,16 +52,21 @@ export default {
   props:{
     multimediaList: {type: Array}
   },
-  data() {
-    return {
-      items: []
+  computed: {
+    items(){
+      return this.multimediaList
     }
   },
-  watch: {
-    multimediaList(){
-      this.items = this.items;
-    }
-  },
+  // data() {
+  //   return {
+  //     items: []
+  //   }
+  // },
+  // watch: {
+  //   multimediaList(){
+  //     this.items = this.multimediaList;
+  //   }
+  // },
   methods: {
     addItem(type){
       let item = {};
