@@ -193,11 +193,6 @@ export default {
   props: {
     mediaContent: {type: Object},
   },
-  computed: {
-    model(){
-      return this.mediaContent;
-    }
-  },
   data() {
     return {
       types: {
@@ -211,7 +206,7 @@ export default {
       drmMessage: 'O DRM (Gerenciamento dos Direitos Digitais) protege o seu conteúdo ao acrescentar imagens em posições variadas do vídeo, dificultando o plágio.',
       hasDownload: false,
       showModule: false,
-      // model: {},
+      model: {},
       audio: null,
       file: null,
       show: false,
@@ -227,16 +222,14 @@ export default {
       nameOpt: new Date().getTime()
     }
   },
-  // watch: {
-  //   mediaContent: {
-  //     deep:true,
-  //     handler: function(){
-  //       console.log(this.mediaContent)
-  //       this.model = {...this.mediaContent}
-  //     }
-  //   }
-  //
-  // },
+  watch: {
+    mediaContent: {
+      deep:true,
+      handler: function(){
+        this.model = {...this.mediaContent}
+      }
+    }
+  },
   methods: {
     loadFile(e) {
       const file = e.dataTransfer ? e.dataTransfer.files[0] : e.target.files[0];

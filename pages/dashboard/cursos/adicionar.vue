@@ -258,23 +258,23 @@
 
                 <label class="d-block mt-4">Quando será disponibilizada?</label>
                 <b-form-group class="radio-style">
-                  <b-form-radio value="immediate" v-model="lesson.classAvailability">
+                  <b-form-radio value="immediate" v-model="availabilityClass">
                     Imediatamente, assim que o curso for publicado.
                   </b-form-radio>
-                  <b-form-radio value="afterRegistration" v-model="lesson.classAvailability">
+                  <b-form-radio value="afterRegistration" v-model="availabilityClass">
                     De acordo com a matrícula do aluno.
                   </b-form-radio>
-                  <span v-if="lesson.classAvailability === 'afterRegistration'">
+                  <span v-if="availabilityClass === 'afterRegistration'">
                   <label class="d-block">Quantos dias após a matrícula?</label>
                 <b-form-group>
                   <b-form-input v-model="lesson.releaseDaysAfterPurchase" class="input-border" type="number"
                                 placeholder="Insira a quantidade de dias"/>
                 </b-form-group>
                 </span>
-                  <b-form-radio value="specificDate" v-model="lesson.classAvailability">
+                  <b-form-radio value="specificDate" v-model="availabilityClass">
                     Em uma data específica.
                   </b-form-radio>
-                  <span v-if="lesson.classAvailability === 'specificDate'">
+                  <span v-if="availabilityClass === 'specificDate'">
                   <label class="d-block">Selecione a data de lançamento</label>
                 <b-form-group>
                   <b-form-datepicker v-model="lesson.releaseDate" class="input-border" locale="pt-BR"
@@ -453,13 +453,13 @@ export default {
         classes: []
       },
       availabilityModule: null,
+      availabilityClass: null,
       expirationModule: null,
       lesson: {
         moduleIndex: null,
         title: null,
         showAuthors: null,
         expirationLesson: null,
-        classAvailability: null,
         showClass: null,
         releaseDate: null,
         releaseDaysAfterPurchase: null,
@@ -477,7 +477,7 @@ export default {
         'task': 'ATIVIDADE'
       },
       moduleList: [],
-      classContent:[],
+      classContent: [],
       classes: {},
       itensProgress: [
         {
@@ -650,6 +650,7 @@ export default {
       });
     },
     sendContent(classId, contentList) {
+      let contentGroup = [];
       contentList.forEach((content, index) => {
         let mediaContent = {};
         switch (content.type) {
@@ -677,21 +678,28 @@ export default {
           enableDownload: content.canDownload ?? false,
           description: JSON.stringify(mediaContent)
         }
-
-        try {
-          if (content.id) {
-            this.$axios.$put(`/content?id=${content.id}`, formattedContent).then(resp => {
-              console.log(resp)
-            });
-          } else {
-            this.$axios.$post(`/content?classId=${classId}`, formattedContent).then(resp => {
-              console.log(resp)
-            })
-          }
-        } catch (error) {
-          console.log(error);
-        }
+        contentGroup.push(formattedContent)
       });
+
+      try {
+        this.$axios.$post(`/content?classId=${classId}`, contentGroup).then(resp => {
+          console.log(resp)
+        })
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    updateContent(content) {
+      const contentID = content.id;
+      delete content.id;
+
+      try {
+        this.$axios.$put(`/content?id=${contentID}`, content).then(resp => {
+          console.log(resp)
+        });
+      } catch (error) {
+        console.log(error);
+      }
     },
     sendModules(couseId) {
       this.moduleList.forEach(module => {
@@ -748,38 +756,38 @@ export default {
         })
       })
     },
-    getClass({lesson, moduleIndex}) {
-      if(lesson.id){
+    getClass({lesson, moduleID}) {
+      if (isNaN(lesson.id)) {
         this.$axios.$get(`/class?id=${lesson.id}`).then(response => {
           this.lesson = {...response.data};
-          this.lesson.moduleIndex = moduleIndex;
-          if (!this.lesson.releaseDaysAfterPurchase && !this.lesson.releaseDate) {
-            this.lesson.classAvailability = 'immediate'
-          } else {
-            this.lesson.classAvailability = this.lesson.releaseDate ? 'specificDate' : 'afterRegistration';
-          }
-
-          this.lesson.expirationLesson = this.expirationDays ? 'Y' : 'N';
-
-          if (this.lesson.accessType.includes('accessType')) {
-            this.permissionsLesson.push('accessType')
-          }
-
-          if (this.lesson.showClass) {
-            this.permissionsLesson.push('showClass')
-          }
-
-          if (this.lesson.contents.length > 0) {
-            console.log(this.lesson.contents)
-          }
-
         });
-      }
-      else {
+      } else {
         this.lesson = lesson;
         this.classContent = lesson.contents
-        console.log(this.classContent)
       }
+      console.log(lesson)
+      this.currentModule = moduleID;
+
+      if (!this.lesson.releaseDaysAfterPurchase && !this.lesson.releaseDate) {
+        this.availabilityClass = 'immediate'
+      } else {
+        this.availabilityClass = this.lesson.releaseDate ? 'specificDate' : 'afterRegistration';
+      }
+
+      this.lesson.expirationLesson = this.expirationDays ? 'Y' : 'N';
+
+      if (this.lesson.accessType.includes('accessType')) {
+        this.permissionsLesson.push('accessType')
+      }
+
+      if (this.lesson.showClass) {
+        this.permissionsLesson.push('showClass')
+      }
+
+      if (this.lesson.contents.length > 0) {
+        console.log(this.lesson.contents)
+      }
+
       this.step = 3;
       this.position = 3;
     },
@@ -824,11 +832,10 @@ export default {
         this.$axios.$put(`/module/${moduleID}`, paramsModule).then(resp => {
           console.log(resp)
         });
-      } else if(!isNaN(idx) && idx === null){
+      } else if (!isNaN(idx) && idx === null) {
         paramsModule.id = new Date().getTime();
         this.moduleList.push(paramsModule);
-      }
-      else {
+      } else {
         paramsModule.id = moduleID;
         this.moduleList[idx] = paramsModule
       }
@@ -840,6 +847,7 @@ export default {
     },
     openFormLesson(moduleId) {
       this.currentModule = moduleId;
+      this.lesson.id = new Date().getTime();
       this.step = 3;
       this.position = 3;
     },
@@ -849,6 +857,7 @@ export default {
       })
 
       const paramsLesson = {
+        id: this.lesson.id,
         title: this.lesson.title,
         showAuthors: this.lesson.showAuthors,
         showClass: !this.permissionsLesson.includes('allowStudentsComments'),
@@ -861,17 +870,28 @@ export default {
         contents: this.classContent
       }
 
-      this.lesson.classAvailability !== 'registration' && delete paramsLesson.releaseDaysAfterPurchase;
-      this.lesson.classAvailability !== 'specificDate' && delete paramsLesson.releaseDate;
+      this.availabilityClass !== 'registration' && delete paramsLesson.releaseDaysAfterPurchase;
+      this.availabilityClass !== 'specificDate' && delete paramsLesson.releaseDate;
       this.lesson.expirationLesson === 'N' && delete paramsLesson.expirationDays;
 
       const idxModule = this.moduleList.findIndex(mdl => {
         return mdl.id === this.currentModule
       })
 
-      this.moduleList[idxModule].classes.push(paramsLesson);
+      const idxClass = this.moduleList[idxModule].classes.findIndex(({id}) => {
+        return id === this.lesson.id
+      })
+
+      if(idxClass >= 0) {
+        this.moduleList[idxModule].classes[idxClass] = paramsLesson;
+      }
+      else {
+        this.moduleList[idxModule].classes.push(paramsLesson);
+      }
+
       this.lesson = {};
       this.classContent = [];
+      this.availabilityClass = null;
       this.permissionsLesson = [];
       this.$forceUpdate();
 
@@ -887,12 +907,11 @@ export default {
         return id === moduleId
       })
 
-      if(idx >= 0){
+      if (idx >= 0) {
         this.module = {...this.moduleList[idx]};
         this.step = 3;
         this.position = 2;
-      }
-      else {
+      } else {
         return false
       }
 
