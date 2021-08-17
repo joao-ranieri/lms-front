@@ -95,10 +95,10 @@ export default {
     },
     updateElement(element){
       const index = this.searchIndex(element.item.id);
-
       if(index >= 0) {
         this.items[index] = {...element.item}
       }
+
       this.$forceUpdate();
       this.$emit('add-multimedia', {collection: this.items});
     },

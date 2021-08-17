@@ -5,7 +5,7 @@
         <span class="three-points mr-2"></span>
         <span :class="types[mediaContent.type].classIco"></span>
         <h6 class="d-inline-block mb-0 ml-2">
-          {{types[mediaContent.type].label + (taskName[typeQuestion] ? (' - ' + taskName[typeQuestion]) :  '')}}
+          {{types[mediaContent.type].label + (taskName[mediaContent.contentType] ? (' - ' + taskName[mediaContent.contentType]) :  '')}}
         </h6>
       </div>
 
@@ -193,6 +193,11 @@ export default {
   props: {
     mediaContent: {type: Object},
   },
+  computed: {
+    model(){
+      return this.mediaContent
+    }
+  },
   data() {
     return {
       types: {
@@ -206,12 +211,10 @@ export default {
       drmMessage: 'O DRM (Gerenciamento dos Direitos Digitais) protege o seu conteúdo ao acrescentar imagens em posições variadas do vídeo, dificultando o plágio.',
       hasDownload: false,
       showModule: false,
-      model: {},
       audio: null,
       file: null,
       show: false,
       selectedTask: null,
-      typeQuestion: null,
       taskView: {},
       taskName: {
         'multiple-choice': 'Múltipla escolha',
@@ -220,14 +223,6 @@ export default {
         'short-answer': 'Resposta curta'
       },
       nameOpt: new Date().getTime()
-    }
-  },
-  watch: {
-    mediaContent: {
-      deep:true,
-      handler: function(){
-        this.model = {...this.mediaContent}
-      }
     }
   },
   methods: {
@@ -248,7 +243,10 @@ export default {
       })
     },
     updateAttr() {
-      this.model.id ||= this.mediaContent.id;
+      if(this.model.id){
+        this.model.id = this.mediaContent.id;
+      }
+
       this.model.type ||= this.mediaContent.type;
       this.$emit('update-item', {collection: this.type, item: {...this.model}})
     },
@@ -320,8 +318,6 @@ export default {
     },
     selectTypeQuestion(type) {
       this.model.contentType = type;
-      this.typeQuestion = type;
-      this.model.id = this.index;
 
       if (type.includes('true-or-false')) {
         this.model.options = [
@@ -349,6 +345,9 @@ export default {
       }
       this.updateAttr();
     }
+  },
+  mounted() {
+    this.model = this.mediaContent;
   }
 }
 </script>
