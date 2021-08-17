@@ -27,6 +27,7 @@ export default {
   plugins: [
     '~/plugins/route',
     '~/plugins/lottie-player',
+    '~/plugins/aws',
     '~plugins/mask.js'
   ],
 
