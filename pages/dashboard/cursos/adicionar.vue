@@ -637,9 +637,10 @@ export default {
         delete lesson.contents;
 
         try {
-          if (lesson.id) {
+          if (isNaN(lesson.id)) {
             this.$axios.$put(`/class?id=${lesson.id}`, lesson);
           } else {
+            delete lesson.id;
             this.$axios.$post(`/class?moduleId=${moduleId}`, lesson).then(resp => {
               this.sendContent(resp.data.id, mediaContent)
             });
@@ -760,36 +761,39 @@ export default {
       if (isNaN(lesson.id)) {
         this.$axios.$get(`/class?id=${lesson.id}`).then(response => {
           this.lesson = {...response.data};
+          this.lesson.contents.forEach(content => {
+            let obj = JSON.parse(content.description);
+            obj.id = content.id;
+            obj.type = 'task';
+            console.log(obj)
+            this.classContent.push(obj)
+            this.step = 3;
+            this.position = 3;
+            this.currentModule = moduleID;
+
+            if (!this.lesson.releaseDaysAfterPurchase && !this.lesson.releaseDate) {
+              this.availabilityClass = 'immediate'
+            } else {
+              this.availabilityClass = this.lesson.releaseDate ? 'specificDate' : 'afterRegistration';
+            }
+
+            this.lesson.expirationLesson = this.expirationDays ? 'Y' : 'N';
+
+            if (this.lesson.accessType.includes('accessType')) {
+              this.permissionsLesson.push('accessType')
+            }
+
+            if (this.lesson.showClass) {
+              this.permissionsLesson.push('showClass')
+            }
+          })
         });
       } else {
         this.lesson = lesson;
         this.classContent = lesson.contents
       }
-      console.log(lesson)
-      this.currentModule = moduleID;
 
-      if (!this.lesson.releaseDaysAfterPurchase && !this.lesson.releaseDate) {
-        this.availabilityClass = 'immediate'
-      } else {
-        this.availabilityClass = this.lesson.releaseDate ? 'specificDate' : 'afterRegistration';
-      }
 
-      this.lesson.expirationLesson = this.expirationDays ? 'Y' : 'N';
-
-      if (this.lesson.accessType.includes('accessType')) {
-        this.permissionsLesson.push('accessType')
-      }
-
-      if (this.lesson.showClass) {
-        this.permissionsLesson.push('showClass')
-      }
-
-      if (this.lesson.contents.length > 0) {
-        console.log(this.lesson.contents)
-      }
-
-      this.step = 3;
-      this.position = 3;
     },
     removeClass(id) {
       this.$axios.$delete(`/class/${id}`).then(response => {
@@ -852,10 +856,6 @@ export default {
       this.position = 3;
     },
     addLesson() {
-      this.classContent.forEach(obj => {
-        delete obj.id;
-      })
-
       const paramsLesson = {
         id: this.lesson.id,
         title: this.lesson.title,
