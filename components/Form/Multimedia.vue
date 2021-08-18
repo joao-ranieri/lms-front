@@ -105,6 +105,16 @@ export default {
     removeItem(id){
       const index = this.searchIndex(id);
 
+      if(isNaN(id)) {
+        try {
+          this.$axios.$delete(`/content/${id}`).then(resp => {
+            console.log(resp)
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
       if(index > -1){
         this.items.splice(index, 1);
       }

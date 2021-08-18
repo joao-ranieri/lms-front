@@ -627,8 +627,8 @@ export default {
         })
       }
     },
-    sendLesson(moduleId, classes) {
-      classes.forEach(lesson => {
+    sendLesson(moduleId, classes, updateModuleList) {
+      classes.forEach((lesson, index) => {
         this.course.authors.forEach(author => {
           lesson.authors.push(author.id);
         });
@@ -642,21 +642,22 @@ export default {
           } else {
             delete lesson.id;
             this.$axios.$post(`/class?moduleId=${moduleId}`, lesson).then(resp => {
-              this.sendContent(resp.data.id, mediaContent)
-            });
+              this.sendContent(resp.data.id, mediaContent, updateModuleList)
+            })
           }
         } catch (error) {
           console.log(error);
         }
       });
     },
-    sendContent(classId, contentList) {
+    sendContent(classId, contentList, updateModuleList) {
       let contentGroup = [];
       contentList.forEach((content, index) => {
         let mediaContent = {};
         switch (content.type) {
           case 'task':
             mediaContent = {
+              title: content.title,
               contentType: content.contentType,
               rightAnswer: content.rightAnswer,
               options: content.options
@@ -674,6 +675,7 @@ export default {
 
         const formattedContent = {
           sequence: index,
+          title: content.title,
           type: this.contentTypes[content.type],
           includeDRM: content.hasDRM ?? false,
           enableDownload: content.canDownload ?? false,
@@ -685,45 +687,87 @@ export default {
       try {
         this.$axios.$post(`/content?classId=${classId}`, contentGroup).then(resp => {
           console.log(resp)
-        })
+        }).finally(()=>{
+          if(updateModuleList){
+            this.getModuleList();
+          }
+        });
       } catch (error) {
         console.log(error);
       }
     },
-    updateContent(content) {
+    updateContent(content, sequence) {
       const contentID = content.id;
-      delete content.id;
+      const formattedContent = this.formatContent(content, sequence)
 
       try {
-        this.$axios.$put(`/content?id=${contentID}`, content).then(resp => {
+        this.$axios.$put(`/content?id=${contentID}`, formattedContent).then(resp => {
           console.log(resp)
         });
       } catch (error) {
         console.log(error);
       }
     },
+    formatContent(content, sequence){
+      let mediaContent = {};
+      switch (content.type) {
+        case 'task':
+          mediaContent = {
+            title: content.title,
+            contentType: content.contentType,
+            rightAnswer: content.rightAnswer,
+            options: content.options
+          }
+          break;
+        case 'video':
+          mediaContent = {link: content.link}
+          break;
+        case 'file':
+          mediaContent = {name: content.name, content: content.content}
+          break;
+        default:
+          mediaContent = {text: content.text}
+      }
+
+      const formattedContent = {
+        sequence: sequence,
+        type: this.contentTypes[content.type],
+        includeDRM: content.hasDRM ?? false,
+        enableDownload: content.canDownload ?? false,
+        description: JSON.stringify(mediaContent)
+      }
+
+      return formattedContent;
+    },
     sendModules(couseId) {
       this.moduleList.forEach(module => {
-        const classes = module.classes;
-        delete module.classes;
-
-        try {
-          if (isNaN(module.id)) {
-            this.$axios.$put(`/module/${module.id}`, module).then(resp => {
-              this.sendLesson(resp.data.id, classes);
-            });
-          } else {
-            delete module.id;
-            const ObjModule = {...module};
-            ObjModule.course = couseId;
-            this.$axios.$post('/module', ObjModule).then(resp => {
-              this.sendLesson(resp.data.id, classes);
-            });
-          }
-        } catch (error) {
-          console.log(error);
-        }
+        this.saveModule(couseId, module);
       });
+    },
+    saveModule(couseId, module, updateModuleList){
+      const classes = module.classes;
+      delete module.classes;
+
+      try {
+        if (isNaN(module.id)) {
+          this.$axios.$put(`/module/${module.id}`, module).then(resp => {
+            this.sendLesson(resp.data.id, classes);
+          });
+        } else {
+          delete module.id;
+          const ObjModule = {...module};
+          ObjModule.course = couseId;
+          this.$axios.$post('/module', ObjModule).then(resp => {
+            this.sendLesson(resp.data.id, classes);
+          }).finally(()=>{
+            if(updateModuleList){
+              this.getModuleList();
+            }
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      }
     },
     changeStep(step) {
       this.step = step + 1;
@@ -765,7 +809,7 @@ export default {
             let obj = JSON.parse(content.description);
             obj.id = content.id;
             obj.type = 'task';
-            console.log(obj)
+
             this.classContent.push(obj)
             this.step = 3;
             this.position = 3;
@@ -793,12 +837,24 @@ export default {
         this.classContent = lesson.contents
       }
 
-
     },
-    removeClass(id) {
-      this.$axios.$delete(`/class/${id}`).then(response => {
-        this.getModuleList();
-      })
+    removeClass({classID, moduloID}) {
+      if(isNaN(classID)) {
+        this.$axios.$delete(`/class/${classID}`).then(response => {
+          console.log(response)
+          this.getModuleList();
+        })
+      } else {
+        const moduleIdx = this.moduleList.findIndex(({id}) => {
+          return moduloID === id
+        })
+
+        const classIdx = this.moduleList[moduleIdx].classes.findIndex(({id}) => {
+          return classID === id
+        })
+
+        this.moduleList[moduleIdx].classes.splice(classIdx, 1)
+      }
     },
     addModule() {
       let moduleID = null;
@@ -844,6 +900,10 @@ export default {
         this.moduleList[idx] = paramsModule
       }
 
+      if(this.id){
+        this.saveModule(this.id, paramsModule, true)
+      }
+
       this.module = {};
       this.availabilityModule = null;
       this.permissions = [];
@@ -851,6 +911,10 @@ export default {
     },
     openFormLesson(moduleId) {
       this.currentModule = moduleId;
+      this.lesson = {};
+      this.classContent = [];
+      this.availabilityClass = null;
+      this.permissionsLesson = [];
       this.lesson.id = new Date().getTime();
       this.step = 3;
       this.position = 3;
@@ -870,6 +934,16 @@ export default {
         contents: this.classContent
       }
 
+      this.classContent.forEach(content => {
+        if(isNaN(content.id) && content.modified){
+          delete content.modified;
+          this.updateContent(content)
+        }
+        else if(!isNaN(content.id) && isNaN(this.lesson.id)){
+          this.sendContent(this.lesson.id, [content])
+        }
+      })
+
       this.availabilityClass !== 'registration' && delete paramsLesson.releaseDaysAfterPurchase;
       this.availabilityClass !== 'specificDate' && delete paramsLesson.releaseDate;
       this.lesson.expirationLesson === 'N' && delete paramsLesson.expirationDays;
@@ -882,8 +956,11 @@ export default {
         return id === this.lesson.id
       })
 
-      if(idxClass >= 0) {
-        this.moduleList[idxModule].classes[idxClass] = paramsLesson;
+      if(isNaN(this.currentModule)) {
+        this.sendLesson(this.currentModule, [paramsLesson], true);
+      }
+      else if(idxClass >= 0) {
+          this.moduleList[idxModule].classes[idxClass] = paramsLesson;
       }
       else {
         this.moduleList[idxModule].classes.push(paramsLesson);

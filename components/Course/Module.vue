@@ -22,7 +22,7 @@
               </template>
               <b-dropdown-item @click=""><i class=" mr-1"></i>Visualizar aula</b-dropdown-item>
               <b-dropdown-item @click="$emit('open-class', {lesson: lesson, moduleID: updatedModule.id})"><i class="pencil-ico mr-1"></i>Editar aula</b-dropdown-item>
-              <b-dropdown-item @click="$emit('remove-class', lesson.id)"><i class="trash-ico mr-1"></i>Deletar aula</b-dropdown-item>
+              <b-dropdown-item @click="$emit('remove-class', {classID: lesson.id, moduloID: updatedModule.id})"><i class="trash-ico mr-1"></i>Deletar aula</b-dropdown-item>
             </b-dropdown>
           </div>
         </draggable>

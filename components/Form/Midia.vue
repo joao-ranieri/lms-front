@@ -247,6 +247,10 @@ export default {
         this.model.id = this.mediaContent.id;
       }
 
+      if(isNaN(this.model.id)){
+        this.model.modified = true;
+      }
+
       this.model.type ||= this.mediaContent.type;
       this.$emit('update-item', {collection: this.type, item: {...this.model}})
     },
