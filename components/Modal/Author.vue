@@ -54,6 +54,8 @@
 </template>
 
 <script>
+import aws from "/plugins/aws.js";
+
 export default {
   data() {
     return {
@@ -90,6 +92,7 @@ export default {
       let img = e.dataTransfer ? e.dataTransfer.files[0] : e.target.files[0];
       this.imageURL = window.URL.createObjectURL(img);
       await this.toBase64(img);
+      aws().upload(img)
     },
     executeForm() {
       if (this.isSuccess) {
