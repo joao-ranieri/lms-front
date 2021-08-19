@@ -181,44 +181,45 @@
                 <label class="d-block">Título do módulo</label>
                 <b-form-group>
                   <b-form-input v-model="module.title" class="input-border" type="text"
-                                placeholder="Insira o título do seu módulo"/>
+                                placeholder="Insira o título do seu módulo" @change="validateModule"/>
                 </b-form-group>
 
                 <label class="d-block mt-4">Quando será disponibilizado?</label>
                 <b-form-group class="radio-style">
-                  <b-form-radio value="immediate" v-model="availabilityModule">
+                  <b-form-radio value="immediate" v-model="availabilityModule" @change="validateModule">
                     Imediatamente, assim que o curso for publicado.
                   </b-form-radio>
 
-                  <b-form-radio value="registration" v-model="availabilityModule">
+                  <b-form-radio value="registration" v-model="availabilityModule" @change="validateModule">
                     De acordo com a matrícula do aluno.
                   </b-form-radio>
                   <span v-if="availabilityModule === 'registration'">
                     <label class="d-block">Quantos dias após a matrícula?</label>
                     <b-form-group>
                       <b-form-input v-model="module.releaseDaysAfterPurchase" class="input-border" type="number"
-                                    placeholder="Insira a quantidade de dias"/>
+                                    placeholder="Insira a quantidade de dias" @change="validateModule"/>
                     </b-form-group>
                   </span>
 
-                  <b-form-radio value="specificDate" v-model="availabilityModule">
+                  <b-form-radio value="specificDate" v-model="availabilityModule" @change="validateModule">
                     Em uma data específica.
                   </b-form-radio>
                   <span v-if="availabilityModule === 'specificDate'">
                     <label class="d-block">Selecione a data de lançamento</label>
                     <b-form-group>
-                      <b-form-datepicker v-model="module.releaseDate" hide-header class="input-border" locale="pt-BR"
-                                         placeholder="Digite ou selecione a data"></b-form-datepicker>
+                      <b-form-datepicker v-model="module.releaseDate" hide-header class="input-border" locale="pt"
+                                         :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"
+                                         placeholder="Digite ou selecione a data" @context="validateModule"></b-form-datepicker>
                     </b-form-group>
                   </span>
                 </b-form-group>
 
                 <label class="d-block mt-4">O método possui período de validade?</label>
                 <b-form-group class="radio-style">
-                  <b-form-radio value="N" name="expiration" v-model="expirationModule">
+                  <b-form-radio value="N" name="expiration" v-model="expirationModule" @change="validateModule">
                     <strong>Não</strong>, o acesso é por tempo indeterminado.
                   </b-form-radio>
-                  <b-form-radio value="Y" name="expiration" v-model="expirationModule">
+                  <b-form-radio value="Y" name="expiration" v-model="expirationModule" @change="validateModule">
                     <strong>Sim</strong>, os alunos só acessam por um período específico.
                   </b-form-radio>
 
@@ -226,7 +227,7 @@
                   <label class="d-block">Qual o prazo de validade desse módulo?</label>
                   <b-form-group>
                     <b-form-input v-model="module.expirationDays" class="input-border" type="number"
-                                  placeholder="Insira a quantidade de dias"/>
+                                  placeholder="Insira a quantidade de dias" @change="validateModule"/>
                   </b-form-group>
                 </span>
                 </b-form-group>
@@ -277,7 +278,8 @@
                   <span v-if="availabilityClass === 'specificDate'">
                   <label class="d-block">Selecione a data de lançamento</label>
                 <b-form-group>
-                  <b-form-datepicker v-model="lesson.releaseDate" class="input-border" locale="pt-BR"
+                  <b-form-datepicker v-model="lesson.releaseDate" class="input-border" locale="pt"
+                                     :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"
                                      placeholder="Digite ou selecione a data"></b-form-datepicker>
                 </b-form-group>
                 </span>
@@ -349,7 +351,7 @@
             </b-button>
 
             <b-button v-if="step === 3 && position === 2" class="btn-purple pl-4 pr-4" v-b-tooltip="'Adicioanr módulo'"
-                      @click="addModule">
+                      @click="addModule" :disabled="disableModuleBtn">
               Adicionar módulo
             </b-button>
 
@@ -372,6 +374,8 @@
       :lessonAnswers="lesson"
       :classContent="classContent"
       :itensProgress="itensProgress"/>
+
+    <ModalNotification :message="notificationMessage" :type="notificationtype"/>
   </div>
 </template>
 
@@ -526,7 +530,10 @@ export default {
           ]
         },
       ],
-      currentModule: null
+      currentModule: null,
+      notificationMessage: null,
+      notificationtype: null,
+      disableModuleBtn: true
     }
   },
   watch: {
@@ -537,6 +544,13 @@ export default {
     }
   },
   methods: {
+    validateModule(){
+      this.disableModuleBtn = (!this.module.title || !this.availabilityModule || !this.expirationModule
+        || (this.availabilityModule === 'registration' && !this.module.releaseDaysAfterPurchase)
+        || (this.availabilityModule === 'specificDate' && !this.module.releaseDate)
+        || (this.expirationModule === 'Y' && !this.module.expirationDays)
+      )
+    },
     backPage() {
       if (this.step === 3 && this.position > 1) {
         this.position = 1;
@@ -558,7 +572,14 @@ export default {
         this.step = 3;
         this.position = 1;
         this.isDisabled = true;
-      } else if (this.step === 3 && this.position === 2) {
+      }
+      else if (this.step === 3 && this.position === 2) {
+        if(!this.course.title || this.course.authors.length === 0 || this.course.categories.length === 0){
+          this.position = 1;
+          this.notificationMessage = "Informe todos os dados do curso para continuar.";
+          this.notificationtype = "alert";
+          this.$bvModal.show('notification');
+        }
         this.module = {};
       }
 
@@ -920,6 +941,48 @@ export default {
       this.position = 3;
     },
     addLesson() {
+      let status = this.classContent.every(content => {
+        if(["ATIVIDADE", "task"].includes(content.type)){
+
+          if(!content.options || content.options.length === 0) {
+            this.notificationMessage = "A sua atividade não possui conteúdo válido";
+            this.notificationtype = "error";
+            this.$bvModal.show('notification');
+            return false;
+          }
+
+          const idx = content.options.findIndex(option => {
+            return option.value === null || option.text === null
+          })
+
+          if(!content.title || idx >= 0){
+            this.notificationMessage = "Revise o preenchimento dos campos de atividades.";
+            this.notificationtype = "alert";
+            this.$bvModal.show('notification');
+            return false;
+          }
+
+          if(content.rightAnswer.length === 0 ){
+            this.notificationMessage = "A questão <strong>"+ content.title + "</strong> não possui uma resposta correta."
+            this.notificationtype = "alert";
+            this.$bvModal.show('notification');
+            return false;
+          }
+        }
+
+        if(isNaN(content.id) && content.modified){
+          delete content.modified;
+          this.updateContent(content)
+        }
+        else if(!isNaN(content.id) && isNaN(this.lesson.id)){
+          this.sendContent(this.lesson.id, [content])
+        }
+
+        return true;
+      })
+
+      if(!status) return status;
+
       const paramsLesson = {
         id: this.lesson.id,
         title: this.lesson.title,
@@ -933,16 +996,6 @@ export default {
         authors: [],
         contents: this.classContent
       }
-
-      this.classContent.forEach(content => {
-        if(isNaN(content.id) && content.modified){
-          delete content.modified;
-          this.updateContent(content)
-        }
-        else if(!isNaN(content.id) && isNaN(this.lesson.id)){
-          this.sendContent(this.lesson.id, [content])
-        }
-      })
 
       this.availabilityClass !== 'registration' && delete paramsLesson.releaseDaysAfterPurchase;
       this.availabilityClass !== 'specificDate' && delete paramsLesson.releaseDate;

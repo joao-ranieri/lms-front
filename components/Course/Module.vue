@@ -40,7 +40,6 @@ export default {
   },
   computed: {
     updatedModule(){
-      console.log(this.moduleData)
       return this.moduleData;
     }
   },
