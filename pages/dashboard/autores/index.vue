@@ -15,21 +15,25 @@
         <UtilsLoading color="dark" size="large"/>
       </div>
       <div v-else class="d-flex flex-wrap pt-5" style="gap: 40px;">
-        <AuthorCard v-for="(author, index) in authors" :key="index" :author="author" @open-modal="openModalAuthor" @open-delete="openDelete(author)"/>
+        <AuthorCard v-for="(author, index) in authors" :key="index" :author="author" @open-modal="openModalAuthor"
+                    @open-delete="openDelete(author)"/>
       </div>
     </div>
-    <b-pagination v-if="authors.length > 0" class="paginate-style mt-4" pills align="right" @change="getByPage" v-model="currentPage"
+    <b-pagination v-if="authors.length > 0" class="paginate-style mt-4" pills align="right" @change="getByPage"
+                  v-model="currentPage"
                   :total-rows="total" :per-page="perPage"/>
 
     <ModalAuthor/>
     <ModalConfirmation
       title="Exclusão de autor"
       :msg="'Deseja remover o autor '+ authorDelete.name+'?'"
-      @confirmed="confirmed" />
+      @confirmed="confirmed"/>
   </div>
 </template>
 
 <script>
+import aws from '/plugins/aws.js';
+
 export default {
   head() {
     return {
@@ -53,14 +57,14 @@ export default {
       image: "../../assets/img/course-test/img-author.svg",
     }
   },
-  watch:{
-    nameSearch(){
+  watch: {
+    nameSearch() {
       this.getAuthors();
     }
   },
   methods: {
     openModalAuthor(id) {
-      if(typeof id === "string") {
+      if (typeof id === "string") {
         this.$axios.get('/author', {params: {id: id}}).then(response => {
           this.$root.$emit('getAuthorData', {...response.data.data});
         })
@@ -81,7 +85,7 @@ export default {
       })
         .catch(e => {
           console.log(e)
-        }).finally(()=>{
+        }).finally(() => {
         this.loadingContent = false;
       })
     },
@@ -89,9 +93,9 @@ export default {
       this.currentPage = page;
     },
     deleteAuthor() {
-      this.$axios.$delete('author/'+this.authorDelete.id).then(response => {
+      this.$axios.$delete('author/' + this.authorDelete.id).then(response => {
         this.getAuthors();
-      }).catch((e)=>{
+      }).catch((e) => {
         console.log(e)
       })
     },
@@ -106,14 +110,18 @@ export default {
   mounted() {
     this.getAuthors();
 
-    this.$root.$on('refresh-authors', ()=>{
+    aws().getFile().then(resp => {
+      console.log(resp)
+    })
+
+    this.$root.$on('refresh-authors', () => {
       this.getAuthors();
     })
   }
 }
 </script>
 
-<style>
+<style scoped>
 .filter-bar {
   position: relative;
   display: flex;

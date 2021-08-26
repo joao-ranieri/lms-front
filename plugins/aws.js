@@ -1,40 +1,18 @@
-import axios from "axios";
-import { aws4Interceptor } from "aws4-axios";
+import {GetObjectCommand, S3Client} from '@aws-sdk/client-s3';
 
-const awsAxios = axios.create({
-  baseURL: 'https://86n9g4owfh.execute-api.sa-east-1.amazonaws.com/homolg',
-  headers: {
-    'Access-Control-Allow-Origin': '*',
-    'Host': '86n9g4owfh.execute-api.sa-east-1.amazonaws.com'
-  },
-});
+const s3conf = {
+  accessKeyId: "AKIARZJ56O72WLO3WGIE",
+  secretAccessKey: "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",
+}
 
-const interceptor = aws4Interceptor(
-  {
-    region: "sa-east-1",
-    service: "execute-api",
-  },
-  {
-    accessKeyId: "AKIARZJ56O723XMCULHS",
-    secretAccessKey: "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",
-  }
-);
-
-awsAxios.interceptors.request.use(interceptor);
+const client = new S3Client({credentials: s3conf, region: "sa-east-1"})
 
 export default function () {
   return {
-    upload: function(file){
-      awsAxios.put(`/file?key=masters-lms-bucket/${file.name}`, file)
-        .then(res => {
-          console.log(res)
-        })
-        .catch(error => {
-          console.log(error)
-        })
-    },
-    file: function(){
-
+    getFile: async function (Key = 'arquivos/tigre.jpg') {
+      const getObjectCommand = new GetObjectCommand({Bucket: 'masters-lms-bucket', Key})
+      const response = await client.send(getObjectCommand);
+      console.log(response.Body)
     }
   }
 }

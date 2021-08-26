@@ -28,7 +28,8 @@ export default {
     '~/plugins/route',
     '~/plugins/lottie-player',
     '~/plugins/aws',
-    '~plugins/mask.js'
+    '~plugins/mask.js',
+    '~plugins/cors.js'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -42,7 +43,7 @@ export default {
   modules: [
     'bootstrap-vue/nuxt',
     '@nuxtjs/axios',
-    '@nuxtjs/auth',
+    '@nuxtjs/auth'
   ],
 
   // Axios settings
@@ -99,7 +100,12 @@ export default {
   },
 
   server: {
-	port: process.env.PORT
+	port: process.env.PORT || 3030
+  },
+
+  env: {
+    accessKeyId: "AKIARZJ56O723XMCULHS",
+    secretAccessKey: "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"
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build

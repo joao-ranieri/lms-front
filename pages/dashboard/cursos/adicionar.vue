@@ -969,6 +969,30 @@ export default {
             return false;
           }
         }
+        else if(["VIDEO", "video"].includes(content.type)){
+          if(!content.link){
+            this.notificationMessage = "Informe o link do vídeo do seu conteúdo.";
+            this.notificationtype = "alert";
+            this.$bvModal.show('notification');
+            return false;
+          }
+        }
+        else if(["TEXTO", "text"].includes(content.type)){
+          if(!content.text){
+            this.notificationMessage = "Falta o conteúdo textual da sua atividade.";
+            this.notificationtype = "alert";
+            this.$bvModal.show('notification');
+            return false;
+          }
+        }
+        else if(["ARQUIVO", "AUDIO", "file", "audio"].includes(content.type)){
+          if(!content.content){
+            this.notificationMessage = "Falta o conteúdo de texto para a sua atividade.";
+            this.notificationtype = "alert";
+            this.$bvModal.show('notification');
+            return false;
+          }
+        }
 
         if(isNaN(content.id) && content.modified){
           delete content.modified;

@@ -349,9 +349,6 @@ export default {
       }
       this.updateAttr();
     }
-  },
-  mounted() {
-    this.model = this.mediaContent;
   }
 }
 </script>
