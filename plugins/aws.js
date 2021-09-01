@@ -1,4 +1,4 @@
-import {GetObjectCommand, S3Client} from '@aws-sdk/client-s3';
+import {GetObjectCommand, PutObjectCommand, S3Client} from '@aws-sdk/client-s3';
 
 const s3conf = {
   accessKeyId: "AKIARZJ56O72WLO3WGIE",
@@ -9,10 +9,23 @@ const client = new S3Client({credentials: s3conf, region: "sa-east-1"})
 
 export default function () {
   return {
-    getFile: async function (Key = 'arquivos/tigre.jpg') {
+    getFile: async function (Key = 'arquivos/eu.jpg') {
       const getObjectCommand = new GetObjectCommand({Bucket: 'masters-lms-bucket', Key})
       const response = await client.send(getObjectCommand);
       console.log(response.Body)
+    },
+    postFile: async function(directory, file) {
+      const putObjectCommand = new PutObjectCommand({
+        Bucket: 'masters-lms-bucket',
+        Key: directory+file.name,
+        Body: file,
+        ContentType: file.type
+      });
+      try {
+        const response = await client.send(putObjectCommand);
+      } catch (err) {
+        console.log("Error", err);
+      }
     }
   }
 }
