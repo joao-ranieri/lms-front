@@ -198,6 +198,7 @@ h6 {
 }
 
 .message-box .dropdown-toggle::after,
+.bag-box .dropdown-toggle::after,
 .notification-box .dropdown-toggle::after,
 .btn-menu.dropdown-toggle::after {
   display: none;
@@ -230,12 +231,17 @@ h6 {
 
 /* Dropdown settings - MESSAGES AND NOTIFICATIONS */
 .message-btn img,
+.bag-btn img,
 .notification-btn img {
   width: 19px;
 }
 
 .message-btn:hover img {
   content: url("../../assets/img/utils/ico-message-purple.svg");
+}
+
+.bag-btn:hover img {
+  content: url("../../assets/img/utils/ico-bag-purple.svg");
 }
 
 .notification-btn:hover img {
@@ -252,6 +258,7 @@ h6 {
 }
 
 /* Dropdown settings - PROFILE */
+.bag-btn,
 .message-btn,
 .notification-btn,
 .profile-btn {

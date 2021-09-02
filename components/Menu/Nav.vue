@@ -6,6 +6,9 @@
     </div>
     <div class="itens">
       <MenuNavItems />
+      <div :class="['toggle-menu-student', !expanded && 'toggle-menu-student-small']" @click="retract">
+        <img :src="require('../../assets/img/utils/small-right-purple.svg')" alt="arrow icon">
+      </div>
     </div>
     <div :class="['footer-nav', !expanded && 'footer-small']">
       <MenuToggleTheme />
@@ -47,6 +50,30 @@ nav {
 .itens {
   height: calc(100vh - 172px);
   overflow: auto;
+}
+
+.toggle-menu-student {
+  position: absolute;
+  margin-top: 98px;
+  height: calc(100% - 98px);
+  background: #F2F2F2;
+  right: 0;
+  top: 0;
+  padding: 0 3px;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border-right: 2px solid #89238A;
+}
+
+.toggle-menu-student img {
+  transform: rotate(90deg);
+}
+
+.toggle-menu-student.toggle-menu-student-small img {
+  transform: rotate(270deg);
 }
 
 .footer-nav {
