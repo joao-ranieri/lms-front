@@ -27,8 +27,13 @@ export default {
     image: {type: String, default: null},
   },
   computed:{
-    imageURL(){
-      return this.image;
+    imageURL: {
+      get: function () {
+        return this.image;
+      },
+      set: function (newValue) {
+        // this.imageURL = newValue;
+      }
     }
   },
   methods:{
