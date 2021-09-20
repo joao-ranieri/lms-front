@@ -856,6 +856,9 @@ export default {
       } else {
         this.lesson = lesson;
         this.classContent = lesson.contents
+        this.step = 3;
+        this.position = 3;
+        this.currentModule = moduleID;
       }
 
     },
