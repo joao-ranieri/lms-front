@@ -32,17 +32,22 @@
       <div class="files-content-class">
         <span>Arquivos para baixar:</span>
         <div class="files">
-          <div class="file-item" v-for="n in 10">
-            <img width="25" :src="require('../../../assets/img/utils/ico-file-download.svg')" alt="">
-            <div class="file-info">
-              <span class="file-item-name">The Walt Disney Compan dc sdfçklds sdf sdf dsf dsf sdfds f</span>
-              <div class="file-item-info">
-                <span>pdf</span>
-                <span>10mb</span>
-              </div>
-            </div>
-          </div>
+          <FileItem v-for="n in 5" :key="n" />
         </div>
+      </div>
+    </div>
+    
+    <hr/>
+
+    <div class="comments-class">
+      <span>Comentários dessa aula</span>
+      <div class="comments">
+          <div class="shadow-comments">
+            <b-button class="btn-purple pl-4 pr-4" v-b-tooltip="'Ver fórum'">
+              Ver fórum
+            </b-button>
+          </div>
+          <Comment v-for="n in 5" :key="n" />
       </div>
     </div>
   </div>
@@ -62,7 +67,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .student-class {
   margin: 0 132px;
 }
@@ -139,58 +144,35 @@ p {
   margin-top: 32px;
 }
 
+.comments-class > span,
 .files-content-class > span {
   font-family: "Inter Semibold";
   font-size: 14px;
   line-height: 20px;
   color: #373740;
   display: block;
-  margin-bottom: 16px;
+  margin-bottom: 21px;
 }
 
 .files-content-class .files {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
+  margin-bottom: 32px;
 }
 
-.files-content-class .file-item {
+.comments-class .comments {
+  position: relative;
+}
+
+/* shadow-comments */
+.shadow-comments {
+  background: rgba(255, 255, 255, 0.7);
   display: flex;
+  justify-content: center;
   align-items: center;
-  background: #F2F2F2;
-  width: 220px;
-  height: 72px;
-  padding: 16px;
-  border-radius: 4px;
-}
-
-.files-content-class .file-item > img {
-  height: 100%;
-  width: 20%;
-  padding-bottom: 15px;
-  margin-right: 5px;
-}
-
-.files-content-class .file-item .file-info {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 75%;
-  height: 100%;
-}
-
-.files-content-class .file-item .file-info .file-item-name {
+  position: absolute;
+  min-height: 100%;
   width: 100%;
-  display: inline-block;
-  white-space: nowrap;
-  overflow: hidden !important;
-  text-overflow: ellipsis;
-}
-
-.files-content-class .file-item .file-item-info {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  color: #5C5C64;
 }
 </style>
