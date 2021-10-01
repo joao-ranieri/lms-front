@@ -1,5 +1,6 @@
 <template>
   <div class="content student-class">
+    <UtilsStepBar />
     <div class="player-class">
       <div class="player-class-media">
         <iframe width="100%" height="100%" src="https://www.youtube.com/embed/gn7PHkYLDZU"
