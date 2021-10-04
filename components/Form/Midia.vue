@@ -198,6 +198,14 @@ export default {
       return this.mediaContent
     }
   },
+  asyncComputed: {
+    file() {
+      if(['audio', 'file'].includes(this.mediaContent.type)) {
+          return this.$getFileAWS(this.author.image);
+      }
+      return this.image;
+    }
+  },
   data() {
     return {
       types: {
@@ -236,11 +244,11 @@ export default {
         this.file = url;
       }
 
-      this.toBase64(file).then(response => {
-        this.model.content = response;
-      }).finally(() => {
-        this.updateAttr();
+      this.toBase64(file).then(resp => {
+        this.model.content = {base64: resp, file:file};
       })
+
+      this.updateAttr();
     },
     updateAttr() {
       if(this.model.id){

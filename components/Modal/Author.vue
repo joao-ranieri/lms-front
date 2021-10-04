@@ -11,7 +11,8 @@
             <div class="drop-image d-flex cursor-pointer" @click="$refs.fileInput.click()" v-cloak
                  @drop.prevent="setImage" @dragover.prevent>
               <span class="selected-image">
-                <img width="128" height="128" :src="imageURL" alt="author-image">
+                <img width="128" height="128" :src="imgBase64 ? imgBase64 : imgDefault"
+                     alt="author-image">
               </span>
               <span class="instructions">
                 <span class="top-text mb-1">
@@ -54,7 +55,7 @@
 </template>
 
 <script>
-import aws from "/plugins/aws.js";
+// import aws from "/plugins/aws.js";
 
 export default {
   data() {
@@ -65,11 +66,13 @@ export default {
       },
       formType: 'new',
       author: {
-        name:'',
+        name: '',
         description: '',
-        image: '../../assets/img/utils/photo-drop.svg'
+        image: null,
       },
-      imageURL: require('../../assets/img/utils/photo-drop.svg'),
+      imgFile: null,
+      imgDefault: require('../../assets/img/utils/photo-drop.svg'),
+      imgBase64: null,
       isLoading: false,
       isSuccess: false,
       notification: null
@@ -77,22 +80,29 @@ export default {
   },
   methods: {
     getAuthor(author) {
-      if(author) {
+      if (author) {
         this.formType = 'edit',
-        this.author.id = author.id;
+          this.author.id = author.id;
         this.author.name = author.name;
+        this.author.image = author.image;
         this.author.description = author.description;
-        this.author.image = author.image ? author.image : this.author.image;
+
+        if (author.image) {
+          this.getImage(author.image)
+        }
       }
+    },
+    async getImage(key) {
+      this.$getFileAWS(key).then(resp => {
+        this.imgBase64 = resp;
+      });
     },
     setValue(v) {
       this.author[v.model] = v.value;
     },
     async setImage(e) {
-      let img = e.dataTransfer ? e.dataTransfer.files[0] : e.target.files[0];
-      this.imageURL = window.URL.createObjectURL(img);
-      await this.toBase64(img);
-      aws().postFile('arquivos/', img)
+      this.imgFile = e.dataTransfer ? e.dataTransfer.files[0] : e.target.files[0];
+      await this.toBase64(this.imgFile);
     },
     executeForm() {
       if (this.isSuccess) {
@@ -102,28 +112,34 @@ export default {
 
       this.isLoading = true;
 
-      if (this.author.id) {
-        this.$axios.$put('/author/'+this.author.id, this.author).then(response => {
-          this.isSuccess = true;
-        }).catch(e => {
-            console.log(e)
-          }).finally(() => {
-            this.resetData();
-            this.isLoading = false;
-          })
-      }
-      else {
-        this.$axios.$post('/author', this.author).then(response => {
-          this.isSuccess = true;
-        }).catch(e => {
-            console.log(e)
-          }).finally(() => {
-            this.resetData();
-            this.isLoading = false;
-          })
+      if (this.imgFile) {
+        const fileDir = `autores/${this.$randomString()}.type.${this.imgFile.type.replace('/', '-')}`;
+        this.$postFileAWS(fileDir, this.imgFile).then(resp => {
+          this.author.image = fileDir;
+          this.saveAuthor();
+        }).catch(err => {
+          console.log(err)
+          this.isLoading = true;
+        });
+      } else {
+        this.saveAuthor();
       }
     },
-    toBase64 (file) {
+    saveAuthor() {
+      const promise = this.author.id ? this.$axios.$put('/author/' + this.author.id, this.author) : this.$axios.$post('/author', this.author);
+      promise.then(response => {
+        console.log(response)
+        this.isSuccess = true;
+      }).catch(e => {
+        console.log(e)
+      }).finally(() => {
+        this.resetData();
+        this.$emit('refresh-authors');
+        this.isLoading = false;
+      })
+    }
+    ,
+    toBase64(file) {
       let image;
       new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -132,26 +148,30 @@ export default {
         reader.onerror = error => reject(error);
       }).then(response => {
         image = response;
-        }).finally(()=>{
-        this.author['image'] = image;
+      }).finally(() => {
+        this.imgBase64 = image;
       })
-    },
+    }
+    ,
     close() {
       this.isSuccess = false;
       this.$bvModal.hide('author');
-    },
-    resetData(){
-      this.author = {
-        name:'',
-        description: '',
-        image: '../../assets/img/utils/photo-drop.svg'
-      }
-      this.$emit('refresh-authors');
     }
-  },
+    ,
+    resetData() {
+      this.author = {
+        name: '',
+        description: '',
+        image: null
+      }
+      this.imgFile = null;
+      this.imgBase64 = null
+    }
+  }
+  ,
   mounted() {
-    this.$root.$on('getAuthorData', (id) => {
-      this.getAuthor(id)
+    this.$root.$on('getAuthorData', (author) => {
+      this.getAuthor(author)
     });
   }
 }

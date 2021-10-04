@@ -8,8 +8,8 @@
         <b-dropdown-item @click="edit"><i class="share-ico mr-1"></i>Editar</b-dropdown-item>
         <b-dropdown-item @click="remove"><i class="trash-ico mr-1"></i>Remover</b-dropdown-item>
       </b-dropdown>
-      <div class="author-image">
-        <img class="mr-auto ml-auto" :src="author.image" alt="author">
+      <div class="author-image" v-if="image">
+        <img class="mr-auto ml-auto" :src="image" alt="author">
       </div>
 
       <div class="author-info">
@@ -25,9 +25,9 @@ export default {
   props: {
     author:{type: Object, default: null},
   },
-  watch: {
-    imageURL(val){
-      return require(val)
+  asyncComputed: {
+    image() {
+      return this.$getFileAWS(this.author.image);
     }
   },
   methods:{

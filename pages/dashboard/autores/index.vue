@@ -23,7 +23,7 @@
                   v-model="currentPage"
                   :total-rows="total" :per-page="perPage"/>
 
-    <ModalAuthor/>
+    <ModalAuthor @refresh-authors="getAuthors"/>
     <ModalConfirmation
       title="Exclusão de autor"
       :msg="'Deseja remover o autor '+ authorDelete.name+'?'"
@@ -32,7 +32,6 @@
 </template>
 
 <script>
-import aws from '/plugins/aws.js';
 
 export default {
   head() {
@@ -109,10 +108,6 @@ export default {
   },
   mounted() {
     this.getAuthors();
-
-    aws().getFile().then(resp => {
-      console.log(resp)
-    })
 
     this.$root.$on('refresh-authors', () => {
       this.getAuthors();

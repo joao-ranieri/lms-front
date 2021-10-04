@@ -3,7 +3,7 @@
     <input class="d-none" ref="fileInput" type="file" @change="setImage" enctype="multipart/form-data">
 
     <div class="drag-drop-box size-default" @click="$refs.fileInput.click()" v-cloak @drop.prevent="setImage" @dragover.prevent>
-      <img v-if="imageURL" :src="imageURL" width="150" height="200" alt="author-image">
+      <img v-if="imgBase64" :src="imgBase64" width="150" height="200" alt="author-image">
 
       <div v-else class="text-center p-3">
           <img src="@/assets/img/utils/ico-camera.svg" alt="camera">
@@ -13,7 +13,7 @@
       </div>
     </div>
 
-    <div v-if="imageURL" class="actions-group size-default">
+    <div v-if="imgBase64" class="actions-group size-default">
       <button type="button" class="mb-3 mr-3" @click="$refs.fileInput.click()" v-b-tooltip="'Editar'"><i class="pencil-ico"></i></button>
       <button type="button" class="mb-3" @click="removeImage" v-b-tooltip="'Remover'"><i class="trash-ico"></i></button>
     </div>
@@ -26,21 +26,14 @@ export default {
   props:{
     image: {type: String, default: null},
   },
-  computed:{
-    imageURL: {
-      get: function () {
-        return this.image;
-      },
-      set: function (newValue) {
-        // this.imageURL = newValue;
-      }
+  asyncComputed: {
+    imgBase64() {
+       return this.image;
     }
   },
   methods:{
     async setImage(e) {
-      let img = e.dataTransfer ? e.dataTransfer.files[0] : e.target.files[0];
-
-      this.imageURL = window.URL.createObjectURL(img);
+      const img = e.dataTransfer ? e.dataTransfer.files[0] : e.target.files[0];
       await this.toBase64(img);
     },
     toBase64 (file) {
@@ -53,12 +46,19 @@ export default {
       }).then(response => {
         image = response;
       }).finally(()=>{
-        this.$emit('send-image', {prop: 'coverImage', item: image})
+        const obj = {
+          file: file,
+          base64: image
+        }
+        this.$emit('send-image', obj)
       })
     },
     removeImage(){
-      this.imageURL = null;
-      this.$emit('send-image', {prop: 'coverImage', item: null})
+      const obj = {
+        file: null,
+        base64: null
+      }
+      this.$emit('send-image', obj)
     }
   }
 }

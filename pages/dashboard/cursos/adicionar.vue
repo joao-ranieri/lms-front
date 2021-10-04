@@ -82,7 +82,7 @@
             <div :class="['input-step-group', {'active': position === 5}]"
                  v-if="position <= 5">
               <div class="item-form d-inline-flex" style="gap: 16px">
-                <UtilsDropImage @send-image="setProperty" :image="course.coverImage"/>
+                <UtilsDropImage @send-image="setImage" :image="coverImage.base64"/>
                 <div class="box-info-image">
                   <h6 class="grey-neutral-6">Escolha a imagem de capa do seu curso</h6>
                   <span class="d-block grey-neutral">
@@ -94,7 +94,7 @@
               </div>
               <div class="pl-3">
                 <button class="btn d-inline btn-purple pl-4 pr-4 mt-4" @click="nextPosition"
-                        :disabled="!course.coverImage">Ok
+                        :disabled="!coverImage.base64">Ok
                 </button>
               </div>
             </div>
@@ -340,12 +340,12 @@
 
           <div>
             <b-button v-if="step <= 2 || (step === 3 && position === 1)" class="btn-rounded-purple mr-3 pl-4 pr-4"
-                      v-b-tooltip="'Salvar rascunho'" @click="sendForm()">
+                      v-b-tooltip="'Salvar rascunho'" @click="processData()">
               Salvar rascunho
             </b-button>
 
             <b-button v-if="step <= 2 || (step === 3 && position === 1)" class="btn-purple pl-4 pr-4"
-                      v-b-tooltip="'Publicar curso'" @click="sendForm(true)"
+                      v-b-tooltip="'Publicar curso'" @click="processData(true)"
                       :disabled="((step === 1 && position < 5) || (step === 2 && position < 3) || isDisabled) && !(!isDisabled && id)">
               Publicar curso
             </b-button>
@@ -445,6 +445,10 @@ export default {
         certificateIssuePercentage: 0,
         termsAndConditions: null,
         publishCourse: false
+      },
+      coverImage:{
+        file: null,
+        base64: null
       },
       module: {
         title: null,
@@ -602,8 +606,26 @@ export default {
         this.isDisabled = true;
       }
     },
+    setImage(obj){
+      this.coverImage.base64 = obj.base64;
+      this.coverImage.file = obj.file;
+    },
+    processData(publish){
+      if(this.coverImage.file) {
+        const fileDir = `arquivos/${this.$randomString()}.type.${this.coverImage.file.type.replace('/', '-')}`;
+        this.$postFileAWS(fileDir, this.coverImage.file).then(resp => {
+          this.course.coverImage = fileDir;
+          this.sendForm(publish);
+        }).catch(err => {
+          console.log(err)
+          this.isLoading = true;
+        });
+      }
+      else {
+        this.sendForm(publish);
+      }
+    },
     sendForm(publish) {
-
       let authors = [];
 
       this.course.authors.forEach(author => {
@@ -1112,6 +1134,10 @@ export default {
       this.id = $nuxt.$route.params.id;
       this.$axios.$get('/course', {params: {id: this.id}}).then(response => {
         this.course = {...response.data};
+
+        this.$getFileAWS(this.course.coverImage).then(resp => {
+          this.coverImage.base64 = resp;
+        });
 
         this.term = this.course.termsAndConditions ? 'Y' : 'N'
 

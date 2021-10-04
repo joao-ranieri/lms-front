@@ -1,5 +1,5 @@
 <template>
-  <b-card overlay :img-src="course.coverImage">
+  <b-card overlay :img-src="coverImage">
     <b-card-body class="p-3">
       <span class="course-status">{{course.publishCourse ? 'Publicado' : 'Rascunho'}}</span>
 
@@ -41,6 +41,11 @@ export default {
     course: {type: Object},
     tags: {type: Array},
     isPublished: {type: Boolean},
+  },
+  asyncComputed: {
+    coverImage() {
+      return this.$getFileAWS(this.course.coverImage);
+    }
   },
   data(){
     return {
