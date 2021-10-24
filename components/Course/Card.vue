@@ -22,7 +22,7 @@
           {{course.title}}
         </div>
 
-        <span v-for="(a, index) in course.authors" :key="index" class="author mb-3">
+        <span v-for="(a, index) in authors" :key="index" class="author mb-3">
           <img class="mr-2" :src="a.image" alt="author">{{a.name}}
         </span>
 
@@ -49,12 +49,21 @@ export default {
   },
   data(){
     return {
-      isFavorite: false
+      isFavorite: false,
+      imageAuthor: false,
+      authors: []
     }
   },
   methods: {
     share(){
 
+    },
+    async getAuthorsImage(authorsList){
+      for(const author of authorsList) {
+        let author_copy = {...author};
+        author_copy.image = await this.$getFileAWS(author.image);
+        this.authors.push(author_copy);
+      }
     },
     remove(){
       this.$emit('open-delete', this.course)
@@ -69,6 +78,9 @@ export default {
     edit(id){
       $nuxt.$router.push('/dashboard/cursos/editar/'+id)
     }
+  },
+  mounted() {
+    this.getAuthorsImage(this.course.authors);
   }
 }
 </script>
