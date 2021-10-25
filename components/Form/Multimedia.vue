@@ -76,10 +76,10 @@ export default {
         item = {text: null};
       }
       else if (type === 'file') {
-        item = {name: null, content: {base64: null, file: null}, canDownload: true};
+        item = {name: null, content: {file: null}, enableDownload: true};
       }
       else if (type === 'audio') {
-        item = {content: {base64: null, file: null}, canDownload: false};
+        item = {content: {file: null}, enableDownload: false};
       }
       else if (type === 'incorporate') {
         item = {text: null};

@@ -695,33 +695,50 @@ export default {
     },
     sendContent(classId, contentList, updateModuleList) {
       let contentGroup = [];
-      contentList.forEach((content, index) => {
+      contentList.forEach((dynamicContent, index) => {
         let mediaContent = {};
-        switch (content.type) {
+        switch (dynamicContent.type) {
           case 'task':
             mediaContent = {
-              title: content.title,
-              contentType: content.contentType,
-              rightAnswer: content.rightAnswer,
-              options: content.options
+              title: dynamicContent.title,
+              contentType: dynamicContent.contentType,
+              rightAnswer: dynamicContent.rightAnswer,
+              options: dynamicContent.options
             }
             break;
           case 'video':
-            mediaContent = {link: content.link}
+            mediaContent = {link: dynamicContent.link}
             break;
           case 'file':
-            mediaContent = {name: content.name, content: content.content}
+            if(dynamicContent.content.file) {
+              const fileDir = dynamicContent.url ? dynamicContent.url :`arquivos/${this.$randomString()}.type.${dynamicContent.content.file.type.replace('/', '-')}`;
+              this.$postFileAWS(fileDir, dynamicContent.content.file);
+              mediaContent = {name: dynamicContent.name, content: fileDir}
+            }
+            else {
+              mediaContent = {name: dynamicContent.name, content: dynamicContent.url}
+            }
+            break;
+          case 'audio':
+            if(dynamicContent.content.file) {
+              const audioDir = dynamicContent.url ? dynamicContent.url :`arquivos/${this.$randomString()}.type.${dynamicContent.content.file.type.replace('/', '-')}`;
+              this.$postFileAWS(audioDir, dynamicContent.content.file)
+              mediaContent = {content: audioDir}
+            }
+            else {
+              mediaContent = {content: dynamicContent.url}
+            }
             break;
           default:
-            mediaContent = {text: content.text}
+            mediaContent = {text: dynamicContent.text}
         }
 
         const formattedContent = {
           sequence: index,
-          title: content.title,
-          type: this.contentTypes[content.type],
-          includeDRM: content.hasDRM ?? false,
-          enableDownload: content.canDownload ?? false,
+          title: dynamicContent.title,
+          type: this.contentTypes[dynamicContent.type],
+          includeDRM: dynamicContent.hasDRM ?? false,
+          enableDownload: dynamicContent.canDownload ?? false,
           description: JSON.stringify(mediaContent)
         }
         contentGroup.push(formattedContent)
@@ -776,7 +793,7 @@ export default {
         sequence: sequence,
         type: this.contentTypes[content.type],
         includeDRM: content.hasDRM ?? false,
-        enableDownload: content.canDownload ?? false,
+        enableDownload: content.enableDownload ?? false,
         description: JSON.stringify(mediaContent)
       }
 
@@ -824,20 +841,22 @@ export default {
         this.changeStep(e.indexItem)
       }
       this.position = e.indexSub + 1;
-
     },
     getCategoriesList() {
-      this.$axios.$get(`/category/all?page=${1}&size=${1000}&orderBy=${'name'}&direction=${'ASC'}`).then(response => {
+      const url = `/category/all?page=${1}&size=${1000}&orderBy=${'name'}&direction=${'ASC'}`;
+      this.$axios.$get(url).then(response => {
         this.categoriesList = [...response.data];
       });
     },
     getAuthorList() {
-      this.$axios.$get(`/author/all?page=${1}&size=${1000}&orderBy=${'name'}&direction=${'ASC'}`).then(response => {
+      const url = `/author/all?page=${1}&size=${1000}&orderBy=${'name'}&direction=${'ASC'}`;
+      this.$axios.$get(url).then(response => {
         this.authorList = [...response.data];
       });
     },
     getModuleList() {
-      this.$axios.$get(`/module/all?courseId=${this.id}&size=${1000}&page=1`).then(response => {
+      const url = `/module/all?courseId=${this.id}&size=${1000}&page=1`;
+      this.$axios.$get(url).then(response => {
         this.moduleList = [...response.data];
         this.moduleList.forEach((module, index) => {
           this.classes[index] = module.classes;
@@ -849,11 +868,20 @@ export default {
         this.$axios.$get(`/class?id=${lesson.id}`).then(response => {
           this.lesson = {...response.data};
           this.lesson.contents.forEach(content => {
-            let obj = JSON.parse(content.description);
-            obj.id = content.id;
-            obj.type = 'task';
+            let classContent = {...content, ...JSON.parse(content.description)};
+            delete classContent.description;
 
-            this.classContent.push(obj)
+            const types = {
+              "TEXTO" : 'text',
+              'VIDEO' : 'video',
+              'ARQUIVO' :'file',
+              'AUDIO' : 'audio',
+              'EMBEDDED' : 'incorporate',
+              'ATIVIDADE' : 'task'
+            }
+            classContent.type = types[content.type];
+
+            this.classContent.push(classContent)
             this.step = 3;
             this.position = 3;
             this.currentModule = moduleID;
