@@ -1,12 +1,7 @@
 <template>
     <div class="step-bar">
         <ul>
-            <li class="item"></li>
-            <li class="item "></li>
-            <li class="item "></li>
-            <li class="item active"></li>
-            <li class="item "></li>
-            <li class="item "></li>
+            <li class="item" :class="{'active': current === step}" v-for="step in steps" :key="step"></li>
         </ul>
         <div class="next-class">
             <img width="65" :src="require('../../assets/img/utils/ico-diamond-chest.svg')" alt=""/>
@@ -20,7 +15,7 @@
 
 <script>
 export default {
-
+    props: ['steps', 'current'],
 }
 </script>
 

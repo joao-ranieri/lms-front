@@ -1,9 +1,9 @@
 <template>
   <div class="content student-class">
-    <UtilsStepBar />
+    <UtilsStepBar :steps="4" :current="2" />
     <div class="player-class">
       <div class="player-class-media">
-        <iframe width="100%" height="100%" src="https://www.youtube.com/embed/gn7PHkYLDZU"
+        <iframe width="100%" height="100%"
         title="YouTube video player"
         frameborder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -25,11 +25,8 @@
     </div>
 
     <div class="content-class">
-      <h5>Fonologia - Como estudar para a prova</h5>
-      <p>
-        Consectetur adipiscing elit duis tristique sollicitudin nibh sit amet
-        commodo nulla facilisi nullam vehicula ipsum a arcu cursus vitae congue.
-      </p>
+      <h5>{{lesson.title}}</h5>
+      <p>descricao</p>
       <div class="files-content-class">
         <span>Arquivos para baixar:</span>
         <div class="files">
@@ -63,8 +60,24 @@ export default {
   },
 
   data() {
-    return {}
+    return {
+      lesson: {},
+    }
   },
+
+  methods: {
+    getClass() {
+      this.$axios.$get(`class?id=${'15212975-0b5d-422b-b7f9-a36270e5cfc9'}`).then(response => {
+        this.lesson = response.data;
+      }).catch(e => {
+        console.log(e)
+      }).finally(() => {})
+    },
+  },
+
+  mounted() {
+    this.getClass();
+  }
 }
 </script>
 
