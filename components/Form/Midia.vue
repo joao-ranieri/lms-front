@@ -31,13 +31,13 @@
 
         <div class="w-100" v-else-if="['audio', 'file'].includes(mediaContent.type)">
           <div class="file-select">
-            <div class="audio-play" v-if="audio">
+            <div class="audio-play" v-if="mediaContent.type === 'audio' && audio">
               <audio controls class="w-100">
-                <source :src="audio" type="audio/mpeg">
+                <source :src="model.content.base64" type="audio/mpeg">
               </audio>
             </div>
 
-            <div v-else-if="file">
+            <div v-else-if="mediaContent.type === 'file' && file">
               <label class="d-block mt-3">Título do arquivo</label>
               <div class="d-flex w-100">
                 <b-form-group class="mb-0 w-100">
@@ -61,7 +61,7 @@
           </div>
 
           <div class="mt-3">
-            <b-form-checkbox class="checkbox-style" v-model="model.canDownload" :value="true"
+            <b-form-checkbox class="checkbox-style" v-model="model.enableDownload" :value="true"
                              @change="updateAttr">Permitir download
             </b-form-checkbox>
           </div>
@@ -198,14 +198,6 @@ export default {
       return this.mediaContent
     }
   },
-  asyncComputed: {
-    file() {
-      if(['audio', 'file'].includes(this.mediaContent.type)) {
-          return this.$getFileAWS(this.author.image);
-      }
-      return this.image;
-    }
-  },
   data() {
     return {
       types: {
@@ -219,10 +211,10 @@ export default {
       drmMessage: 'O DRM (Gerenciamento dos Direitos Digitais) protege o seu conteúdo ao acrescentar imagens em posições variadas do vídeo, dificultando o plágio.',
       hasDownload: false,
       showModule: false,
-      audio: null,
-      file: null,
       show: false,
       selectedTask: null,
+      audio: null,
+      file: null,
       taskView: {},
       taskName: {
         'multiple-choice': 'Múltipla escolha',
@@ -236,39 +228,29 @@ export default {
   methods: {
     loadFile(e) {
       const file = e.dataTransfer ? e.dataTransfer.files[0] : e.target.files[0];
-      const url = window.URL.createObjectURL(file);
 
-      if (this.mediaContent.type === 'audio') {
-        this.audio = url;
-      } else if (this.mediaContent.type === 'file') {
-        this.file = url;
-      }
-
-      this.toBase64(file).then(resp => {
-        this.model.content = {base64: resp, file:file};
+      this.$toBase64(file).then(resp => {
+        if (this.mediaContent.type === 'audio') {
+          this.audio = resp;
+        } else if (this.mediaContent.type === 'file') {
+          this.file = resp;
+        }
+        this.model.content = {base64: resp, file: file};
       })
 
       this.updateAttr();
     },
     updateAttr() {
-      if(this.model.id){
+      if (this.model.id) {
         this.model.id = this.mediaContent.id;
       }
 
-      if(isNaN(this.model.id)){
+      if (isNaN(this.model.id)) {
         this.model.modified = true;
       }
 
       this.model.type ||= this.mediaContent.type;
       this.$emit('update-item', {collection: this.type, item: {...this.model}})
-    },
-    toBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-      })
     },
     addOption() {
       let option = {
@@ -293,27 +275,25 @@ export default {
       }
       this.updateAttr();
     },
-    setAnswerCheckbox(option, index){
-      if(this.model.rightAnswer.includes(index)){
+    setAnswerCheckbox(option, index) {
+      if (this.model.rightAnswer.includes(index)) {
         this.model.rightAnswer.splice(this.model.rightAnswer.indexOf(index), 1);
         option.isCorrect = false;
-      }
-      else {
+      } else {
         this.model.rightAnswer.push(index)
         option.isCorrect = true;
       }
       this.updateAttr();
     },
     reorderValues() {
-      if(this.model.contentType.includes('checkbox')){
+      if (this.model.contentType.includes('checkbox')) {
         this.model.rightAnswer = [];
-        this.model.options.forEach((option, index) =>{
-          if(option.isCorrect){
+        this.model.options.forEach((option, index) => {
+          if (option.isCorrect) {
             this.model.rightAnswer.push(index);
           }
         })
-      }
-      else{
+      } else {
         this.model.rightAnswer = this.model.options.findIndex(option => {
           return option.isCorrect
         })
@@ -343,20 +323,44 @@ export default {
             value: 'Falso',
             isCorrect: false
           }];
-      }
-      else if (['checkbox', 'multiple-choice'].includes(type)) {
+      } else if (['checkbox', 'multiple-choice'].includes(type)) {
         this.model.rightAnswer = [];
         this.model.options = [];
-      }
-      else if(type.includes('short-answer')) {
+      } else if (type.includes('short-answer')) {
         this.model.options = [{
-            text: null,
-            value: null,
-            isCorrect: true
-          }];
+          text: null,
+          value: null,
+          isCorrect: true
+        }];
       }
       this.updateAttr();
+    },
+    async getFile(url) {
+      const archive = await this.$getFileAWS(url);
+
+      if (this.mediaContent.type === 'audio') {
+        this.audio = archive;
+      } else if (this.mediaContent.type === 'file') {
+        this.file = archive;
+      }
     }
+  },
+  mounted() {
+      if(["audio","file"].includes(this.mediaContent.type)){
+        if(this.mediaContent.content.file){
+          this.$toBase64(this.mediaContent.content.file).then(resp => {
+            if (this.mediaContent.type === 'audio') {
+              this.audio = resp;
+            } else if (this.mediaContent.type === 'file') {
+              this.file = resp;
+            }
+            this.model.content = {base64: resp, file: file};
+          })
+        }
+        else if(this.mediaContent.content.url){
+          this.getFile(this.mediaContent.content.url);
+        }
+      }
   }
 }
 </script>

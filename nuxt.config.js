@@ -25,11 +25,11 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-    '~/plugins/route',
+    '~/plugins/route-control',
+    '~/plugins/axios-settings',
     '~/plugins/lottie-player',
     '~/plugins/aws',
-    '~plugins/mask.js',
-    '~plugins/cors.js'
+    '~/plugins/utils.js'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -86,6 +86,10 @@ export default {
     extendRoutes(routes, resolve) {
       routes.push(
         {
+          name: 'Página Inicial',
+          path: '/',
+          component: resolve(__dirname, 'pages/dashboard/cursos/index.vue')
+        },        {
           name: 'Login Administrador',
           path: '/admin/login',
           component: resolve(__dirname, 'pages/login.vue')
