@@ -1,0 +1,1 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[32],{716:function(e,n,t){"use strict";t.r(n);var r={head:function(){return{title:"Marketing - Masters"}}},c=t(44),component=Object(c.a)(r,(function(){var e=this,n=e.$createElement;return(e._self._c||n)("p",[e._v("Marketing sub menu 1")])}),[],!1,null,"057279f1",null);n.default=component.exports}}]);

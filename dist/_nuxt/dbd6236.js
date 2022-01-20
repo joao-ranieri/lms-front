@@ -1,0 +1,1 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[29],{714:function(e,n,t){"use strict";t.r(n);var o={head:function(){return{title:"Comunicação - Masters"}}},c=t(44),component=Object(c.a)(o,(function(){var e=this,n=e.$createElement;return(e._self._c||n)("p",[e._v("Comunicação submenu 1")])}),[],!1,null,"419237be",null);n.default=component.exports}}]);
