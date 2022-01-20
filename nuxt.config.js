@@ -48,7 +48,7 @@ export default {
 
   // Axios settings
   axios: {
-    baseURL: 'https://masters-api.herokuapp.com/api/'
+    baseURL: 'http://18.212.140.39:3000/api/'
   },
 
   auth: {
